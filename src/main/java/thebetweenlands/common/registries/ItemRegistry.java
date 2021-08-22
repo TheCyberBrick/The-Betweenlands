@@ -97,6 +97,10 @@ import thebetweenlands.common.item.herblore.ItemDentrothystVial;
 import thebetweenlands.common.item.herblore.ItemElixir;
 import thebetweenlands.common.item.herblore.ItemManualHL;
 import thebetweenlands.common.item.herblore.ItemPlantDrop;
+import thebetweenlands.common.item.herblore.ItemScrivenerTool;
+import thebetweenlands.common.item.herblore.rune.ItemRune;
+import thebetweenlands.common.item.herblore.rune.ItemRuneChain;
+import thebetweenlands.common.item.herblore.rune.ItemRunelet;
 import thebetweenlands.common.item.misc.ItemAmateMap;
 import thebetweenlands.common.item.misc.ItemAmuletSlot;
 import thebetweenlands.common.item.misc.ItemAngryPebble;
@@ -457,10 +461,28 @@ public class ItemRegistry {
     public static final Item DRAETON_UPGRADE_CRAFTING = new Item().setCreativeTab(BLCreativeTabs.ITEMS).setMaxStackSize(1);
     public static final Item WEEDWOOD_ROWBOAT_UPGRADE_LANTERN = new Item().setCreativeTab(BLCreativeTabs.ITEMS).setMaxStackSize(1);
     
+    public static final Item RUNE_CHAIN = new ItemRuneChain();
+    public static final Item SCRIVENER_TOOL = new ItemScrivenerTool();
+    
+    public static final ItemRune WEEDWOOD_RUNE = new ItemRune(new ResourceLocation(ModInfo.ID, "weedwood"));
+    public static final ItemRune PITSTONE_RUNE = new ItemRune(new ResourceLocation(ModInfo.ID, "pitstone"));
+    public static final ItemRune DENTROTHYST_GREEN_RUNE = new ItemRune(new ResourceLocation(ModInfo.ID, "dentrothyst_green"));
+    public static final ItemRune DENTROTHYST_ORANGE_RUNE = new ItemRune(new ResourceLocation(ModInfo.ID, "dentrothyst_orange"));
+    public static final ItemRune BONE_RUNE = new ItemRune(new ResourceLocation(ModInfo.ID, "bone"));
+    public static final ItemRune ANCIENT_RUNE = new ItemRune(new ResourceLocation(ModInfo.ID, "ancient"));
+    
+    public static final Item WEEDWOOD_RUNELET = new ItemRunelet(() -> WEEDWOOD_RUNE);
+    public static final Item PITSTONE_RUNELET = new ItemRunelet(() -> PITSTONE_RUNE);
+    public static final Item DENTROTHYST_GREEN_RUNELET = new ItemRunelet(() -> DENTROTHYST_GREEN_RUNE);
+    public static final Item DENTROTHYST_ORANGE_RUNELET = new ItemRunelet(() -> DENTROTHYST_ORANGE_RUNE);
+    public static final Item BONE_RUNELET = new ItemRunelet(() -> BONE_RUNE);
+    public static final Item ANCIENT_RUNELET = new ItemRunelet(() -> ANCIENT_RUNE);
+    
     private static final List<ItemStack> ORES = new ArrayList<ItemStack>();
     private static final List<ItemStack> INGOTS = new ArrayList<ItemStack>();
     private static final List<ItemStack> NUGGETS = new ArrayList<ItemStack>();
- 
+    
+
     private ItemRegistry() {
 
     }

@@ -58,8 +58,10 @@ import thebetweenlands.client.gui.inventory.GuiDruidAltar;
 import thebetweenlands.client.gui.inventory.GuiMortar;
 import thebetweenlands.client.gui.inventory.GuiPouch;
 import thebetweenlands.client.gui.inventory.GuiPurifier;
+import thebetweenlands.client.gui.inventory.GuiRuneCarvingTable;
 import thebetweenlands.client.gui.inventory.GuiTarBarrel;
 import thebetweenlands.client.gui.inventory.GuiWeedwoodWorkbench;
+import thebetweenlands.client.gui.inventory.runeweavingtable.GuiRuneWeavingTable;
 import thebetweenlands.client.gui.menu.GuiBLMainMenu;
 import thebetweenlands.client.gui.menu.GuiDownloadTerrainBetweenlands;
 import thebetweenlands.client.handler.AmbienceSoundPlayHandler;
@@ -119,6 +121,10 @@ import thebetweenlands.client.render.tile.RenderPestleAndMortar;
 import thebetweenlands.client.render.tile.RenderPossessedBlock;
 import thebetweenlands.client.render.tile.RenderPurifier;
 import thebetweenlands.client.render.tile.RenderRepeller;
+import thebetweenlands.client.render.tile.RenderRuneCarvingTable;
+import thebetweenlands.client.render.tile.RenderRuneCarvingTableFiller;
+import thebetweenlands.client.render.tile.RenderRuneWeavingTable;
+import thebetweenlands.client.render.tile.RenderRuneWeavingTableFiller;
 import thebetweenlands.client.render.tile.RenderSimulacrum;
 import thebetweenlands.client.render.tile.RenderSpawnerBetweenlands;
 import thebetweenlands.client.render.tile.RenderSpikeTrap;
@@ -148,6 +154,7 @@ import thebetweenlands.common.entity.EntityMovingWall;
 import thebetweenlands.common.entity.EntityResurrection;
 import thebetweenlands.common.entity.EntityRootGrabber;
 import thebetweenlands.common.entity.EntityRopeNode;
+import thebetweenlands.common.entity.EntityRunicBeetleProjectile;
 import thebetweenlands.common.entity.EntityShock;
 import thebetweenlands.common.entity.EntityShockwaveBlock;
 import thebetweenlands.common.entity.EntityShockwaveSwordItem;
@@ -249,6 +256,8 @@ import thebetweenlands.common.inventory.container.ContainerPouch;
 import thebetweenlands.common.item.ITintedItem;
 import thebetweenlands.common.item.equipment.ItemAmulet;
 import thebetweenlands.common.item.equipment.ItemLurkerSkinPouch;
+import thebetweenlands.common.item.herblore.rune.properties.FormationTokenRuneItemProperties;
+import thebetweenlands.common.item.herblore.rune.properties.PatternTokenRuneItemProperties;
 import thebetweenlands.common.item.misc.ItemBarkAmulet;
 import thebetweenlands.common.item.shields.ItemSwatShield;
 import thebetweenlands.common.item.tools.bow.ItemBLBow;
@@ -288,6 +297,10 @@ import thebetweenlands.common.tile.TileEntityPossessedBlock;
 import thebetweenlands.common.tile.TileEntityPuffshroom;
 import thebetweenlands.common.tile.TileEntityPurifier;
 import thebetweenlands.common.tile.TileEntityRepeller;
+import thebetweenlands.common.tile.TileEntityRuneCarvingTable;
+import thebetweenlands.common.tile.TileEntityRuneCarvingTableFiller;
+import thebetweenlands.common.tile.TileEntityRuneWeavingTable;
+import thebetweenlands.common.tile.TileEntityRuneWeavingTableFiller;
 import thebetweenlands.common.tile.TileEntitySimulacrum;
 import thebetweenlands.common.tile.TileEntitySpikeTrap;
 import thebetweenlands.common.tile.TileEntityTarLootPot1;
@@ -406,7 +419,19 @@ public class ClientProxy extends CommonProxy implements IResourceManagerReloadLi
 				return new GuiTarBarrel(player.inventory, (TileEntityBarrel) tile);
 			}
 			break;
-
+			
+		case GUI_RUNE_WEAVING_TABLE:
+			if (tile instanceof TileEntityRuneWeavingTable) {
+				return new GuiRuneWeavingTable(player, (TileEntityRuneWeavingTable) tile);
+			}
+			break;
+			
+		case GUI_RUNE_CARVING_TABLE:
+			if (tile instanceof TileEntityRuneCarvingTable) {
+				return new GuiRuneCarvingTable(player.inventory, (TileEntityRuneCarvingTable) tile, ((TileEntityRuneCarvingTable) tile).isFullGrid());
+			}
+			break;
+			
 		case GUI_DRAETON_POUCH:
 			entity = world.getEntityByID(x);
 			if (entity instanceof EntityDraeton) {
@@ -459,7 +484,7 @@ public class ClientProxy extends CommonProxy implements IResourceManagerReloadLi
 				return new GuiDraetonUpgrades(player.inventory, (EntityDraeton)entity);
 			break;
 		}
-
+		
 		return null;
 	}
 
@@ -637,12 +662,13 @@ public class ClientProxy extends CommonProxy implements IResourceManagerReloadLi
 		RenderingRegistry.registerEntityRenderingHandler(EntityChiromawHatchling.class, RenderChiromawHatchling::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityChiromawTame.class, RenderChiromawTame::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityGreeblingCorpse.class, RenderGreeblingCorpse::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityGreeblingCoracle.class, RenderGreeblingCoracle::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityStalker.class, RenderStalker::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityResurrection.class, RenderNothing::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntityFalseXPOrb.class, RenderXPOrb::new);
 		RenderingRegistry.registerEntityRenderingHandler(EntitySwarm.class, RenderSwarm::new);
-		RenderingRegistry.registerEntityRenderingHandler(EntityGreeblingCoracle.class, RenderGreeblingCoracle::new);
-
+		RenderingRegistry.registerEntityRenderingHandler(EntityRunicBeetleProjectile.class, RenderRunicBeetleProjectile::new);
+		
 		//Tile entities
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPurifier.class, new RenderPurifier());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDruidAltar.class, new RenderDruidAltar());
@@ -681,6 +707,10 @@ public class ClientProxy extends CommonProxy implements IResourceManagerReloadLi
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCenser.class, new RenderCenser());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBarrel.class, new RenderBarrel());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDecayPitGroundChain.class, new RenderDecayPitGroundChain());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRuneWeavingTable.class, new RenderRuneWeavingTable());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRuneWeavingTableFiller.class, new RenderRuneWeavingTableFiller());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRuneCarvingTable.class, new RenderRuneCarvingTable());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRuneCarvingTableFiller.class, new RenderRuneCarvingTableFiller());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySimulacrum.class, new RenderSimulacrum());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityOfferingTable.class, new RenderGroundItem());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityWindChime.class, new RenderWindChime());
@@ -751,6 +781,8 @@ public class ClientProxy extends CommonProxy implements IResourceManagerReloadLi
 		Item.getItemFromBlock(BlockRegistry.CENSER).setTileEntityItemStackRenderer(new RenderItemStackAsTileEntity(TileEntityCenser.class));
 		Item.getItemFromBlock(BlockRegistry.WEEDWOOD_BARREL).setTileEntityItemStackRenderer(new RenderItemStackAsTileEntity(TileEntityBarrel.class));
 		Item.getItemFromBlock(BlockRegistry.WIND_CHIME).setTileEntityItemStackRenderer(new RenderItemStackAsTileEntity(TileEntityWindChime.class));
+		Item.getItemFromBlock(BlockRegistry.RUNE_WEAVING_TABLE).setTileEntityItemStackRenderer(new RenderItemStackAsTileEntity(TileEntityRuneWeavingTable.class));
+		Item.getItemFromBlock(BlockRegistry.RUNE_CARVING_TABLE).setTileEntityItemStackRenderer(new RenderItemStackAsTileEntity(TileEntityRuneCarvingTable.class));
 		
 		//Block colors
 		for (Block block : BlockRegistry.BLOCKS) {
@@ -846,6 +878,8 @@ public class ClientProxy extends CommonProxy implements IResourceManagerReloadLi
         MinecraftForge.EVENT_BUS.register(RenderUtils.class);
         MinecraftForge.EVENT_BUS.register(EntityChiromawTame.class);
         MinecraftForge.EVENT_BUS.register(EventHeavyRain.class);
+        MinecraftForge.EVENT_BUS.register(PatternTokenRuneItemProperties.class);
+        MinecraftForge.EVENT_BUS.register(FormationTokenRuneItemProperties.class);
 	}
 
 	private static FontRenderer pixelLove;

@@ -2074,6 +2074,16 @@
   "pit_fall": {
     "sounds": [
       "thebetweenlands:pit_fall"
+      ]
+  },
+  "rune_slate_move": {
+    "sounds": [
+      "thebetweenlands:rune_slate_move"
+    ]
+  },
+  "rune_slot_shift": {
+    "sounds": [
+      "thebetweenlands:rune_slot_shift"
     ]
   },
   "zap": {
@@ -2154,6 +2164,44 @@
   "chimes_snowfall": {
     "sounds": [
       "thebetweenlands:chimes_snowfall"
+    ]
+  },
+  "rune_connect_start": {
+    "sounds": [
+      "thebetweenlands:rune_connect_start"
+    ]
+  },
+  "rune_connect_finish": {
+    "sounds": [
+      "thebetweenlands:rune_connect_finish"
+    ]
+  },
+  "rune_disconnect": {
+    "sounds": [
+      "thebetweenlands:rune_connect_finish"
+    ]
+  },
+  "rune_select": {
+    "sounds": [
+      "thebetweenlands:rune_select"
+    ]
+  },
+  "rune_carving": {
+    "sounds": [
+      "thebetweenlands:rune_carving_1",
+      "thebetweenlands:rune_carving_2",
+      "thebetweenlands:rune_carving_3",
+      "thebetweenlands:rune_carving_4"
+    ]
+  },
+  "pattern_rune_add": {
+    "sounds": [
+      "thebetweenlands:pattern_rune_add"
+    ]
+  },
+  "pattern_rune_remove": {
+    "sounds": [
+      "thebetweenlands:pattern_rune_remove"
     ]
   }
 }

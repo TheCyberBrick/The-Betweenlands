@@ -15,9 +15,13 @@ import thebetweenlands.api.capability.ILastKilledCapability;
 import thebetweenlands.api.capability.IPortalCapability;
 import thebetweenlands.api.capability.IPuppetCapability;
 import thebetweenlands.api.capability.IPuppeteerCapability;
+import thebetweenlands.api.capability.IRuneCapability;
+import thebetweenlands.api.capability.IRuneChainCapability;
+import thebetweenlands.api.capability.IRuneChainUserCapability;
 import thebetweenlands.api.capability.ISummoningCapability;
 import thebetweenlands.api.capability.ISwarmedCapability;
 import thebetweenlands.common.capability.CustomStepSoundCapability;
+import thebetweenlands.common.capability.RuneChainUserPlayerCapability;
 import thebetweenlands.common.capability.base.EntityCapabilityHandler;
 import thebetweenlands.common.capability.base.ItemCapabilityHandler;
 import thebetweenlands.common.capability.blessing.BlessingEntityCapability;
@@ -29,6 +33,8 @@ import thebetweenlands.common.capability.flight.FlightEntityCapability;
 import thebetweenlands.common.capability.foodsickness.FoodSicknessEntityCapability;
 import thebetweenlands.common.capability.item.ILivingWeedwoodShieldCapability;
 import thebetweenlands.common.capability.item.LivingWeedwoodShieldItemCapability;
+import thebetweenlands.common.capability.item.RuneChainItemCapability;
+import thebetweenlands.common.capability.item.RuneItemCapability;
 import thebetweenlands.common.capability.lastkilled.LastKilledCapability;
 import thebetweenlands.common.capability.playermounts.IPlayerMountsEntityCapability;
 import thebetweenlands.common.capability.playermounts.PlayerMountsEntityCapability;
@@ -73,9 +79,18 @@ public class CapabilityRegistry {
 	
 	@CapabilityInject(ILivingWeedwoodShieldCapability.class)
 	public static final Capability<ILivingWeedwoodShieldCapability> CAPABILITY_LIVING_WEEDWOOD_SHIELD = null;
-	
+
 	@CapabilityInject(IEntityCustomCollisionsCapability.class)
 	public static final Capability<IEntityCustomCollisionsCapability> CAPABILITY_ENTITY_CUSTOM_BLOCK_COLLISIONS = null;
+
+	@CapabilityInject(IRuneChainCapability.class)
+	public static final Capability<IRuneChainCapability> CAPABILITY_RUNE_CHAIN = null;
+	
+	@CapabilityInject(IRuneCapability.class)
+	public static final Capability<IRuneCapability> CAPABILITY_RUNE = null;
+	
+	@CapabilityInject(IRuneChainUserCapability.class)
+	public static final Capability<IRuneChainUserCapability> CAPABILITY_RUNE_CHAIN_USER = null;
 	
 	@CapabilityInject(IPlayerMountsEntityCapability.class)
 	public static final Capability<IPlayerMountsEntityCapability> CAPABILITY_PLAYER_MOUNTS = null;
@@ -101,12 +116,15 @@ public class CapabilityRegistry {
 		EntityCapabilityHandler.registerEntityCapability(new FoodSicknessEntityCapability());
 		EntityCapabilityHandler.registerEntityCapability(new CustomStepSoundCapability());
 		EntityCapabilityHandler.registerEntityCapability(new RingOfDispersionEntityCapability());
+		EntityCapabilityHandler.registerEntityCapability(new RuneChainUserPlayerCapability());
 		EntityCapabilityHandler.registerEntityCapability(new PlayerMountsEntityCapability());
 		EntityCapabilityHandler.registerEntityCapability(new LastKilledCapability());
 		EntityCapabilityHandler.registerEntityCapability(new BlessingEntityCapability());
 		EntityCapabilityHandler.registerEntityCapability(new SwarmedCapability());
 		
 		ItemCapabilityHandler.registerItemCapability(new LivingWeedwoodShieldItemCapability());
+		ItemCapabilityHandler.registerItemCapability(new RuneChainItemCapability());
+		ItemCapabilityHandler.registerItemCapability(new RuneItemCapability());
 		
 		EntityCapabilityHandler.registerCapabilities();
 		ItemCapabilityHandler.registerCapabilities();

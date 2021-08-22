@@ -6,9 +6,8 @@ import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.inventory.Slot;
 import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.util.math.BlockPos;
-import thebetweenlands.common.inventory.InventoryWeedwoodWorkbench;
-import thebetweenlands.common.inventory.InventoryWeedwoodWorkbenchResult;
-import thebetweenlands.common.registries.BlockRegistry;
+import thebetweenlands.common.inventory.InventoryCustomCraftResult;
+import thebetweenlands.common.inventory.InventoryCustomCrafting;
 import thebetweenlands.common.tile.TileEntityWeedwoodWorkbench;
 
 public class ContainerWeedwoodWorkbench extends ContainerWorkbench {
@@ -21,10 +20,10 @@ public class ContainerWeedwoodWorkbench extends ContainerWorkbench {
 		this.inventorySlots.clear();
 		this.inventoryItemStacks.clear();
 
-		this.craftMatrix = new InventoryWeedwoodWorkbench(this, tile);
+		this.craftMatrix = new InventoryCustomCrafting(this, tile, tile.getCraftingGrid(), 3, 3, "container.bl.weedwood_workbench");
 		this.craftMatrix.openInventory(playerInventory.player);
 
-		this.craftResult = new InventoryWeedwoodWorkbenchResult(tile);
+		this.craftResult = new InventoryCustomCraftResult(tile, null);
 
 		//Result
 		this.addSlotToContainer(new SlotCrafting(playerInventory.player, this.craftMatrix, this.craftResult, 0, 124, 35));

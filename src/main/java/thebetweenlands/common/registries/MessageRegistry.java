@@ -24,6 +24,9 @@ import thebetweenlands.common.network.clientbound.MessageGemProc;
 import thebetweenlands.common.network.clientbound.MessageLivingWeedwoodShieldSpit;
 import thebetweenlands.common.network.clientbound.MessageMireSnailEggHatching;
 import thebetweenlands.common.network.clientbound.MessagePlayEntityIdle;
+import thebetweenlands.common.network.clientbound.MessagePlayerRuneChainAdd;
+import thebetweenlands.common.network.clientbound.MessagePlayerRuneChainPacket;
+import thebetweenlands.common.network.clientbound.MessagePlayerRuneChainRemove;
 import thebetweenlands.common.network.clientbound.MessagePowerRingParticles;
 import thebetweenlands.common.network.clientbound.MessageRemoveLocalStorage;
 import thebetweenlands.common.network.clientbound.MessageRiftSound;
@@ -47,11 +50,16 @@ import thebetweenlands.common.network.serverbound.MessageEquipItem;
 import thebetweenlands.common.network.serverbound.MessageExtendedReach;
 import thebetweenlands.common.network.serverbound.MessageFlightState;
 import thebetweenlands.common.network.serverbound.MessageItemNaming;
+import thebetweenlands.common.network.serverbound.MessageLinkRuneWeavingTableRune;
 import thebetweenlands.common.network.serverbound.MessageOpenPouch;
 import thebetweenlands.common.network.serverbound.MessagePurgeDraetonBurner;
 import thebetweenlands.common.network.serverbound.MessageRow;
 import thebetweenlands.common.network.serverbound.MessageSetDraetonAnchorPos;
 import thebetweenlands.common.network.serverbound.MessageSetGalleryUrl;
+import thebetweenlands.common.network.serverbound.MessageSetRuneWeavingTableConfiguration;
+import thebetweenlands.common.network.serverbound.MessageSetRuneWeavingTablePage;
+import thebetweenlands.common.network.serverbound.MessageShiftRuneWeavingTableSlot;
+import thebetweenlands.common.network.serverbound.MessageUnlinkRuneWeavingTableRune;
 import thebetweenlands.common.network.serverbound.MessageUpdatePuppeteerState;
 import thebetweenlands.common.network.serverbound.MessageUpdateRingKeybindState;
 
@@ -92,6 +100,9 @@ public class MessageRegistry {
 		registerMessage(MessageUpdateDraetonPhysicsPart.class, Side.CLIENT);
 		registerMessage(MessageSyncDraetonLeakages.class, Side.CLIENT);
 		registerMessage(MessageShockArrowHit.class, Side.CLIENT);
+		registerMessage(MessagePlayerRuneChainPacket.class, Side.CLIENT);
+		registerMessage(MessagePlayerRuneChainAdd.class, Side.CLIENT);
+		registerMessage(MessagePlayerRuneChainRemove.class, Side.CLIENT);
 		
 		registerMessage(MessageEquipItem.class, Side.SERVER);
 		registerMessage(MessageOpenPouch.class, Side.SERVER);
@@ -103,6 +114,11 @@ public class MessageRegistry {
 		registerMessage(MessageConnectCavingRope.class, Side.SERVER);
 		registerMessage(MessageExtendedReach.class, Side.SERVER);
 		registerMessage(MessageSetGalleryUrl.class, Side.SERVER);
+		registerMessage(MessageSetRuneWeavingTablePage.class, Side.SERVER);
+		registerMessage(MessageShiftRuneWeavingTableSlot.class, Side.SERVER);
+		registerMessage(MessageLinkRuneWeavingTableRune.class, Side.SERVER);
+		registerMessage(MessageUnlinkRuneWeavingTableRune.class, Side.SERVER);
+		registerMessage(MessageSetRuneWeavingTableConfiguration.class, Side.SERVER);
 		registerMessage(MessageUpdateDraetonPhysicsPart.class, Side.SERVER);
 		registerMessage(MessageSetDraetonAnchorPos.class, Side.SERVER);
 		registerMessage(MessagePurgeDraetonBurner.class, Side.SERVER);

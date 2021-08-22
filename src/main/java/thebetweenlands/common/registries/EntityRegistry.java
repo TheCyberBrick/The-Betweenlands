@@ -17,6 +17,8 @@ import thebetweenlands.common.entity.EntityMovingWall;
 import thebetweenlands.common.entity.EntityResurrection;
 import thebetweenlands.common.entity.EntityRootGrabber;
 import thebetweenlands.common.entity.EntityRopeNode;
+import thebetweenlands.common.entity.EntityRunicBeetleProjectile;
+import thebetweenlands.common.entity.EntityRunicBeetleWalking;
 import thebetweenlands.common.entity.EntityShock;
 import thebetweenlands.common.entity.EntityShockwaveBlock;
 import thebetweenlands.common.entity.EntityShockwaveSwordItem;
@@ -235,10 +237,13 @@ public class EntityRegistry {
 		registerEntity(EntityChiromawHatchling.class, "chiromaw_hatchling", 64, 3, true);
 		registerEntity(EntityChiromawTame.class, "chiromaw_tame", 128, 3, true);
 		registerEntity(EntityGreeblingCorpse.class, "greebling_corpse", 80, 20, false);
+		//registerEntity(EntityGreeblingCoracle.class, "greebling_coracle", 0x142728, 0x7CB2AA);
 
 		registerEntity(EntityStalker.class, "stalker", 0xE4DCC9, 0xD58888);
 		registerEntity(EntitySwarm.class, "swarm", 0x292B3B, 0xE2D698);
-		//registerEntity(EntityGreeblingCoracle.class, "greebling_coracle", 0x142728, 0x7CB2AA);
+		
+		registerEntity(EntityRunicBeetleProjectile.class, "runic_beetle_projectile", 64, 20, true);
+		registerEntity(EntityRunicBeetleWalking.class, "runic_beetle_walking");
 	}
 
 	private static int id = 0;
