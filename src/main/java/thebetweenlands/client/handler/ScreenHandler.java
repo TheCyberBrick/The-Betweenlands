@@ -460,6 +460,7 @@ public class ScreenHandler {
 	private static void drawAspectTooltip(RenderTooltipEvent.Color event) {
 		if (Screen.hasShiftDown()) {
 			Minecraft mc = Minecraft.getInstance();
+			if(mc.level == null) return;
 			Font fontRenderer = mc.font;
 
 			int yOffset = 0;
