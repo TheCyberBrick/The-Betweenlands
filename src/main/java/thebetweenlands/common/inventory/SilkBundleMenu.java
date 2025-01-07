@@ -3,25 +3,22 @@ package thebetweenlands.common.inventory;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import thebetweenlands.common.inventory.container.ItemContainer;
+import thebetweenlands.common.TheBetweenlands;
+import thebetweenlands.common.inventory.container.SecureItemContainer;
 import thebetweenlands.common.inventory.slot.SilkBundleSlot;
 import thebetweenlands.common.registries.MenuRegistry;
 
-public class SilkBundleMenu extends AbstractContainerMenu {
-
-	private final ItemContainer bundle;
+public class SilkBundleMenu extends SecureInventoryItemMenu {
 
 	public SilkBundleMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buf) {
-		this(containerId, playerInventory, new ItemContainer(ItemStack.STREAM_CODEC.decode(buf), 4));
+		this(containerId, playerInventory, new SecureItemContainer(ItemStack.STREAM_CODEC.decode(buf), 4, TheBetweenlands.isRemote(playerInventory)));
 	}
 
-	public SilkBundleMenu(int containerId, Inventory playerInventory, ItemContainer bundle) {
-		super(MenuRegistry.SILK_BUNDLE.get(), containerId);
+	public SilkBundleMenu(int containerId, Inventory playerInventory, SecureItemContainer bundle) {
+		super(MenuRegistry.SILK_BUNDLE.get(), containerId, bundle);
 		checkContainerSize(bundle, 4);
-		this.bundle = bundle;
 
 		this.addSlot(new SilkBundleSlot(bundle, 0, 78, 15));
 		this.addSlot(new SilkBundleSlot(bundle, 1, 42, 33));
@@ -37,6 +34,8 @@ public class SilkBundleMenu extends AbstractContainerMenu {
 		for (int i1 = 0; i1 < 9; ++i1) {
 			this.addSlot(new Slot(playerInventory, i1, 7 + i1 * 18, 141));
 		}
+
+		bundle.startOpen(playerInventory.player);
 	}
 
 	@Override
@@ -71,12 +70,12 @@ public class SilkBundleMenu extends AbstractContainerMenu {
 
 	@Override
 	public boolean stillValid(Player player) {
-		return player.getInventory().contains(this.bundle.getContainerStack());
+		return super.stillValid(player);
 	}
 
 	@Override
 	public void removed(Player player) {
-		this.bundle.stopOpen(player);
+		this.secureContainer.stopOpen(player);
 		super.removed(player);
 	}
 }

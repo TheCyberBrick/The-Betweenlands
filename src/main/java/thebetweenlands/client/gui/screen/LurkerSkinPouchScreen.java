@@ -17,6 +17,8 @@ public class LurkerSkinPouchScreen extends AbstractContainerScreen<LurkerSkinPou
 		this.containerRows = menu.getRows();
 		this.imageHeight = 114 + this.containerRows * 18;
 		this.inventoryLabelY = this.imageHeight - 94;
+		
+		menu.addUUIDChangeListener();
 	}
 
 	@Override
@@ -31,5 +33,9 @@ public class LurkerSkinPouchScreen extends AbstractContainerScreen<LurkerSkinPou
 		int j = (this.height - this.imageHeight) / 2;
 		graphics.blit(CONTAINER_BACKGROUND, i, j, 0, 0, this.imageWidth, this.containerRows * 18 + 17);
 		graphics.blit(CONTAINER_BACKGROUND, i, j + this.containerRows * 18 + 17, 0, 126, this.imageWidth, 96);
+		
+		// For debugging UUID sync
+//		graphics.drawString(font, Component.literal(menu.getSecureContainer().getContainerStackUUID().toString()), this.leftPos, this.topPos - font.lineHeight * 2, 0xFFFFFF);
+//		graphics.drawString(font, Component.literal(Minecraft.getInstance().player.getMainHandItem().get(DataComponentRegistry.INVENTORY_ITEM_UUID).toString()), this.leftPos, this.topPos - font.lineHeight * 3, 0xFFFFFF);
 	}
 }

@@ -4,24 +4,26 @@ import java.util.Locale;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.network.chat.Style;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.common.ItemAbility;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import thebetweenlands.client.BetweenlandsClient;
 import thebetweenlands.client.event.ClientRegistrationEvents;
@@ -30,7 +32,35 @@ import thebetweenlands.common.config.BetweenlandsConfigSetup;
 import thebetweenlands.common.event.CommonRegistrationEvents;
 import thebetweenlands.common.handler.OverworldItemHandler;
 import thebetweenlands.common.herblore.elixir.ElixirEffectRegistry;
-import thebetweenlands.common.registries.*;
+import thebetweenlands.common.registries.AdvancementCriteriaRegistry;
+import thebetweenlands.common.registries.AmphibiousArmorUpgradeRegistry;
+import thebetweenlands.common.registries.ArmorMaterialRegistry;
+import thebetweenlands.common.registries.AspectCalculatorRegistry;
+import thebetweenlands.common.registries.AttachmentRegistry;
+import thebetweenlands.common.registries.AttributeRegistry;
+import thebetweenlands.common.registries.BlockEntityRegistry;
+import thebetweenlands.common.registries.BlockRegistry;
+import thebetweenlands.common.registries.CarverRegistry;
+import thebetweenlands.common.registries.CenserRecipeRegistry;
+import thebetweenlands.common.registries.CreativeGroupRegistry;
+import thebetweenlands.common.registries.DataComponentRegistry;
+import thebetweenlands.common.registries.EntityDataSerializerRegistry;
+import thebetweenlands.common.registries.EntityPredicateRegistry;
+import thebetweenlands.common.registries.EntityRegistry;
+import thebetweenlands.common.registries.EnvironmentEventRegistry;
+import thebetweenlands.common.registries.FeatureRegistry;
+import thebetweenlands.common.registries.FluidRegistry;
+import thebetweenlands.common.registries.FluidTypeRegistry;
+import thebetweenlands.common.registries.ItemRegistry;
+import thebetweenlands.common.registries.LootFunctionRegistry;
+import thebetweenlands.common.registries.MapDecorationRegistry;
+import thebetweenlands.common.registries.MenuRegistry;
+import thebetweenlands.common.registries.ParticleRegistry;
+import thebetweenlands.common.registries.RecipeRegistry;
+import thebetweenlands.common.registries.SimulacrumEffectRegistry;
+import thebetweenlands.common.registries.SoundRegistry;
+import thebetweenlands.common.registries.StorageRegistry;
+import thebetweenlands.common.registries.StructureTypeRegistry;
 import thebetweenlands.common.world.BetweenlandsSurfaceRules;
 
 @Mod(TheBetweenlands.ID)
@@ -155,6 +185,11 @@ public class TheBetweenlands {
 			//TODO send particles to client
 		}
 	}
+
+	// Helper: Whether or not we're on the authoritative side of things currently
+	public static boolean isRemote(Level level) { return level.isClientSide(); }
+	public static boolean isRemote(Entity entity) { return isRemote(entity.level()); }
+	public static boolean isRemote(Inventory playerInventory) { return isRemote(playerInventory.player); }
 }
 
 

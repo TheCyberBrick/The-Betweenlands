@@ -1,5 +1,7 @@
 package thebetweenlands.common.item.tool;
 
+import java.util.List;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -14,10 +16,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
+import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.inventory.SilkBundleMenu;
-import thebetweenlands.common.inventory.container.ItemContainer;
-
-import java.util.List;
+import thebetweenlands.common.inventory.container.SecureItemContainer;
 
 public class SilkBundleItem extends Item {
 	public SilkBundleItem(Properties properties) {
@@ -32,7 +33,7 @@ public class SilkBundleItem extends Item {
 			player.openMenu(new MenuProvider() {
 				@Override
 				public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-					return new SilkBundleMenu(containerId, playerInventory, new ItemContainer(stack, 4));
+					return new SilkBundleMenu(containerId, playerInventory, new SecureItemContainer(stack, 4, TheBetweenlands.isRemote(playerInventory)));
 				}
 
 				@Override

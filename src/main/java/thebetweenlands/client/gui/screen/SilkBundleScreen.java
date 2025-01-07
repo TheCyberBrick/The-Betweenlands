@@ -16,6 +16,8 @@ public class SilkBundleScreen extends AbstractContainerScreen<SilkBundleMenu> {
 		super(menu, playerInventory, title);
 		this.imageWidth = 174;
 		this.imageHeight = 164;
+		
+		menu.addUUIDChangeListener();
 	}
 
 	@Override
