@@ -16,13 +16,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 
+/**
+ * Allows you to read & write the contents of a container item
+ * <br/>
+ * For secure access (anything the player can directly interact with) use {@linkplain SecureItemContainer}
+ */
 public class ItemContainer implements Container {
 
 	protected final @Nonnull ItemStack stack;
 	protected final NonNullList<ItemStack> contents;
 	protected boolean changed = false;
-    @Nullable
-    private List<ContainerListener> listeners;
+    private @Nullable List<ContainerListener> listeners;
 
 	public ItemContainer(@Nonnull ItemStack stack, int slots) {
 		this.stack = stack;

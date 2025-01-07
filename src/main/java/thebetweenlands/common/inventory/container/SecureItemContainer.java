@@ -18,6 +18,10 @@ import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.registries.DataComponentRegistry;
 import thebetweenlands.util.ZeroCullingObject2IntHashMap;
 
+/**
+ * Hardened version of {@linkplain ItemContainer} against duplication bugs
+ * Use for anything the player can directly interact with. {@linkplain ItemContainer} is sufficient otherwise
+ */
 public class SecureItemContainer extends ItemContainer {
 
 	// Separate tracker for remote (client) worlds, to prevent any race conditions where the server erroneously thinks there are open containers
@@ -64,27 +68,19 @@ public class SecureItemContainer extends ItemContainer {
 			if(OPEN_CONTAINERS.contains(container)) count--;
 			return count;
 		}
-		
-		public void increment(UUID uuid) {
-			OPEN_CONTAINERS_BY_UUID.increment(uuid);
-		}
-		
-		public void decrement(UUID uuid) {
-			OPEN_CONTAINERS_BY_UUID.increment(uuid);
-		}
 	}
 	
 	
 	
-	// Track multiple players in case of fake players or admin menu spectator tools
+	// Track multiple players accessing the same gui in case of fake (simulated) players or admin menu spectator tools
 	protected final Set<UUID> trackingPlayers = new HashSet<UUID>();
 	protected Map<UUID, ContainerListener> playerListeners = new HashMap<UUID, ContainerListener>();
-	
-	protected final boolean isClientSide; // Whether or not we're on the authoritative side of things
+	// Whether or not we're on the authoritative side of things
+	protected final boolean isClientSide;
 	protected final ContainerTracker tracker;
+	// UUID of the ItemStack, used to identify any copies (ItemStack#copy()) in the player's inventory
 	protected UUID stackUUID;
-	
-	
+	// Used to inform whether or not to strip the UUID component from the item when the container closes
 	private boolean isTracked = false;
 	
 	public SecureItemContainer(ItemStack stack, int slots, boolean isClientSide) {
@@ -102,13 +98,13 @@ public class SecureItemContainer extends ItemContainer {
 		return this.stackUUID;
 	}
 
-	// Should only be called on the client so we don't need to worry about adjusting the other stack things
+	// Should only be called on the client when it recieves info from the server, so we don't need to worry about adjusting the other trackers
 	public void setContainerStackUUID(UUID dataUUID) {
-		final ContainerTracker tracker = getTracker(isClientSide);
-		tracker.decrement(this.getContainerStackUUID());
+		final ZeroCullingObject2IntHashMap<UUID> containerTracker = tracker.OPEN_CONTAINERS_BY_UUID;
+		containerTracker.decrement(this.getContainerStackUUID());
 		this.stackUUID = dataUUID;
 		this.stack.set(DataComponentRegistry.INVENTORY_ITEM_UUID, dataUUID);
-		tracker.increment(this.getContainerStackUUID());
+		containerTracker.increment(this.getContainerStackUUID());
 	}
 
 	protected void startTracking() {
