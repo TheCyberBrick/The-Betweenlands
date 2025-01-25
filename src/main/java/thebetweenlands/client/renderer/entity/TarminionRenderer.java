@@ -2,16 +2,15 @@ package thebetweenlands.client.renderer.entity;
 
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.ResourceLocation;
 import thebetweenlands.client.BLModelLayers;
-import thebetweenlands.client.model.entity.RootSpriteModel;
 import thebetweenlands.client.model.entity.TarminionModel;
 import thebetweenlands.client.renderer.entity.layers.AnimatedLayer;
 import thebetweenlands.common.TheBetweenlands;
-import thebetweenlands.common.entity.creature.RootSprite;
 import thebetweenlands.common.entity.creature.Tarminion;
 
-public class TarminionRenderer extends MobRenderer<Tarminion, TarminionModel> {
+public class TarminionRenderer extends MobRenderer<Tarminion, LivingEntityRenderState, TarminionModel> {
 
 	private static final ResourceLocation TEXTURE = TheBetweenlands.prefix("textures/entity/tarminion.png");
 
@@ -21,7 +20,12 @@ public class TarminionRenderer extends MobRenderer<Tarminion, TarminionModel> {
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(Tarminion entity) {
+	public LivingEntityRenderState createRenderState() {
+		return new LivingEntityRenderState();
+	}
+
+	@Override
+	public ResourceLocation getTextureLocation(LivingEntityRenderState state) {
 		return TEXTURE;
 	}
 }

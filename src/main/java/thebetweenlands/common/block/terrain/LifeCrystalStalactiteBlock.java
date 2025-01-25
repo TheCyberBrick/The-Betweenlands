@@ -10,7 +10,7 @@ public class LifeCrystalStalactiteBlock extends StalactiteBlock {
 
 	public final boolean isOre;
 
-	public LifeCrystalStalactiteBlock(Properties properties, boolean isOre) {
+	public LifeCrystalStalactiteBlock(boolean isOre, Properties properties) {
 		super(properties);
 		this.isOre = isOre;
 	}

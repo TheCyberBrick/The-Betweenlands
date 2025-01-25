@@ -5,7 +5,8 @@ import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.CoreShaders;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -48,14 +49,14 @@ public class CenserScreen extends AbstractContainerScreen<CenserMenu> {
 	protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
 		int i = this.leftPos;
 		int j = (this.height - this.imageHeight) / 2;
-		graphics.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight);
+		graphics.blit(RenderType::guiTextured, TEXTURE, i, j, 0.0F, 0.0F, 0, 0, this.imageWidth, this.imageHeight);
 
 		if (this.getMenu().isLit()) {
 			this.renderBurn(graphics);
 		}
 
 		if (this.getMenu().shouldRenderCover()) {
-			graphics.blitSprite(INTERNAL_SLOT_COVER, this.leftPos + 79, this.topPos + 102, 18, 18);
+			graphics.blitSprite(RenderType::guiTextured, INTERNAL_SLOT_COVER, this.leftPos + 79, this.topPos + 102, 18, 18);
 		} else {
 			this.renderFog(graphics);
 			this.renderLiquid(graphics);
@@ -78,15 +79,15 @@ public class CenserScreen extends AbstractContainerScreen<CenserMenu> {
 	private void renderBurn(GuiGraphics graphics) {
 		int maxBarHeight = 14;
 		int barHeight = Mth.ceil(this.getMenu().getBurnProgress() * maxBarHeight);
-		graphics.blitSprite(FLAME, 14, 14, 0, maxBarHeight - barHeight, this.leftPos + 81, this.topPos + 122 + maxBarHeight - barHeight, 14, barHeight);
+		graphics.blitSprite(RenderType::guiTextured, FLAME, 14, 14, 0, maxBarHeight - barHeight, this.leftPos + 81, this.topPos + 122 + maxBarHeight - barHeight, 14, barHeight);
 	}
 
 	private void renderLiquid(GuiGraphics graphics) {
 		var sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(BuiltInRegistries.FLUID.getKey(this.getMenu().getTankFluid().getFluid()));
 
 		if (sprite != null && !this.getMenu().getTankFluid().isEmpty()) {
-			graphics.blit(this.leftPos + 80, this.topPos + 103, 0, 16, 16, sprite);
-			graphics.blitSprite(FLUID_SLOT_COVER, this.leftPos + 77, this.topPos + 100, 22, 22);
+			graphics.blitSprite(RenderType::guiTextured, sprite, this.leftPos + 80, this.topPos + 103, 0, 16, 16);
+			graphics.blitSprite(RenderType::guiTextured, FLUID_SLOT_COVER, this.leftPos + 77, this.topPos + 100, 22, 22);
 		}
 	}
 
@@ -114,7 +115,7 @@ public class CenserScreen extends AbstractContainerScreen<CenserMenu> {
 		float maxV = sprite.getV((float) (vPosition + vHeight) / (float) textureHeight);
 
 		RenderSystem.setShaderTexture(0, sprite.atlasLocation());
-		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+		RenderSystem.setShader(CoreShaders.POSITION_TEX_COLOR);
 		Matrix4f matrix4f = graphics.pose().last().pose();
 		BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 		bufferbuilder.addVertex(matrix4f, x, y, 0).setUv(minU, minV).setColor(startColor);

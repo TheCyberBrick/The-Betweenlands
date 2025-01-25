@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.ContainerHelper;
@@ -28,7 +29,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import thebetweenlands.common.block.container.PurifierBlock;
 import thebetweenlands.common.inventory.PurifierMenu;
-import thebetweenlands.common.item.recipe.PurifierRecipe;
+import thebetweenlands.common.recipe.PurifierRecipe;
 import thebetweenlands.common.registries.BlockEntityRegistry;
 import thebetweenlands.common.registries.FluidRegistry;
 import thebetweenlands.common.registries.RecipeRegistry;
@@ -74,12 +75,12 @@ public class PurifierBlockEntity extends BaseContainerBlockEntity implements IFl
 	}
 
 	public static void tick(Level level, BlockPos pos, BlockState state, PurifierBlockEntity entity) {
-		if (level.isClientSide())
+		if (!(level instanceof ServerLevel sl))
 			return;
 		ItemStack fuel = entity.getItem(1);
 		ItemStack input = entity.getItem(0);
 		if (!fuel.isEmpty() && !input.isEmpty() && !entity.tank.isEmpty()) {
-			RecipeHolder<PurifierRecipe> recipeholder = entity.quickCheck.getRecipeFor(new SingleRecipeInput(input), level).orElse(null);
+			RecipeHolder<PurifierRecipe> recipeholder = entity.quickCheck.getRecipeFor(new SingleRecipeInput(input), sl).orElse(null);
 			if (entity.canPurify(level.registryAccess(), recipeholder)) {
 				entity.time++;
 				if (entity.time % 108 == 0)
@@ -88,7 +89,7 @@ public class PurifierBlockEntity extends BaseContainerBlockEntity implements IFl
 				if (entity.time == entity.maxTime) {
 					if (entity.purify(level.registryAccess(), recipeholder)) {
 						entity.time = 0;
-						entity.maxTime = entity.getPurifyingTime(level);
+						entity.maxTime = entity.getPurifyingTime(sl);
 						entity.setChanged();
 						entity.updateLitState(level, pos, state, entity.canPurify(level.registryAccess(), recipeholder));
 					}
@@ -104,13 +105,13 @@ public class PurifierBlockEntity extends BaseContainerBlockEntity implements IFl
 		}
 	}
 
-	private int getPurifyingTime(Level level) {
-		return this.quickCheck.getRecipeFor(new SingleRecipeInput(this.getItem(0)), level).map(recipe -> recipe.value().purifyingTime()).orElse(200);
+	private int getPurifyingTime(ServerLevel level) {
+		return this.quickCheck.getRecipeFor(new SingleRecipeInput(this.getItem(0)), level).map(recipe -> recipe.value().purifyingTime).orElse(200);
 	}
 
 	private boolean canPurify(RegistryAccess access, @Nullable RecipeHolder<PurifierRecipe> recipe) {
 		if (!this.getItems().getFirst().isEmpty() && recipe != null) {
-			if (recipe.value().requiredWater() > this.tank.getFluidAmount()) return false;
+			if (recipe.value().requiredWater > this.tank.getFluidAmount()) return false;
 			ItemStack itemstack = recipe.value().assemble(new SingleRecipeInput(this.getItem(0)), access);
 			if (itemstack.isEmpty()) {
 				return false;
@@ -139,7 +140,7 @@ public class PurifierBlockEntity extends BaseContainerBlockEntity implements IFl
 			} else if (ItemStack.isSameItemSameComponents(output, recipeResult)) {
 				output.grow(recipeResult.getCount());
 			}
-			this.tank.drain(recipe.value().requiredWater(), IFluidHandler.FluidAction.EXECUTE);
+			this.tank.drain(recipe.value().requiredWater, IFluidHandler.FluidAction.EXECUTE);
 			input.shrink(1);
 			this.getItem(1).shrink(1);
 			return true;
@@ -185,8 +186,8 @@ public class PurifierBlockEntity extends BaseContainerBlockEntity implements IFl
 		boolean flag = !stack.isEmpty() && ItemStack.isSameItemSameComponents(itemstack, stack);
 		this.items.set(slot, stack);
 		stack.limitSize(this.getMaxStackSize(stack));
-		if (slot == 0 && !flag) {
-			this.maxTime = this.getPurifyingTime(this.getLevel());
+		if (slot == 0 && !flag && this.level instanceof ServerLevel serverlevel) {
+			this.maxTime = this.getPurifyingTime(serverlevel);
 			this.time = 0;
 			this.setChanged();
 		}

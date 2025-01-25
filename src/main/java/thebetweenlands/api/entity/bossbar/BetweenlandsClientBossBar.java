@@ -7,7 +7,8 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LerpingBossEvent;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.CoreShaders;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -34,10 +35,10 @@ public class BetweenlandsClientBossBar extends LerpingBossEvent {
 	public void renderBossBar(GuiGraphics graphics, int x, int y) {
 		RenderSystem.enableBlend();
 
-		graphics.blit(BOSS_BAR_TEXTURE, x, y, 0, 0, 256, 16, 256, 32);
+		graphics.blit(RenderType::guiTexturedOverlay, BOSS_BAR_TEXTURE, x, y, 0, 0, 256, 16, 256, 32);
 		int i = Mth.lerpDiscrete(this.getProgress(), 0, 241) + 15;
 		if (i > 0) {
-			graphics.blit(BOSS_BAR_TEXTURE, x, y, 0, 16, i, 16, 256, 32);
+			graphics.blit(RenderType::guiTexturedOverlay, BOSS_BAR_TEXTURE, x, y, 0, 16, i, 16, 256, 32);
 		}
 
 		Component title = this.getName().copy().setStyle(TheBetweenlands.HERBLORE_FONT);
@@ -75,7 +76,7 @@ public class BetweenlandsClientBossBar extends LerpingBossEvent {
 	}
 
 	private void renderTagQuad(Tesselator tesselator, float minX, float minY, float maxX, float maxY, float minU, float maxU) {
-		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+		RenderSystem.setShader(CoreShaders.POSITION_TEX_COLOR);
 		RenderSystem.setShaderTexture(0, MINIBOSS_BAR_TEXTURE);
 		BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 		buffer.addVertex(minX, minY, 0.0F).setUv(minU, 0.5F).setColor(-1);

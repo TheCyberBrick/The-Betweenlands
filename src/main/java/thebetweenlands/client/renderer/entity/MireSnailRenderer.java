@@ -2,13 +2,14 @@ package thebetweenlands.client.renderer.entity;
 
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.ResourceLocation;
 import thebetweenlands.client.BLModelLayers;
 import thebetweenlands.client.model.entity.MireSnailModel;
 import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.entity.creature.MireSnail;
 
-public class MireSnailRenderer extends MobRenderer<MireSnail, MireSnailModel> {
+public class MireSnailRenderer extends MobRenderer<MireSnail, LivingEntityRenderState, MireSnailModel> {
 
 	public static final ResourceLocation TEXTURE = TheBetweenlands.prefix("textures/entity/mire_snail.png");
 
@@ -17,7 +18,12 @@ public class MireSnailRenderer extends MobRenderer<MireSnail, MireSnailModel> {
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(MireSnail entity) {
+	public LivingEntityRenderState createRenderState() {
+		return new LivingEntityRenderState();
+	}
+
+	@Override
+	public ResourceLocation getTextureLocation(LivingEntityRenderState state) {
 		return TEXTURE;
 	}
 }

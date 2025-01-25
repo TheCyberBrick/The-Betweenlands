@@ -6,6 +6,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
@@ -22,7 +23,6 @@ import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 import thebetweenlands.common.entity.BLEntity;
 import thebetweenlands.common.entity.ai.goals.FollowTargetGoal;
 import thebetweenlands.common.entity.ai.goals.JumpRandomlyGoal;
@@ -38,8 +38,8 @@ public class Sporeling extends PathfinderMob implements BLEntity {
 
 	protected static final EntityDataAccessor<Boolean> IS_FALLING = SynchedEntityData.defineId(Sporeling.class, EntityDataSerializers.BOOLEAN);
 
-	protected float prevFloatingRotationTicks = 0;
-	protected float floatingRotationTicks = 0;
+	public float prevFloatingRotationTicks = 0;
+	public float floatingRotationTicks = 0;
 
 	private AvoidEntityGoal<LivingEntity> aiRunAway;
 	private FollowTargetGoal<Player> moveToTarget;
@@ -89,7 +89,7 @@ public class Sporeling extends PathfinderMob implements BLEntity {
 	@Override
 	public void aiStep() {
 		if (this.level().isClientSide()) {
-			this.level().addParticle(new DustParticleOptions(new Vector3f(0.5F + this.getRandom().nextFloat() * 0.5F, 0.5F + this.getRandom().nextFloat() * 0.5F, 0.5F + this.getRandom().nextFloat() * 0.5F), 1.0F),
+			this.level().addParticle(new DustParticleOptions(ARGB.colorFromFloat(1.0F, 0.5F + this.getRandom().nextFloat() * 0.5F, 0.5F + this.getRandom().nextFloat() * 0.5F, 0.5F + this.getRandom().nextFloat() * 0.5F), 1.0F),
 				this.getX() + (this.getRandom().nextDouble() - 0.5D) * this.getBbWidth(),
 				this.getY() + this.getRandom().nextDouble() * this.getBbHeight() - 0.25D,
 				this.getZ() + (this.getRandom().nextDouble() - 0.5D) * this.getBbWidth(),
@@ -141,10 +141,6 @@ public class Sporeling extends PathfinderMob implements BLEntity {
 			this.floatingRotationTicks = 0;
 		}
 		super.tick();
-	}
-
-	public float smoothedAngle(float partialTicks) {
-		return this.prevFloatingRotationTicks + (this.floatingRotationTicks - this.prevFloatingRotationTicks) * partialTicks;
 	}
 
 	private float updateRotation(float angle, float targetAngle, float maxIncrease) {
@@ -214,7 +210,7 @@ public class Sporeling extends PathfinderMob implements BLEntity {
 	}
 
 	@Override
-	public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+	public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnGroupData) {
 		if (this.isAlive() && this.isBloodSkiesActive()) {
 			Splodeshroom shroom = new Splodeshroom(EntityRegistry.SPLODESHROOM.get(), this.level());
 			shroom.moveTo(this.getX(), this.getY(), this.getZ(), level.getRandom().nextFloat() * 360.0F, 0.0F);

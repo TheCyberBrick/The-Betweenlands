@@ -21,7 +21,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.SelectMusicEvent;
 import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.tuple.Pair;
@@ -168,7 +167,7 @@ public class MusicHandler {
 					}
 				}
 
-				timeUntilMusic = Math.min(timeUntilMusic, (isInBlMainMenu ? BL_MAIN_MENU.getMaxDelay() : BL_MAIN_MENU.getMaxDelay()));
+				timeUntilMusic = Math.min(timeUntilMusic, (isInBlMainMenu ? BL_MAIN_MENU.getMaxDelay() : BL_DIMENSION.getMaxDelay()));
 
 				if (currentSound == null && timeUntilMusic-- <= 0) {
 					//Start new sound track

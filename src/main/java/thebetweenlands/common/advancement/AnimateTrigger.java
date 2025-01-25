@@ -7,7 +7,9 @@ import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import thebetweenlands.common.registries.AdvancementCriteriaRegistry;
@@ -44,16 +46,16 @@ public class AnimateTrigger extends SimpleCriterionTrigger<AnimateTrigger.Trigge
 			return AdvancementCriteriaRegistry.ANIMATE.get().createCriterion(new AnimateTrigger.TriggerInstance(Optional.empty(), Optional.of(input), Optional.of(output)));
 		}
 
-		public static Criterion<AnimateTrigger.TriggerInstance> animateItem(ItemLike input, ItemLike output) {
-			return animateItem(ItemPredicate.Builder.item().of(input).build(), ItemPredicate.Builder.item().of(output).build());
+		public static Criterion<AnimateTrigger.TriggerInstance> animateItem(HolderGetter<Item> getter, ItemLike input, ItemLike output) {
+			return animateItem(ItemPredicate.Builder.item().of(getter, input).build(), ItemPredicate.Builder.item().of(getter, output).build());
 		}
 
 		public static Criterion<TriggerInstance> animateItem(ItemPredicate input) {
 			return AdvancementCriteriaRegistry.ANIMATE.get().createCriterion(new AnimateTrigger.TriggerInstance(Optional.empty(), Optional.of(input), Optional.empty()));
 		}
 
-		public static Criterion<AnimateTrigger.TriggerInstance> animateItem(ItemLike input) {
-			return animateItem(ItemPredicate.Builder.item().of(input).build());
+		public static Criterion<AnimateTrigger.TriggerInstance> animateItem(HolderGetter<Item> getter, ItemLike input) {
+			return animateItem(ItemPredicate.Builder.item().of(getter, input).build());
 		}
 	}
 }

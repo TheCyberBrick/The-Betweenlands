@@ -28,20 +28,20 @@ public class SwampGrassBlock extends Block implements BonemealableBlock {
 	}
 
 	public static boolean updateGrass(Level level, BlockPos pos, RandomSource random) {
-		if (level.getBlockState(pos.above()).getLightBlock(level, pos.above()) > 2) {
+		if (level.getBlockState(pos.above()).getLightBlock() > 2) {
 			revertToDirt(level, pos);
 			return true;
 		} else {
 			for (int i = 0; i < 4; ++i) {
 				BlockPos blockPos = pos.offset(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
 
-				if (blockPos.getY() >= level.getMinBuildHeight() && blockPos.getY() < level.getMaxBuildHeight() && !level.isLoaded(blockPos)) {
+				if (blockPos.getY() >= level.getMinY() && blockPos.getY() < level.getMaxY() && !level.isLoaded(blockPos)) {
 					return false;
 				}
 
 				BlockState blockStateAbove = level.getBlockState(blockPos.above());
 
-				if (blockStateAbove.getLightBlock(level, pos.above()) <= 2) {
+				if (blockStateAbove.getLightBlock() <= 2) {
 					spreadGrassTo(level, blockPos);
 					return true;
 				}
@@ -130,7 +130,7 @@ public class SwampGrassBlock extends Block implements BonemealableBlock {
 	}
 
 	private void tryPlaceFeature(ServerLevel level, BlockPos pos, RandomSource random, ResourceKey<PlacedFeature> feature) {
-		level.registryAccess().registryOrThrow(Registries.PLACED_FEATURE).getOrThrow(feature).place(level, level.getChunkSource().getGenerator(), random, pos);
+		level.registryAccess().lookupOrThrow(Registries.PLACED_FEATURE).getValueOrThrow(feature).place(level, level.getChunkSource().getGenerator(), random, pos);
 	}
 
 	@Override

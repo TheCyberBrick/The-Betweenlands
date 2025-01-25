@@ -322,7 +322,6 @@ public final class GLUProjection {
 	 * @param extrudeInverted		If set to true this extrudes the projected point
 	 * 								onto the screen borders if the point is inside
 	 * 								the inverted frustum
-	 * @return
 	 */
 	public Projection project(double x, double y, double z, ClampMode clampModeOutside, boolean extrudeInverted) {
 		if(this.viewport != null && this.modelview != null && this.projection != null) {
@@ -447,7 +446,6 @@ public final class GLUProjection {
 	 * @param x						X position
 	 * @param y						Y position
 	 * @param z						Z position
-	 * @return
 	 */
 	public boolean[] doFrustumCheck(Vector3D[] frustumCorners, Vector3D frustumPos, double x, double y, double z) {
 		Vector3D point = new Vector3D(x, y, z);
@@ -462,7 +460,6 @@ public final class GLUProjection {
 	 * Returns true if the given plane has been crossed by the point.
 	 * @param plane		Vector3D[] that describes the plane
 	 * @param point		Vector3D that describes the point
-	 * @return
 	 */
 	public boolean crossPlane(Vector3D[] plane, Vector3D point) {
 		Vector3D z = new Vector3D(0.0D, 0.0D, 0.0D);
@@ -489,7 +486,6 @@ public final class GLUProjection {
 	 * @param fov				FOV
 	 * @param farDistance		Far plane distance
 	 * @param aspectRatio		(Display width) / (Display height)
-	 * @return
 	 */
 	public Vector3D[] getFrustum(double x, double y, double z, double rotationYaw, double rotationPitch, double fov, double farDistance, double aspectRatio) {
 		double hFar = 2D * Math.tan(Math.toRadians(fov / 2D)) * farDistance;
@@ -514,7 +510,6 @@ public final class GLUProjection {
 	 * |          |
 	 * 1 -------- 2
 	 *
-	 * @return
 	 */
 	public Vector3D[] getFrustum() {
 		return this.frustum;
@@ -522,7 +517,6 @@ public final class GLUProjection {
 
 	/**
 	 * Returns the horizontal fov angle
-	 * @return
 	 */
 	public float getFovX() {
 		return this.fovX;
@@ -530,7 +524,6 @@ public final class GLUProjection {
 
 	/**
 	 * Returns the vertical fov angle
-	 * @return
 	 */
 	public float getFovY() {
 		return this.fovY;
@@ -538,7 +531,6 @@ public final class GLUProjection {
 
 	/**
 	 * Returns the normalized look vector
-	 * @return
 	 */
 	public Vector3D getLookVector() {
 		return this.lookVec;
@@ -548,7 +540,6 @@ public final class GLUProjection {
 	 * Returns a rotated vector with the given yaw and pitch.
 	 * @param rotYaw	Yaw
 	 * @param rotPitch	Pitch
-	 * @return
 	 */
 	public Vector3D getRotationVector(double rotYaw, double rotPitch) {
 		double c = Math.cos(-rotYaw * 0.017453292F - Math.PI);

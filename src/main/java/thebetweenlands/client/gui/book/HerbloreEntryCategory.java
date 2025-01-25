@@ -16,11 +16,11 @@ import java.util.ArrayList;
 
 public class HerbloreEntryCategory {
 
-	public static ArrayList<ManualCategory> CATEGORIES = new ArrayList<>();
+	public static final ArrayList<ManualCategory> CATEGORIES = new ArrayList<>();
 	public static ManualCategory aspectCategory;
-	public static ArrayList<Page> aspectPages = new ArrayList<>();
-	public static ArrayList<Page> itemPages = new ArrayList<>();
-	public static ArrayList<Page> elixirPages = new ArrayList<>();
+	public static final ArrayList<Page> aspectPages = new ArrayList<>();
+	public static final ArrayList<Page> itemPages = new ArrayList<>();
+	public static final ArrayList<Page> elixirPages = new ArrayList<>();
 
 	public static ManualCategory elixirCategory;
 
@@ -103,7 +103,7 @@ public class HerbloreEntryCategory {
 		ArrayList<Page> infusionPages = new ArrayList<>();
 		ArrayList<Page> antiInfusionPages = new ArrayList<>();
 
-		for (Holder<ElixirEffect> effect : BLRegistries.ELIXIR_EFFECTS.holders().toList()) {
+		for (Holder<ElixirEffect> effect : BLRegistries.ELIXIR_EFFECTS.listElements().toList()) {
 			if (effect.value().shouldShowInBook()) {
 				if (effect.value().isAntiInfusion()) {
 					antiInfusionPages.addAll(PageCreators.makeElixirPage(ElixirContents.createItemStack(ItemRegistry.GREEN_ELIXIR.get(), effect, 1, 1), effect, registries));

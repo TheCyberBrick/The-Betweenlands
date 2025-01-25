@@ -92,7 +92,6 @@ public class EntityIdentifierList {
 
 	/**
 	 * Adds an entity to be written to the message
-	 * @param entity
 	 */
 	public void addEntity(@Nonnull Entity entity) {
 		this.entityIdentifiers.add(new EntityIdentifier(entity.getId(), entity.level().dimension(), entity));
@@ -100,8 +99,6 @@ public class EntityIdentifierList {
 
 	/**
 	 * Reads an entity from the message
-	 * @param index
-	 * @return
 	 */
 	@Nullable
 	public Entity getEntity(int index) {
@@ -116,7 +113,6 @@ public class EntityIdentifierList {
 
 	/**
 	 * Returns a list of all entities from the message
-	 * @return
 	 */
 	public List<Entity> getEntities() {
 		List<Entity> entities = new ArrayList<>();

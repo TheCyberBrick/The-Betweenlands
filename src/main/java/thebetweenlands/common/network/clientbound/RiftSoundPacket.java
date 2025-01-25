@@ -32,7 +32,7 @@ public record RiftSoundPacket(RiftSoundType soundType) implements CustomPacketPa
 	public static void handle(RiftSoundPacket packet, IPayloadContext context) {
 		Player player = context.player();
 		Level level = player.level();
-		Minecraft.getInstance().getSoundManager().play(new SimpleSoundInstance(packet.soundType().getSoundEvent().getLocation(), SoundSource.AMBIENT, 1.0F, 1.0F, level.getRandom(), false, 0, SoundInstance.Attenuation.NONE, 0.0F, 0.0F, 0.0F, false) {
+		Minecraft.getInstance().getSoundManager().play(new SimpleSoundInstance(packet.soundType().getSoundEvent().location(), SoundSource.AMBIENT, 1.0F, 1.0F, level.getRandom(), false, 0, SoundInstance.Attenuation.NONE, 0.0F, 0.0F, 0.0F, false) {
 			@Override
 			public float getPitch() {
 				if (player.getY() < TheBetweenlands.CAVE_START) {

@@ -27,8 +27,6 @@ public record CircleGem(CircleGemType gemType, CircleGem.CombatType combatType) 
 	/**
 	 * Returns whether the specified combat type matches
 	 *
-	 * @param type
-	 * @return
 	 */
 	public boolean matchCombatType(CombatType type) {
 		return this.combatType == CombatType.BOTH || type == this.combatType;

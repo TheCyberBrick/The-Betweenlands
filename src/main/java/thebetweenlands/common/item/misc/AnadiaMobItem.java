@@ -30,7 +30,7 @@ import java.util.List;
 
 public class AnadiaMobItem extends MobItem<Anadia> {
 	public AnadiaMobItem(Properties properties) {
-		super(properties, 5.0D, EntityRegistry.ANADIA.get(), null);
+		super(5.0D, EntityRegistry.ANADIA.get(), null, properties);
 	}
 
 	public int getDecayTime(ItemStack stack) {

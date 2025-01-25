@@ -5,7 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -65,7 +65,7 @@ public class MummyBaitItem extends Item {
 						} else {
 							DreadfulPeatMummy boss = new DreadfulPeatMummy(EntityRegistry.DREADFUL_PEAT_MUMMY.get(), level);
 							boss.moveTo(entity.getX(), entity.getY(), entity.getZ(), 0, 0);
-							EventHooks.finalizeMobSpawn(boss, (ServerLevelAccessor) level, level.getCurrentDifficultyAt(pos), MobSpawnType.MOB_SUMMONED, null);
+							EventHooks.finalizeMobSpawn(boss, (ServerLevelAccessor) level, level.getCurrentDifficultyAt(pos), EntitySpawnReason.MOB_SUMMONED, null);
 							level.addFreshEntity(boss);
 							entity.discard();
 							return true;

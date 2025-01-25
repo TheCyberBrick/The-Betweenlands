@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -11,10 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -56,7 +54,7 @@ public class SimulacrumBlock extends HorizontalBaseEntityBlock implements SwampW
 	public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
 		if (level.getBlockEntity(pos) instanceof SimulacrumBlockEntity simulacrum) {
 			if (stack.has(DataComponentRegistry.SIMULACRUM_EFFECT)) {
-				simulacrum.setEffect(BLRegistries.SIMULACRUM_EFFECTS.get(stack.get(DataComponentRegistry.SIMULACRUM_EFFECT)));
+				simulacrum.setEffect(BLRegistries.SIMULACRUM_EFFECTS.getValue(stack.get(DataComponentRegistry.SIMULACRUM_EFFECT)));
 			}
 			simulacrum.setActive(level, pos, state, true);
 			if (stack.has(DataComponents.CUSTOM_NAME)) {
@@ -78,7 +76,7 @@ public class SimulacrumBlock extends HorizontalBaseEntityBlock implements SwampW
 				}
 			}
 
-			return InteractionResult.sidedSuccess(level.isClientSide());
+			return InteractionResult.SUCCESS;
 		}
 		return super.useWithoutItem(state, level, pos, player, hitResult);
 	}
@@ -90,12 +88,12 @@ public class SimulacrumBlock extends HorizontalBaseEntityBlock implements SwampW
 	}
 
 	@Override
-	protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+	protected BlockState updateShape(BlockState state, LevelReader reader, ScheduledTickAccess access, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
 		if (state.getValue(WATER_TYPE) != SwampWaterLoggable.WaterType.NONE) {
-			level.scheduleTick(pos, state.getValue(WATER_TYPE).getFluid(), state.getValue(WATER_TYPE).getFluid().getTickDelay(level));
+			access.scheduleTick(pos, state.getValue(WATER_TYPE).getFluid(), state.getValue(WATER_TYPE).getFluid().getTickDelay(reader));
 		}
 
-		return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+		return super.updateShape(state, reader, access, pos, direction, neighborPos, neighborState, random);
 	}
 
 	@Override
@@ -129,7 +127,7 @@ public class SimulacrumBlock extends HorizontalBaseEntityBlock implements SwampW
 	@Override
 	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
 		if (flag.isCreative()) {
-			tooltip.add(Component.translatable("block.thebetweenlands.simulacrum.effect", Component.translatable(BLRegistries.SIMULACRUM_EFFECTS.get(stack.getOrDefault(DataComponentRegistry.SIMULACRUM_EFFECT, BLRegistries.SIMULACRUM_EFFECTS.getKey(SimulacrumEffectRegistry.NONE.get()))).getDescriptionId())));
+			tooltip.add(Component.translatable("block.thebetweenlands.simulacrum.effect", Component.translatable(BLRegistries.SIMULACRUM_EFFECTS.getValue(stack.getOrDefault(DataComponentRegistry.SIMULACRUM_EFFECT, BLRegistries.SIMULACRUM_EFFECTS.getKey(SimulacrumEffectRegistry.NONE.get()))).getDescriptionId())));
 		}
 	}
 

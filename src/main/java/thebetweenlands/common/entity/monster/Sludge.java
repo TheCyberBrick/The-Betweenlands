@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.DifficultyInstance;
@@ -36,11 +37,11 @@ public class Sludge extends Monster implements BLEntity {
 	public static final EntityDataAccessor<Boolean> IS_ACTIVE = SynchedEntityData.defineId(Sludge.class, EntityDataSerializers.BOOLEAN);
 
 	private float squishAmount;
-	private float squishFactor;
-	private float prevSquishFactor;
+	public float squishFactor;
+	public float prevSquishFactor;
 	private boolean wasOnGround;
 
-	public ControlledAnimation scale = new ControlledAnimation(5);
+	public final ControlledAnimation scale = new ControlledAnimation(5);
 
 	protected int attackCooldown = 0;
 
@@ -88,14 +89,9 @@ public class Sludge extends Monster implements BLEntity {
 	}
 
 	@Override
-	public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+	public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnGroupData) {
 		this.setActive(this.level().getRandom().nextInt(5) == 0 || !this.canHideIn(this.level().getBlockState(this.blockPosition().below())));
 		return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
-	}
-
-	@Override
-	public boolean isInvisible() {
-		return super.isInvisible();
 	}
 
 	@Override
@@ -182,10 +178,6 @@ public class Sludge extends Monster implements BLEntity {
 		return super.getDefaultDimensions(pose).scale(this.isActive() ? 1.0F : 0.5F);
 	}
 
-	public float getSquishFactor(float partialTicks) {
-		return this.prevSquishFactor + (this.squishFactor - this.prevSquishFactor) * partialTicks;
-	}
-
 	protected void alterSquishAmount() {
 		this.squishAmount *= 0.8F;
 	}
@@ -208,7 +200,7 @@ public class Sludge extends Monster implements BLEntity {
 	}
 
 	protected void dealDamage(LivingEntity entity) {
-		if (this.isActive() && this.hasLineOfSight(entity) && this.distanceToSqr(entity) < 2.5D && entity.hurt(this.damageSources().mobAttack(this), (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE))) {
+		if (this.level() instanceof ServerLevel level && this.isActive() && this.hasLineOfSight(entity) && this.distanceToSqr(entity) < 2.5D && entity.hurtServer(level, this.damageSources().mobAttack(this), (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE))) {
 			this.playSound(SoundRegistry.SLUDGE_ATTACK.get(), this.getSoundVolume(), this.getVoicePitch());
 		}
 	}
@@ -264,13 +256,13 @@ public class Sludge extends Monster implements BLEntity {
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		if (!this.isActive() && !source.isCreativePlayer()) {
 			if (!this.level().isClientSide()) {
 				this.setActive(true);
 			}
 			return false;
 		}
-		return super.hurt(source, amount);
+		return super.hurtServer(level, source, amount);
 	}
 }

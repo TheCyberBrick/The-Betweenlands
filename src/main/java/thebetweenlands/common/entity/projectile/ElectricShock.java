@@ -3,6 +3,7 @@ package thebetweenlands.common.entity.projectile;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -71,6 +72,11 @@ public class ElectricShock extends Entity {
 	}
 
 	@Override
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+		return false;
+	}
+
+	@Override
 	public void move(MoverType type, Vec3 pos) {
 		//no-op
 	}
@@ -79,7 +85,7 @@ public class ElectricShock extends Entity {
 	public void tick() {
 		super.tick();
 
-		if (!this.level().isClientSide()) {
+		if (this.level() instanceof ServerLevel level) {
 			if (this.source == null) {
 				this.discard();
 			} else {
@@ -149,12 +155,12 @@ public class ElectricShock extends Entity {
 										boolean wasShocked = false;
 
 										if (!blocked) {
-											wasShocked = newTarget.hurt(damageSource, isWet ? 2 * damage : damage);
+											wasShocked = newTarget.hurtServer(level, damageSource, isWet ? 2 * damage : damage);
 
 											//Also zap all passengers >:)
 											for (Entity passenger : newTarget.getPassengers()) {
 												if (passenger instanceof LivingEntity living && !this.targets.contains(passenger) && !newTargets.contains(passenger)) {
-													passenger.hurt(damageSource, isWet ? 2 * damage : damage);
+													passenger.hurtServer(level, damageSource, isWet ? 2 * damage : damage);
 													newTargets.add(living);
 												}
 											}

@@ -39,8 +39,8 @@ public class Wight extends Monster {
 	protected static final EntityDataAccessor<Boolean> VOLATILE_STATE_DW = SynchedEntityData.defineId(Wight.class, EntityDataSerializers.BOOLEAN);
 	protected final MoveControl flightMoveHelper;
 	protected final MoveControl groundMoveHelper;
-	private int hidingAnimationTicks = 0;
-	private int lastHidingAnimationTicks = 0;
+	public int hidingAnimationTicks = 0;
+	public int lastHidingAnimationTicks = 0;
 	private int volatileCooldownTicks = (int) AttributeRegistry.VOLATILE_COOLDOWN_ATTRIB.value().getDefaultValue() / 2 + 20;
 	private int volatileTicks = 0;
 	private boolean canTurnVolatile = true;
@@ -98,7 +98,7 @@ public class Wight extends Monster {
 					//tar_beast.setPositionAndRotation(posX, posY, posZ, rotationYaw, rotationPitch);
 					//tar_beast.setGrowTimer(0);
 					//getEntityWorld().spawnEntity(tar_beast);
-					kill();
+					this.discard();
 				}
 			}
 
@@ -312,7 +312,7 @@ public class Wight extends Monster {
 			if (f2 > 1.0F) {
 				f2 = 1.0F;
 			}
-			this.walkAnimation.update(f2, 0.4F);
+			this.walkAnimation.update(f2, 0.4F, 1.0F);
 		} else {
 			//Use normal movement
 
@@ -374,14 +374,6 @@ public class Wight extends Monster {
 
 	public void setGrowTimer(int timer) {
 		entityData.set(GROW_TIMER, timer);
-	}
-
-	public float getHidingAnimation(float partialTicks) {
-		return (this.lastHidingAnimationTicks + (this.hidingAnimationTicks - this.lastHidingAnimationTicks) * partialTicks) / 12.0F;
-	}
-
-	public float getGrowthFactor(float partialTicks) {
-		return prevGrowCount + (growCount - prevGrowCount) * partialTicks;
 	}
 
 	public boolean isVolatile() {

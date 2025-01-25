@@ -99,7 +99,7 @@ public class Emberling extends TamableAnimal implements BLEntity, Enemy {
 				return !Emberling.this.isInSittingPose() && super.canUse();
 			}
 		});
-		this.targetSelector.addGoal(0, new NearestAttackableTargetGoal<>(this, Mob.class, 0, false, true, entity -> entity instanceof Enemy) {
+		this.targetSelector.addGoal(0, new NearestAttackableTargetGoal<>(this, Mob.class, 0, false, true, (entity, level) -> entity instanceof Enemy) {
 			@Override
 			public boolean canUse() {
 				return Emberling.this.isTame() && super.canUse();
@@ -223,10 +223,6 @@ public class Emberling extends TamableAnimal implements BLEntity, Enemy {
 		this.tailPart.moveTo(this.getX() - offSetX, this.getY() + 0.2D, this.getZ() - offSetZ, 0.0F, 0.0F);
 	}
 
-	public float smoothedAngle(float partialTicks) {
-		return this.prevAnimationTicks + (this.animationTicks - this.prevAnimationTicks) * partialTicks;
-	}
-
 	public void flameParticles(Level level, double x, double y, double z, RandomSource rand) {
 		for (int count = 0; count < 3; ++count) {
 			int motionX = rand.nextBoolean() ? 1 : -1;
@@ -284,7 +280,7 @@ public class Emberling extends TamableAnimal implements BLEntity, Enemy {
 					}
 					stack.consume(1, player);
 					this.gameEvent(GameEvent.EAT);
-					return InteractionResult.sidedSuccess(this.level().isClientSide());
+					return InteractionResult.SUCCESS;
 				} else {
 					InteractionResult interactionresult = super.mobInteract(player, hand);
 					if (!interactionresult.consumesAction() && this.isOwnedBy(player)) {
@@ -292,7 +288,7 @@ public class Emberling extends TamableAnimal implements BLEntity, Enemy {
 						this.jumping = false;
 						this.navigation.stop();
 						this.setTarget(null);
-						return InteractionResult.SUCCESS_NO_ITEM_USED;
+						return InteractionResult.SUCCESS.withoutItem();
 					} else {
 						return interactionresult;
 					}

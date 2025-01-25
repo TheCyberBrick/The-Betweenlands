@@ -6,11 +6,10 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.monster.Stalker;
+import thebetweenlands.client.state.StalkerRenderState;
 
-public class StalkerModel extends MowzieModelBase<Stalker> {
+public class StalkerModel extends MowzieModelBase<StalkerRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart bodyBase;
 	private final ModelPart bodyMain;
 	private final ModelPart abdomen;
@@ -42,7 +41,7 @@ public class StalkerModel extends MowzieModelBase<Stalker> {
 	private final ModelPart leg_left1b;
 
 	public StalkerModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.bodyBase = root.getChild("body_base");
 		this.bodyMain = this.bodyBase.getChild("body_main");
 		this.abdomen = this.bodyMain.getChild("abdomen");
@@ -403,22 +402,8 @@ public class StalkerModel extends MowzieModelBase<Stalker> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void setupAnim(Stalker entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		this.neck1a.zRot -= (netHeadYaw / Mth.RAD_TO_DEG) / 2.0F;
-		this.head_main.zRot -= (netHeadYaw / Mth.RAD_TO_DEG) / 2.0F;
-		this.neck1a.xRot += (headPitch / Mth.RAD_TO_DEG) / 2.0F;
-		this.head_main.xRot += (headPitch / Mth.RAD_TO_DEG) / 2.0F;
-	}
-
-	@Override
-	public void prepareMobModel(Stalker entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		this.setInitPose();
-		float frame = entity.tickCount + partialTick;
+	public void setupAnim(StalkerRenderState state) {
+		super.setupAnim(state);
 
 		this.medEyelidTopRight.x += 0.07F;
 		this.medEyelidTopRight.z += 0.13F;
@@ -439,13 +424,13 @@ public class StalkerModel extends MowzieModelBase<Stalker> {
 		this.smallEyelidRight.z += 0.12F;
 		this.smallEyelidRight.y += 0.08F;
 
-		float blinkFrame = frame * Mth.TWO_PI;
+		float blinkFrame = state.ageInTicks * Mth.TWO_PI;
 		float blinkSmallRight = 0.0F;
 		float blinkSmallLeft = 0.0F;
 		float blinkMedRight = 0.0F;
 		float blinkMedLeft = 0.0F;
 		float blinkBig = 0.0F;
-		if ((int) (frame * 0.04F) % 5 == 0) {
+		if ((int) (state.ageInTicks * 0.04F) % 5 == 0) {
 			blinkSmallRight = (float) Math.pow(Math.sin(blinkFrame * 0.02F + 0.5F), 10.0F);
 			blinkSmallLeft = (float) Math.pow(Math.sin(blinkFrame * 0.02F + 0.7F), 10.0F);
 			blinkMedRight = (float) Math.pow(Math.sin(blinkFrame * 0.02F - 0.2F), 10.0F);
@@ -475,12 +460,9 @@ public class StalkerModel extends MowzieModelBase<Stalker> {
 
 		this.root.y -= 2.2F;
 
-//        swing = frame;
-//        limbSwingAmount = 1.0F;
-
-		float newf1 = limbSwingAmount;
+		float newf1 = state.walkAnimationSpeed;
 		if (newf1 > 0.4F) newf1 = 0.4F;
-		float newf12 = limbSwingAmount;
+		float newf12 = state.walkAnimationSpeed;
 		if (newf12 > 0.7F) newf12 = 0.7F;
 
 		float globalDegree = 1.4F;
@@ -488,72 +470,72 @@ public class StalkerModel extends MowzieModelBase<Stalker> {
 		float globalSpeed = 0.8F;
 		float globalHeight = 1.0F;
 
-		this.bodyBase.x -= wiggleDegree * globalDegree * newf1 * 3.0F * Mth.cos(globalSpeed * limbSwing);
-		this.swing(this.bodyBase, globalSpeed, 0.2F * globalDegree * wiggleDegree, false, 1.6F, 0.0F, limbSwing, newf1);
-		this.flap(this.bodyMain, globalSpeed, 0.2F * globalDegree * wiggleDegree, false, 0.8F, 0.0F, limbSwing, newf1);
-		this.flap(this.abdomen, globalSpeed, 0.3F * globalDegree * wiggleDegree, false, 0.0F, 0.0F, limbSwing, newf1);
-		this.flap(this.neck1a, globalSpeed, 0.7F * globalDegree * wiggleDegree, true, -0.5F, 0.0F, limbSwing, newf1);
-		this.flap(this.head_main, globalSpeed, 0.35F * globalDegree * wiggleDegree, false, -1.0F, 0.0F, limbSwing, newf1);
-		this.swing(this.head_main, globalSpeed, 0.2F * globalDegree * wiggleDegree, true, 0.0F, 0.0F, limbSwing, newf1);
-		this.head_main.z -= 1.0F * Mth.cos(2.0F * limbSwing * globalSpeed - 0.5F) * newf1 * globalDegree;
+		this.bodyBase.x -= wiggleDegree * globalDegree * newf1 * 3.0F * Mth.cos(globalSpeed * state.walkAnimationPos);
+		this.swing(this.bodyBase, globalSpeed, 0.2F * globalDegree * wiggleDegree, false, 1.6F, 0.0F, state.walkAnimationPos, newf1);
+		this.flap(this.bodyMain, globalSpeed, 0.2F * globalDegree * wiggleDegree, false, 0.8F, 0.0F, state.walkAnimationPos, newf1);
+		this.flap(this.abdomen, globalSpeed, 0.3F * globalDegree * wiggleDegree, false, 0.0F, 0.0F, state.walkAnimationPos, newf1);
+		this.flap(this.neck1a, globalSpeed, 0.7F * globalDegree * wiggleDegree, true, -0.5F, 0.0F, state.walkAnimationPos, newf1);
+		this.flap(this.head_main, globalSpeed, 0.35F * globalDegree * wiggleDegree, false, -1.0F, 0.0F, state.walkAnimationPos, newf1);
+		this.swing(this.head_main, globalSpeed, 0.2F * globalDegree * wiggleDegree, true, 0.0F, 0.0F, state.walkAnimationPos, newf1);
+		this.head_main.z -= 1.0F * Mth.cos(2.0F * state.walkAnimationPos * globalSpeed - 0.5F) * newf1 * globalDegree;
 
-		this.walk(this.bodyMain, 2.0F * globalSpeed, 0.1F * globalHeight, true, -1.5F, 0.1F, limbSwing, limbSwingAmount);
-		this.walk(this.neck1a, 2.0F * globalSpeed, 0.1F * globalHeight, false, -1.5F, -0.1F, limbSwing, limbSwingAmount);
-		this.walk(this.jaw_lower_main, 2.0F * globalSpeed, 0.15F * globalHeight, false, -0.7F, -0.1F, limbSwing, limbSwingAmount);
-		this.walk(this.jaw_lower_left1a, 2.0F * globalSpeed, 0.1F * globalHeight, false, -0.7F, -0.1F, limbSwing, limbSwingAmount);
-		this.walk(this.jaw_lower_right1a, 2.0F * globalSpeed, 0.1F * globalHeight, false, -0.7F, -0.1F, limbSwing, limbSwingAmount);
-		this.bob(this.bodyBase, 2.0F * globalSpeed, 0.5F * globalHeight, false, limbSwing, limbSwingAmount);
+		this.walk(this.bodyMain, 2.0F * globalSpeed, 0.1F * globalHeight, true, -1.5F, 0.1F, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.neck1a, 2.0F * globalSpeed, 0.1F * globalHeight, false, -1.5F, -0.1F, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.jaw_lower_main, 2.0F * globalSpeed, 0.15F * globalHeight, false, -0.7F, -0.1F, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.jaw_lower_left1a, 2.0F * globalSpeed, 0.1F * globalHeight, false, -0.7F, -0.1F, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.jaw_lower_right1a, 2.0F * globalSpeed, 0.1F * globalHeight, false, -0.7F, -0.1F, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.bob(this.bodyBase, 2.0F * globalSpeed, 0.5F * globalHeight, false, state.walkAnimationPos, state.walkAnimationSpeed);
 
 		float legOffset = -0.4F;
-		this.flap(this.leg_left1a, globalSpeed, 0.6F * globalDegree, false, 0.0F - 0.8F + legOffset, 0.6F, limbSwing, newf12);
-		this.walk(this.leg_left1a, globalSpeed, 0.2F * globalDegree, true, 0.0F - 2.0F + legOffset, 0.5F, limbSwing, newf12);
-		this.walk(this.leg_left1b, globalSpeed, 0.3F * globalDegree, true, -1.5F + 0.2F + legOffset, -0.6F, limbSwing, newf12);
-		this.flap(this.leg_left1b, globalSpeed, 0.5F * globalDegree, true, -1.5F + 0.7F + legOffset, 0.0F, limbSwing, newf12);
+		this.flap(this.leg_left1a, globalSpeed, 0.6F * globalDegree, false, 0.0F - 0.8F + legOffset, 0.6F, state.walkAnimationPos, newf12);
+		this.walk(this.leg_left1a, globalSpeed, 0.2F * globalDegree, true, 0.0F - 2.0F + legOffset, 0.5F, state.walkAnimationPos, newf12);
+		this.walk(this.leg_left1b, globalSpeed, 0.3F * globalDegree, true, -1.5F + 0.2F + legOffset, -0.6F, state.walkAnimationPos, newf12);
+		this.flap(this.leg_left1b, globalSpeed, 0.5F * globalDegree, true, -1.5F + 0.7F + legOffset, 0.0F, state.walkAnimationPos, newf12);
 
-		this.flap(this.leg_right1a, globalSpeed, 0.6F * globalDegree, false, 0.0F - 0.8F + legOffset, -0.6F, limbSwing, newf12);
-		this.walk(this.leg_right1a, globalSpeed, 0.2F * globalDegree, false, 0.0F - 2.0F + legOffset, 0.5F, limbSwing, newf12);
-		this.walk(this.leg_right1b, globalSpeed, 0.3F * globalDegree, false, -1.5F + 0.2F + legOffset, -0.6F, limbSwing, newf12);
-		this.flap(this.leg_right1b, globalSpeed, 0.5F * globalDegree, true, -1.5F + 0.7F + legOffset, 0.0F, limbSwing, newf12);
+		this.flap(this.leg_right1a, globalSpeed, 0.6F * globalDegree, false, 0.0F - 0.8F + legOffset, -0.6F, state.walkAnimationPos, newf12);
+		this.walk(this.leg_right1a, globalSpeed, 0.2F * globalDegree, false, 0.0F - 2.0F + legOffset, 0.5F, state.walkAnimationPos, newf12);
+		this.walk(this.leg_right1b, globalSpeed, 0.3F * globalDegree, false, -1.5F + 0.2F + legOffset, -0.6F, state.walkAnimationPos, newf12);
+		this.flap(this.leg_right1b, globalSpeed, 0.5F * globalDegree, true, -1.5F + 0.7F + legOffset, 0.0F, state.walkAnimationPos, newf12);
 
-		this.walk(this.arm_lefta, globalSpeed, 0.5F * globalDegree, true, -1.6F - 0.4F, -0.3F, limbSwing, newf12);
-		this.walk(this.arm_leftb, globalSpeed, 0.5F * globalDegree, true, -0.1F - 0.4F, -0.2F, limbSwing, newf12);
-		this.swing(this.arm_leftb, globalSpeed, 0.3F * globalDegree, false, -0.1F - 0.4F, 0.0F, limbSwing, newf12);
+		this.walk(this.arm_lefta, globalSpeed, 0.5F * globalDegree, true, -1.6F - 0.4F, -0.3F, state.walkAnimationPos, newf12);
+		this.walk(this.arm_leftb, globalSpeed, 0.5F * globalDegree, true, -0.1F - 0.4F, -0.2F, state.walkAnimationPos, newf12);
+		this.swing(this.arm_leftb, globalSpeed, 0.3F * globalDegree, false, -0.1F - 0.4F, 0.0F, state.walkAnimationPos, newf12);
 
-		this.walk(this.arm_righta, globalSpeed, 0.5F * globalDegree, false, -1.6F - 0.4F, -0.3F, limbSwing, newf12);
-		this.walk(this.arm_rightb, globalSpeed, 0.5F * globalDegree, false, -0.1F - 0.4F, -0.2F, limbSwing, newf12);
-		this.swing(this.arm_rightb, globalSpeed, 0.3F * globalDegree, false, -0.1F - 0.4F, 0.0F, limbSwing, newf12);
+		this.walk(this.arm_righta, globalSpeed, 0.5F * globalDegree, false, -1.6F - 0.4F, -0.3F, state.walkAnimationPos, newf12);
+		this.walk(this.arm_rightb, globalSpeed, 0.5F * globalDegree, false, -0.1F - 0.4F, -0.2F, state.walkAnimationPos, newf12);
+		this.swing(this.arm_rightb, globalSpeed, 0.3F * globalDegree, false, -0.1F - 0.4F, 0.0F, state.walkAnimationPos, newf12);
 
 		float midLegOffset = Mth.PI - 3.0F;
 		float midLegDegree = 0.5F;
-		this.walk(this.midarm_lefta, globalSpeed, 0.7F * globalDegree * midLegDegree, true, -1.6F - 0.4F + midLegOffset, 0.1F, limbSwing, newf12);
-		this.swing(this.midarm_lefta, globalSpeed, 0.2F * globalDegree * midLegDegree, false, -1.6F + 2.4f + midLegOffset, 0.3F, limbSwing, newf12);
-		this.flap(this.midarm_lefta, globalSpeed, 0.3F * globalDegree * midLegDegree, false, -1.6F + 0.4F + midLegOffset, 0.5F, limbSwing, newf12);
-		this.walk(this.midarm_leftb, globalSpeed, 0.5F * globalDegree * midLegDegree, true, -0.1F - 0.4F + midLegOffset, 0.2F, limbSwing, newf12);
-		this.swing(this.midarm_leftb, globalSpeed, 0.3F * globalDegree * midLegDegree, false, -0.1F - 0.4F + midLegOffset, 0.0F, limbSwing, newf12);
+		this.walk(this.midarm_lefta, globalSpeed, 0.7F * globalDegree * midLegDegree, true, -1.6F - 0.4F + midLegOffset, 0.1F, state.walkAnimationPos, newf12);
+		this.swing(this.midarm_lefta, globalSpeed, 0.2F * globalDegree * midLegDegree, false, -1.6F + 2.4f + midLegOffset, 0.3F, state.walkAnimationPos, newf12);
+		this.flap(this.midarm_lefta, globalSpeed, 0.3F * globalDegree * midLegDegree, false, -1.6F + 0.4F + midLegOffset, 0.5F, state.walkAnimationPos, newf12);
+		this.walk(this.midarm_leftb, globalSpeed, 0.5F * globalDegree * midLegDegree, true, -0.1F - 0.4F + midLegOffset, 0.2F, state.walkAnimationPos, newf12);
+		this.swing(this.midarm_leftb, globalSpeed, 0.3F * globalDegree * midLegDegree, false, -0.1F - 0.4F + midLegOffset, 0.0F, state.walkAnimationPos, newf12);
 
-		this.walk(this.midarm_righta, globalSpeed, 0.7F * globalDegree * midLegDegree, false, -1.6F - 0.4F + midLegOffset, 0.1F, limbSwing, newf12);
-		this.swing(this.midarm_righta, globalSpeed, 0.2F * globalDegree * midLegDegree, false, -1.6F + 2.4f + midLegOffset, -0.3F, limbSwing, newf12);
-		this.flap(this.midarm_righta, globalSpeed, 0.3F * globalDegree * midLegDegree, false, -1.6F + 0.4F + midLegOffset, -0.5F, limbSwing, newf12);
-		this.walk(this.midarm_rightb, globalSpeed, 0.5F * globalDegree * midLegDegree, false, -0.1F - 0.4F + midLegOffset, 0.2F, limbSwing, newf12);
-		this.swing(this.midarm_rightb, globalSpeed, 0.3F * globalDegree * midLegDegree, false, -0.1F - 0.4F + midLegOffset, 0.0F, limbSwing, newf12);
+		this.walk(this.midarm_righta, globalSpeed, 0.7F * globalDegree * midLegDegree, false, -1.6F - 0.4F + midLegOffset, 0.1F, state.walkAnimationPos, newf12);
+		this.swing(this.midarm_righta, globalSpeed, 0.2F * globalDegree * midLegDegree, false, -1.6F + 2.4f + midLegOffset, -0.3F, state.walkAnimationPos, newf12);
+		this.flap(this.midarm_righta, globalSpeed, 0.3F * globalDegree * midLegDegree, false, -1.6F + 0.4F + midLegOffset, -0.5F, state.walkAnimationPos, newf12);
+		this.walk(this.midarm_rightb, globalSpeed, 0.5F * globalDegree * midLegDegree, false, -0.1F - 0.4F + midLegOffset, 0.2F, state.walkAnimationPos, newf12);
+		this.swing(this.midarm_rightb, globalSpeed, 0.3F * globalDegree * midLegDegree, false, -0.1F - 0.4F + midLegOffset, 0.0F, state.walkAnimationPos, newf12);
 
-		Vec3 eyeRot = entity.prevEyeRotation.add(entity.eyeRotation.subtract(entity.prevEyeRotation).scale(partialTick));
+		Vec3 eyeRot = state.eyeRotation;
 		eyeRot = eyeRot.scale(0.5F);
 		this.bigeye.xRot += (float) (eyeRot.x * 0.5F);
 		this.bigeye.yRot += (float) eyeRot.y;
 		this.bigeye.zRot += (float) eyeRot.z;
 
-		this.walk(this.head_main, 4.0F, 0.01F, false, 0.0F, 0.0F, frame, 1.0F);
-		this.swing(this.head_main, 3.0F, 0.01F, false, 0.0F, 0.0F, frame, 1.0F);
-		this.flap(this.head_main, 5.0F, 0.01F, false, 0.0F, 0.0F, frame, 1.0F);
+		this.walk(this.head_main, 4.0F, 0.01F, false, 0.0F, 0.0F, state.ageInTicks, 1.0F);
+		this.swing(this.head_main, 3.0F, 0.01F, false, 0.0F, 0.0F, state.ageInTicks, 1.0F);
+		this.flap(this.head_main, 5.0F, 0.01F, false, 0.0F, 0.0F, state.ageInTicks, 1.0F);
 
-		this.walk(this.jaw_lower_main, 0.4F, 0.2F, false, 0.0F, 0.0F, frame, 1.0F);
-		this.walk(this.jaw_lower_right1a, 0.4F, 0.1F, false, -0.35F, 0.0F, frame, 1.0F);
-		this.walk(this.jaw_lower_left1a, 0.4F, 0.1F, false, -0.35F, 0.0F, frame, 1.0F);
-		this.swing(this.jaw_lower_right1a, 0.4F, 0.1F, true, -0.7F, 0.0F, frame, 1.0F);
-		this.swing(this.jaw_lower_left1a, 0.4F, 0.1F, false, -0.7F, 0.0F, frame, 1.0F);
+		this.walk(this.jaw_lower_main, 0.4F, 0.2F, false, 0.0F, 0.0F, state.ageInTicks, 1.0F);
+		this.walk(this.jaw_lower_right1a, 0.4F, 0.1F, false, -0.35F, 0.0F, state.ageInTicks, 1.0F);
+		this.walk(this.jaw_lower_left1a, 0.4F, 0.1F, false, -0.35F, 0.0F, state.ageInTicks, 1.0F);
+		this.swing(this.jaw_lower_right1a, 0.4F, 0.1F, true, -0.7F, 0.0F, state.ageInTicks, 1.0F);
+		this.swing(this.jaw_lower_left1a, 0.4F, 0.1F, false, -0.7F, 0.0F, state.ageInTicks, 1.0F);
 
-		float screechTicks = entity.prevScreechingTicks + (entity.screechingTicks - entity.prevScreechingTicks) * partialTick;
+		float screechTicks = state.screechingTicks;
 
 		float upright = easeInOutBack(Math.min(screechTicks / 40.0F, 1.0F));
 		this.bodyMain.xRot -= upright * 0.5F;
@@ -578,7 +560,7 @@ public class StalkerModel extends MowzieModelBase<Stalker> {
 		this.midarm_rightb.zRot += upright * 0.1F;
 
 		float screeching = easeInOutBack(Mth.clamp((screechTicks - 20.0F) / 30.0F, 0.0F, 1.0F));
-		float screechingHeadRotationStrength = Mth.sin(frame * 0.4F) * screeching;
+		float screechingHeadRotationStrength = Mth.sin(state.ageInTicks * 0.4F) * screeching;
 		this.head_main.yRot += screechingHeadRotationStrength * 0.13F;
 		this.head_main.zRot += screechingHeadRotationStrength * 0.13F;
 
@@ -596,9 +578,14 @@ public class StalkerModel extends MowzieModelBase<Stalker> {
 		this.midarm_righta.xRot += screechingHeadRotationStrength * 0.04F;
 		this.midarm_rightb.xRot -= screechingHeadRotationStrength * 0.075F;
 
-		float armShakeStrength = Mth.sin(frame * 4.0F) * screeching;
+		float armShakeStrength = Mth.sin(state.ageInTicks * 4.0F) * screeching;
 		this.arm_lefta.zRot += armShakeStrength * 0.025F;
 		this.arm_righta.zRot -= armShakeStrength * 0.025F;
+
+		this.neck1a.zRot -= (state.yRot / Mth.RAD_TO_DEG) / 2.0F;
+		this.head_main.zRot -= (state.yRot / Mth.RAD_TO_DEG) / 2.0F;
+		this.neck1a.xRot += (state.xRot / Mth.RAD_TO_DEG) / 2.0F;
+		this.head_main.xRot += (state.xRot / Mth.RAD_TO_DEG) / 2.0F;
 	}
 
 	private static float easeInOutBack(float x) {

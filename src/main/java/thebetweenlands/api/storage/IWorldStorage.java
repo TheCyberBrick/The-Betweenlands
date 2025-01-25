@@ -12,50 +12,38 @@ public interface IWorldStorage {
 
 	/**
 	 * Called when a chunk storage needs to be read from the specified NBT and loaded
-	 * @param chunk
-	 * @param tag
 	 */
 	void readAndLoadChunk(ChunkAccess chunk, CompoundTag tag);
 
 	/**
 	 * Called when a new chunk is loaded without any NBT data
-	 * @param chunk
 	 */
 	void loadChunk(ChunkAccess chunk);
 
 	/**
 	 * Saves the chunk storage data to NBT. May return
 	 * null if no data needs to be saved
-	 * @param chunk
-	 * @return
 	 */
 	@Nullable
 	CompoundTag saveChunk(ChunkAccess chunk);
 
 	/**
 	 * Called when a chunk is unloaded
-	 * @param chunk
 	 */
 	void unloadChunk(ChunkAccess chunk);
 
 	/**
 	 * Called when a player starts watching the specified chunk
-	 * @param pos
-	 * @param player
 	 */
 	void watchChunk(ChunkPos pos, ServerPlayer player);
 
 	/**
 	 * Called when a player stops watching the specified chunk
-	 * @param pos
-	 * @param player
 	 */
 	void unwatchChunk(ChunkPos pos, ServerPlayer player);
 
 	/**
 	 * Returns the chunk storage of the specified chunk
-	 * @param chunk
-	 * @return
 	 */
 	IChunkStorage getChunkStorage(ChunkAccess chunk);
 
@@ -63,7 +51,6 @@ public interface IWorldStorage {
 	 * Returns the local storage handler responsible for loading and
 	 * saving local storage from/to files and keeping track
 	 * the local storage instances
-	 * @return
 	 */
 	ILocalStorageHandler getLocalStorageHandler();
 

@@ -6,7 +6,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -40,7 +39,6 @@ public class InfuserBlockEntity extends NoMenuContainerBlockEntity implements IF
 	private int temp = 0;
 	private int evaporation = 0;
 	private int itemBob = 0;
-	private boolean countUp = true;
 	private boolean hasInfusion = false;
 	private boolean hasCrystal = false;
 	private float crystalVelocity = 0.0F;
@@ -267,7 +265,7 @@ public class InfuserBlockEntity extends NoMenuContainerBlockEntity implements IF
 					ItemStack stack = this.getItem(i);
 					if (!stack.isEmpty() && stack.getItem() instanceof AspectVialItem vial) {
 						//Return empty vials
-						ItemEntity entity = new ItemEntity(level, pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D, vial.getCraftingRemainingItem(stack));
+						ItemEntity entity = new ItemEntity(level, pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D, vial.getCraftingRemainder(stack));
 						level.addFreshEntity(entity);
 					}
 					this.setItem(i, ItemStack.EMPTY);

@@ -8,11 +8,10 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.creature.Lurker;
+import thebetweenlands.client.state.LurkerRenderState;
 
-public class LurkerModel extends MowzieModelBase<Lurker> {
+public class LurkerModel extends MowzieModelBase<LurkerRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart trunk;
 	private final ModelPart head;
 	private final ModelPart mandible;
@@ -25,7 +24,7 @@ public class LurkerModel extends MowzieModelBase<Lurker> {
 	private final ModelPart[] tail;
 
 	public LurkerModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.trunk = root.getChild("trunk");
 		this.head = this.trunk.getChild("head");
 		this.mandible = this.head.getChild("mandible");
@@ -162,43 +161,35 @@ public class LurkerModel extends MowzieModelBase<Lurker> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void setupAnim(Lurker entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		netHeadYaw = Mth.clamp(netHeadYaw, -60, 60);
-		this.head.yRot = netHeadYaw * Mth.DEG_TO_RAD;
-		this.head.xRot += headPitch * Mth.DEG_TO_RAD;
-	}
-
-	@Override
-	public void prepareMobModel(Lurker entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		float mouthOpen = entity.getMouthOpen(partialTick);
-		float yaw = entity.getTailYaw(partialTick) * Mth.DEG_TO_RAD * 0.2F;
-		float pitch = entity.getTailPitch(partialTick) * Mth.DEG_TO_RAD * 0.2F;
-		this.forefinLeftProximal.xRot = Mth.cos(limbSwing * 0.8F - Mth.PI / 8) * limbSwingAmount * 1.5F - 0.2602503F;
-		this.forefinLeftProximal.yRot = Mth.cos(limbSwing * 0.8F) * limbSwingAmount * 1.7F + 0.2230717F;
-		this.forefinLeftProximal.zRot = Mth.sin(limbSwing * 0.8F) * limbSwingAmount * 0.7F + 0.4461433F - limbSwingAmount * 0.7F;
-		this.forefinLeftDistal.yRot = Mth.sin(limbSwing * 0.8F + Mth.PI / 4) * limbSwingAmount * 0.7F + 0.2F;
-		this.hindfinLeft.xRot = Mth.cos(limbSwing * 0.8F - Mth.PI / 2) * limbSwingAmount * 1.0F - 0.260246F + limbSwingAmount * 0.8F;
-		this.hindfinLeft.yRot = Mth.sin(limbSwing * 0.8F - Mth.PI / 2) * limbSwingAmount * 1.2F + 0.4461411F;
-		this.forefinRightProximal.xRot = Mth.cos(limbSwing * 0.8F - Mth.PI / 8) * limbSwingAmount * 1.5F + 0.2602503F;
-		this.forefinRightProximal.yRot = Mth.cos(limbSwing * 0.8F) * limbSwingAmount * 1.7F + 2.918522F;
-		this.forefinRightProximal.zRot = Mth.sin(limbSwing * 0.8F) * limbSwingAmount * 0.7F - 0.4461433F + limbSwingAmount * 0.7F;
-		this.forefinRightDistal.yRot = Mth.sin(limbSwing * 0.8F + Mth.PI / 4) * limbSwingAmount * 0.7F - 0.2F + Mth.PI;
-		this.hindfinRight.xRot = Mth.sin(limbSwing * 0.8F + Mth.PI / 2) * limbSwingAmount * 1.0F - 0.260246F + limbSwingAmount * 0.8F;
-		this.hindfinRight.yRot = Mth.cos(limbSwing * 0.8F + Mth.PI / 2) * limbSwingAmount * 1.2F - 0.4461411F;
-		this.trunk.zRot = Mth.sin(limbSwing * 0.8F) * limbSwingAmount * 0.1F;
+	public void setupAnim(LurkerRenderState state) {
+		float mouthOpen = state.jawRotation;
+		float yaw = state.tailYaw * Mth.DEG_TO_RAD * 0.2F;
+		float pitch = state.tailPitch * Mth.DEG_TO_RAD * 0.2F;
+		this.forefinLeftProximal.xRot = Mth.cos(state.walkAnimationPos * 0.8F - Mth.PI / 8) * state.walkAnimationSpeed * 1.5F - 0.2602503F;
+		this.forefinLeftProximal.yRot = Mth.cos(state.walkAnimationPos * 0.8F) * state.walkAnimationSpeed * 1.7F + 0.2230717F;
+		this.forefinLeftProximal.zRot = Mth.sin(state.walkAnimationPos * 0.8F) * state.walkAnimationSpeed * 0.7F + 0.4461433F - state.walkAnimationSpeed * 0.7F;
+		this.forefinLeftDistal.yRot = Mth.sin(state.walkAnimationPos * 0.8F + Mth.PI / 4) * state.walkAnimationSpeed * 0.7F + 0.2F;
+		this.hindfinLeft.xRot = Mth.cos(state.walkAnimationPos * 0.8F - Mth.PI / 2) * state.walkAnimationSpeed * 1.0F - 0.260246F + state.walkAnimationSpeed * 0.8F;
+		this.hindfinLeft.yRot = Mth.sin(state.walkAnimationPos * 0.8F - Mth.PI / 2) * state.walkAnimationSpeed * 1.2F + 0.4461411F;
+		this.forefinRightProximal.xRot = Mth.cos(state.walkAnimationPos * 0.8F - Mth.PI / 8) * state.walkAnimationSpeed * 1.5F + 0.2602503F;
+		this.forefinRightProximal.yRot = Mth.cos(state.walkAnimationPos * 0.8F) * state.walkAnimationSpeed * 1.7F + 2.918522F;
+		this.forefinRightProximal.zRot = Mth.sin(state.walkAnimationPos * 0.8F) * state.walkAnimationSpeed * 0.7F - 0.4461433F + state.walkAnimationSpeed * 0.7F;
+		this.forefinRightDistal.yRot = Mth.sin(state.walkAnimationPos * 0.8F + Mth.PI / 4) * state.walkAnimationSpeed * 0.7F - 0.2F + Mth.PI;
+		this.hindfinRight.xRot = Mth.sin(state.walkAnimationPos * 0.8F + Mth.PI / 2) * state.walkAnimationSpeed * 1.0F - 0.260246F + state.walkAnimationSpeed * 0.8F;
+		this.hindfinRight.yRot = Mth.cos(state.walkAnimationPos * 0.8F + Mth.PI / 2) * state.walkAnimationSpeed * 1.2F - 0.4461411F;
+		this.trunk.zRot = Mth.sin(state.walkAnimationPos * 0.8F) * state.walkAnimationSpeed * 0.1F;
 		this.head.zRot = -this.trunk.zRot;
 		this.head.xRot = -mouthOpen * 0.4F + 0.0743572F;
 		this.mandible.xRot = mouthOpen * 0.4F;
 		for (int i = 0; i < this.tail.length; i++) {
 			ModelPart segment = this.tail[i];
-			segment.xRot = segment.getInitialPose().xRot + pitch;
-			segment.yRot = yaw + Mth.sin(limbSwing * 0.4F - i * 1.6F) * limbSwingAmount * ((i / (float) this.tail.length * 2 + 0.1F)) * 0.6F;
+			segment.xRot = segment.getInitialPose().xRot() + pitch;
+			segment.yRot = yaw + Mth.sin(state.walkAnimationPos * 0.4F - i * 1.6F) * state.walkAnimationSpeed * ((i / (float) this.tail.length * 2 + 0.1F)) * 0.6F;
 			segment.zRot = -this.trunk.zRot / this.tail.length;
 		}
+
+		var headYaw = Mth.clamp(state.yRot, -60, 60);
+		this.head.yRot = headYaw * Mth.DEG_TO_RAD;
+		this.head.xRot += state.xRot * Mth.DEG_TO_RAD;
 	}
 }

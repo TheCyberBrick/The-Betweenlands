@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
@@ -23,7 +24,7 @@ import thebetweenlands.api.recipes.CrabPotFilterRecipe;
 import thebetweenlands.common.block.container.CrabPotFilterBlock;
 import thebetweenlands.common.block.waterlog.SwampWaterLoggable;
 import thebetweenlands.common.inventory.CrabPotFilterMenu;
-import thebetweenlands.common.item.recipe.ItemAndEntityInput;
+import thebetweenlands.common.recipe.input.ItemAndEntityInput;
 import thebetweenlands.common.registries.BlockEntityRegistry;
 import thebetweenlands.common.registries.EntityRegistry;
 import thebetweenlands.common.registries.ItemRegistry;
@@ -106,7 +107,7 @@ public class CrabPotFilterBlockEntity extends BaseContainerBlockEntity implement
 				ItemAndEntityInput input = new ItemAndEntityInput(entity.getPottedCrab(level, pos), inputStack);
 				RecipeHolder<CrabPotFilterRecipe> recipeholder;
 				if (flag2) {
-					recipeholder = entity.quickCheck.getRecipeFor(input, level).orElse(null);
+					recipeholder = entity.quickCheck.getRecipeFor(input, (ServerLevel) level).orElse(null);
 				} else {
 					recipeholder = null;
 				}
@@ -115,12 +116,12 @@ public class CrabPotFilterBlockEntity extends BaseContainerBlockEntity implement
 					entity.baitTime = 800;
 					if (entity.isBaited()) {
 						flag1 = true;
-						if (fuelStack.hasCraftingRemainingItem())
-							entity.items.set(1, fuelStack.getCraftingRemainingItem());
+						if (!fuelStack.getCraftingRemainder().isEmpty())
+							entity.items.set(1, fuelStack.getCraftingRemainder());
 						else if (flag3) {
 							fuelStack.shrink(1);
 							if (fuelStack.isEmpty()) {
-								entity.items.set(1, fuelStack.getCraftingRemainingItem());
+								entity.items.set(1, fuelStack.getCraftingRemainder());
 							}
 						}
 					}
@@ -131,7 +132,7 @@ public class CrabPotFilterBlockEntity extends BaseContainerBlockEntity implement
 					entity.refreshPotAnimation(level, pos, true);
 					if (entity.filteringProgress == entity.filteringTotalTime) {
 						entity.filteringProgress = 0;
-						entity.filteringTotalTime = entity.getTotalFilterTime(input, level);
+						entity.filteringTotalTime = entity.getTotalFilterTime(input, (ServerLevel) level);
 						if (entity.filter(level.registryAccess(), input, recipeholder)) {
 							level.blockEvent(pos, state.getBlock(), EVENT_RESET_FILTERING_PROGRESS, 0);
 						}
@@ -221,7 +222,7 @@ public class CrabPotFilterBlockEntity extends BaseContainerBlockEntity implement
 		}
 	}
 
-	private int getTotalFilterTime(ItemAndEntityInput input, Level level) {
+	private int getTotalFilterTime(ItemAndEntityInput input, ServerLevel level) {
 		return this.quickCheck.getRecipeFor(input, level).map(recipe -> recipe.value().filterTime()).orElse(200);
 	}
 
@@ -254,9 +255,9 @@ public class CrabPotFilterBlockEntity extends BaseContainerBlockEntity implement
 		boolean flag = !stack.isEmpty() && ItemStack.isSameItemSameComponents(itemstack, stack);
 		this.items.set(slot, stack);
 		stack.limitSize(this.getMaxStackSize(stack));
-		if (slot == 0 && !flag) {
+		if (slot == 0 && !flag && this.getLevel() instanceof ServerLevel sl) {
 			ItemAndEntityInput input = new ItemAndEntityInput(this.getPottedCrab(this.getLevel(), this.getBlockPos()), stack);
-			this.filteringTotalTime = this.getTotalFilterTime(input, this.getLevel());
+			this.filteringTotalTime = this.getTotalFilterTime(input, sl);
 			this.filteringProgress = 0;
 			this.setChanged();
 		}

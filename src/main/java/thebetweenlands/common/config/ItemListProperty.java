@@ -46,7 +46,7 @@ public class ItemListProperty {
 	// Note: behaviour is different to that of DataComponentPredicate
 	public static class DataComponentTagPredicate implements Predicate<DataComponentMap> {
 
-		public static record TypedDataComponentTag<T>(DataComponentType<T> type, Tag value) {}
+		public record TypedDataComponentTag<T>(DataComponentType<T> type, Tag value) {}
 
 		public static class Builder {
 	        private final List<TypedDataComponentTag<?>> expectedComponents = new ArrayList<>();
@@ -84,7 +84,7 @@ public class ItemListProperty {
 	    private HolderLookup.Provider registries;
 
 		public DataComponentTagPredicate(List<TypedDataComponentTag<?>> expectedComponents) {
-			this(expectedComponents, HolderLookup.Provider.create(Stream.of(BuiltInRegistries.DATA_COMPONENT_TYPE.asLookup())));
+			this(expectedComponents, HolderLookup.Provider.create(Stream.of(BuiltInRegistries.DATA_COMPONENT_TYPE)));
 		}
 
 		public DataComponentTagPredicate(List<TypedDataComponentTag<?>> expectedComponents, HolderLookup.Provider registries) {
@@ -95,12 +95,8 @@ public class ItemListProperty {
 
 	    @Override
 	    public boolean equals(Object other) {
-	        if (other instanceof DataComponentTagPredicate datacomponentpredicate && this.expectedComponents.equals(datacomponentpredicate.expectedComponents)) {
-	            return true;
-	        }
-
-	        return false;
-	    }
+			return other instanceof DataComponentTagPredicate datacomponentpredicate && this.expectedComponents.equals(datacomponentpredicate.expectedComponents);
+		}
 
 	    @Override
 	    public int hashCode() {
@@ -175,9 +171,6 @@ public class ItemListProperty {
 		 * </ul>
 		 * <br/>
 		 * Note: <strong>NOT</strong> identical to {@link net.minecraft.nbt.NbtUtils#compareNbt(Tag, Tag, boolean)}  NbtUtils.compareNbt(Tag, Tag, boolean)}
-		 * @param tagA
-		 * @param tagB
-		 * @return
 		 */
 		protected static boolean compareTags(Tag tagA, Tag tagB) {
 			final byte typeId = tagA.getId();
@@ -307,20 +300,20 @@ public class ItemListProperty {
 
 	private final Supplier<String[]> unparsed;
 
-	private Map<ResourceLocation, Set<ComparableItemStack>> itemList;
+	private final Map<ResourceLocation, Set<ComparableItemStack>> itemList;
 
-	private Set<ResourceLocation> itemTags;
-	private Set<DataComponentTagPredicate> itemComponents;
+	private final Set<ResourceLocation> itemTags;
+	private final Set<DataComponentTagPredicate> itemComponents;
 
 	private boolean cacheBuilt = false;
 	private HolderLookup.Provider registryAccessCache;
-	private Set<TagKey<Item>> itemTagCache;
+	private final Set<TagKey<Item>> itemTagCache;
 
 	public ItemListProperty(Supplier<String[]> unparsed) {
-		this.itemList = new HashMap<ResourceLocation, Set<ComparableItemStack>>();
-		this.itemTags = new HashSet<ResourceLocation>();
-		this.itemComponents = new HashSet<DataComponentTagPredicate>();
-		this.itemTagCache = new HashSet<TagKey<Item>>();
+		this.itemList = new HashMap<>();
+		this.itemTags = new HashSet<>();
+		this.itemComponents = new HashSet<>();
+		this.itemTagCache = new HashSet<>();
 		this.unparsed = unparsed;
 	}
 
@@ -331,14 +324,14 @@ public class ItemListProperty {
 	@SuppressWarnings("deprecation")
 	public void buildCache(HolderLookup.Provider registryAccess) {
 		if(registryAccess == null) {
-			registryAccess = HolderLookup.Provider.create(Stream.of(BuiltInRegistries.ITEM.asLookup(), BuiltInRegistries.BLOCK.asLookup(), BuiltInRegistries.DATA_COMPONENT_TYPE.asLookup()));
+			registryAccess = HolderLookup.Provider.create(Stream.of(BuiltInRegistries.ITEM, BuiltInRegistries.BLOCK, BuiltInRegistries.DATA_COMPONENT_TYPE));
 		}
 
 		this.registryAccessCache = registryAccess;
 		this.itemTagCache.clear();
 
 		for(ResourceLocation location : this.itemTags) {
-			this.itemTagCache.add(new TagKey<Item>(Registries.ITEM, location));
+			this.itemTagCache.add(new TagKey<>(Registries.ITEM, location));
 		}
 
 		for(DataComponentTagPredicate predicate : itemComponents) {
@@ -373,7 +366,7 @@ public class ItemListProperty {
 
 		for(String string : items) {
 			string = string.trim();
-			if(string.length() == 0) continue;
+			if(string.isEmpty()) continue;
 			if(string.charAt(0) == '#')
 				processTag(string);
 			else if(string.charAt(0) == '[')

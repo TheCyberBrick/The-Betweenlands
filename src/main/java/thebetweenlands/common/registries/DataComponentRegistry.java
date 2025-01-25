@@ -19,17 +19,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import thebetweenlands.api.BLRegistries;
 import thebetweenlands.api.item.amphibious.AmphibiousArmorUpgrade;
 import thebetweenlands.common.TheBetweenlands;
-import thebetweenlands.common.component.entity.circlegem.CircleGemType;
-import thebetweenlands.common.component.item.AmphibiousUpgrades;
-import thebetweenlands.common.component.item.AspectContents;
-import thebetweenlands.common.component.item.CorrosionData;
-import thebetweenlands.common.component.item.DiscoveryContainerData;
-import thebetweenlands.common.component.item.ElixirContents;
-import thebetweenlands.common.component.item.FishBaitStats;
-import thebetweenlands.common.component.item.InfusionBucketData;
-import thebetweenlands.common.component.item.OriginalItemData;
-import thebetweenlands.common.component.item.ShieldSpitData;
-import thebetweenlands.common.component.item.UpgradeDamage;
+import thebetweenlands.common.component.item.*;
 
 public class DataComponentRegistry {
 
@@ -40,7 +30,7 @@ public class DataComponentRegistry {
 	public static final DeferredHolder<DataComponentType<?>, DataComponentType<AspectContents>> ASPECT_CONTENTS = COMPONENTS.register("aspect_contents", () -> DataComponentType.<AspectContents>builder().persistent(AspectContents.CODEC).networkSynchronized(AspectContents.STREAM_CODEC).build());
 	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> BURN_TICKS = COMPONENTS.register("burn_ticks", () -> DataComponentType.<Integer>builder().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT).build());
 	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> CORROSIVE = COMPONENTS.register("corrosive", () -> DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build());
-	public static final DeferredHolder<DataComponentType<?>, DataComponentType<CircleGemType>> CIRCLE_GEM = COMPONENTS.register("circle_gem", () -> DataComponentType.<CircleGemType>builder().persistent(CircleGemType.CODEC).networkSynchronized(CircleGemType.STREAM_CODEC).build());
+	public static final DeferredHolder<DataComponentType<?>, DataComponentType<CircleGemData>> CIRCLE_GEM = COMPONENTS.register("circle_gem", () -> DataComponentType.<CircleGemData>builder().persistent(CircleGemData.CODEC).networkSynchronized(CircleGemData.STREAM_CODEC).build());
 	public static final DeferredHolder<DataComponentType<?>, DataComponentType<DiscoveryContainerData>> DISCOVERY_DATA = COMPONENTS.register("discovery_data", () -> DataComponentType.<DiscoveryContainerData>builder().persistent(DiscoveryContainerData.CODEC).networkSynchronized(DiscoveryContainerData.STREAM_CODEC).build());
 	public static final DeferredHolder<DataComponentType<?>, DataComponentType<ElixirContents>> ELIXIR_CONTENTS = COMPONENTS.register("elixir_contents", () -> DataComponentType.<ElixirContents>builder().persistent(ElixirContents.CODEC).networkSynchronized(ElixirContents.STREAM_CODEC).build());
 	public static final DeferredHolder<DataComponentType<?>, DataComponentType<FishBaitStats>> FISH_BAIT = COMPONENTS.register("fish_bait", () -> DataComponentType.<FishBaitStats>builder().persistent(FishBaitStats.CODEC).networkSynchronized(FishBaitStats.STREAM_CODEC).build());

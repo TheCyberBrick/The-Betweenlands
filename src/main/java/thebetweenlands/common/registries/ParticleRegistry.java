@@ -49,7 +49,7 @@ public class ParticleRegistry {
 	public static final DeferredHolder<ParticleType<?>, SimpleParticleType> LANDING_TAR = PARTICLES.register("landing_tar", () -> new SimpleParticleType(false));
 
 	private static <T extends ParticleOptions> DeferredHolder<ParticleType<?>, ParticleType<T>> register(String name, boolean overrideLimiter, final Function<ParticleType<T>, MapCodec<T>> codecGetter, final Function<ParticleType<T>, StreamCodec<? super RegistryFriendlyByteBuf, T>> streamCodecGetter) {
-		return PARTICLES.register(name, () -> new ParticleType<T>(overrideLimiter) {
+		return PARTICLES.register(name, () -> new ParticleType<>(overrideLimiter) {
 			@Override
 			public MapCodec<T> codec() {
 				return codecGetter.apply(this);

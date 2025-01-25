@@ -9,12 +9,12 @@ import thebetweenlands.common.registries.ItemRegistry;
 
 public class FreshwaterUrchinMobItem extends MobItem<FreshwaterUrchin> {
 	public FreshwaterUrchinMobItem(Properties properties) {
-		super(properties, 3.0D, EntityRegistry.FRESHWATER_URCHIN.get(), null);
+		super(3.0D, EntityRegistry.FRESHWATER_URCHIN.get(), null, properties);
 	}
 
 	@Override
 	public InteractionResult useOn(UseOnContext context) {
-		var result = JukeboxPlayable.tryInsertIntoJukebox(context.getLevel(), context.getClickedPos(), ItemRegistry.RECORD_DEEP_WATER_THEME.toStack(), context.getPlayer()).result();
+		var result = JukeboxPlayable.tryInsertIntoJukebox(context.getLevel(), context.getClickedPos(), ItemRegistry.RECORD_DEEP_WATER_THEME.toStack(), context.getPlayer());
 		if (result.consumesAction()) {
 			context.getItemInHand().consume(1, context.getPlayer());
 		}

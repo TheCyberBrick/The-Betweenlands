@@ -3,7 +3,6 @@ package thebetweenlands.client.shader;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.ARBTextureFloat;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -17,7 +16,7 @@ public class FloatFramebuffer extends RenderTarget {
 
 	public FloatFramebuffer(int width, int height, boolean useDepth, boolean useFloatBuffer) {
 		super(useDepth);
-		this.resize(width, height, Minecraft.ON_OSX);
+		this.resize(width, height);
 		this.useFloatBuffer = useFloatBuffer;
 		if(this.useFloatBuffer) {
 			int colorFormat = ShaderHelper.INSTANCE.isFloatBufferSupported() ? GL30.GL_RGBA16F : ShaderHelper.INSTANCE.isARBFloatBufferSupported() ? ARBTextureFloat.GL_RGB16F_ARB : -1;

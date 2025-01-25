@@ -253,7 +253,6 @@ public class BetweenlandsChunkStorage extends ChunkStorageImpl {
 	 * @param level  World
 	 * @param pos    World coordinate
 	 * @param target Gem target type
-	 * @return
 	 * @see #markGem(int, int, int, GemSingerItem.GemSingerTarget)
 	 */
 	public static boolean markGem(Level level, BlockPos pos, GemSingerItem.GemSingerTarget target) {
@@ -268,7 +267,6 @@ public class BetweenlandsChunkStorage extends ChunkStorageImpl {
 	 * @param level  World
 	 * @param pos    World coordinate
 	 * @param target Gem target type
-	 * @return
 	 * @see #unmarkGem(int, int, int, GemSingerItem.GemSingerTarget)
 	 */
 	public static boolean unmarkGem(Level level, BlockPos pos, GemSingerItem.GemSingerTarget target) {

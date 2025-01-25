@@ -39,7 +39,7 @@ public class TinySludgeWormHelper extends TinySludgeWorm implements OwnableEntit
 		this.goalSelector.addGoal(0, new MeleeAttackGoal(this, 1.0D, false));
 		this.goalSelector.addGoal(1, new RandomStrollGoal(this, 0.8D, 1));
 		this.targetSelector.addGoal(0, new HurtByTargetGoal(this, Player.class));
-		this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 2, true, true, entity -> entity instanceof Enemy));
+		this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 2, true, true, (entity, level) -> entity instanceof Enemy));
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class TinySludgeWormHelper extends TinySludgeWorm implements OwnableEntit
 		if (uuid != null) {
 			try {
 				this.setOwnerUUID(uuid);
-			} catch (Throwable throwable) {
+			} catch (Throwable ignored) {
 			}
 		}
 	}
@@ -129,7 +129,7 @@ public class TinySludgeWormHelper extends TinySludgeWorm implements OwnableEntit
 	}
 
 	@Override
-	public boolean isAlliedTo(Entity entity) {
+	public boolean considersEntityAsAlly(Entity entity) {
 		if (this.getOwnerUUID() != null) {
 			LivingEntity livingentity = this.getOwner();
 			if (entity == livingentity) {
@@ -137,10 +137,10 @@ public class TinySludgeWormHelper extends TinySludgeWorm implements OwnableEntit
 			}
 
 			if (livingentity != null) {
-				return livingentity.isAlliedTo(entity);
+				return livingentity.considersEntityAsAlly(entity);
 			}
 		}
 
-		return super.isAlliedTo(entity);
+		return super.considersEntityAsAlly(entity);
 	}
 }

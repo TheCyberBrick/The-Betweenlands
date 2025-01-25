@@ -64,10 +64,6 @@ public class TextureAtlasHelper {
 	 * Returns the relative (0.0 - 1.0) min. and max. interpolated UVs for the given segment of the texture.
 	 * Index 0 is min. UV coordinates and index 1 is max. UV coordinates.
 	 * @param segment Texture segment
-	 * @param umin
-	 * @param vmin
-	 * @param umax
-	 * @param vmax
 	 * @return Relative interpolated min. and max. UVs
 	 */
 	public float[][] getInterpolatedUVs(int segment, float umin, float vmin, float umax, float vmax) {

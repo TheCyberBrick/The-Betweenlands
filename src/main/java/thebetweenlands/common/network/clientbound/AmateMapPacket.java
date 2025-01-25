@@ -1,12 +1,13 @@
 package thebetweenlands.common.network.clientbound;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientboundMapItemDataPacket;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.maps.MapId;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.item.misc.AmateMapItem;
@@ -32,16 +33,15 @@ public record AmateMapPacket(ClientboundMapItemDataPacket inner) implements Cust
 				public void run() {
 					Level level = ctx.player().level();
 					// [VanillaCopy] ClientPacketListener#handleMapItemData with our own mapdatas
-					MapRenderer mapitemrenderer = Minecraft.getInstance().gameRenderer.getMapRenderer();
-					String s = AmateMapItem.getMapName(message.inner.mapId().id());
-					AmateMapData mapdata = AmateMapData.getMapData(level, s);
+					MapId mapid = message.inner().mapId();
+					MapItemSavedData mapdata = level.getMapData(mapid);
 					if (mapdata == null) {
-						mapdata = new AmateMapData(0, 0, false, false, message.inner.locked());
-						AmateMapData.registerMapData(level, mapdata, s);
+						mapdata = AmateMapData.createForClient(message.inner.locked());
+						Minecraft.getInstance().level.overrideMapData(mapid, mapdata);
 					}
 
 					message.inner.applyToMap(mapdata);
-					mapitemrenderer.update(message.inner.mapId(), mapdata);
+					Minecraft.getInstance().getMapTextureManager().update(mapid, mapdata);
 				}
 			});
 		}

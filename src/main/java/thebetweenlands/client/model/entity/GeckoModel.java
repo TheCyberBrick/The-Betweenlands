@@ -3,13 +3,12 @@ package thebetweenlands.client.model.entity;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.creature.Gecko;
 
-public class GeckoModel<T extends Gecko> extends MowzieModelBase<T> {
+public class GeckoModel extends MowzieModelBase<LivingEntityRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart tongue;
 	private final ModelPart legleft_f1;
@@ -23,7 +22,7 @@ public class GeckoModel<T extends Gecko> extends MowzieModelBase<T> {
 	private final ModelPart[] tail;
 
 	public GeckoModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		var tail1 = root.getChild("body").getChild("tail_1");
 		var tail2 = tail1.getChild("tail_2");
 		var tail3 = tail2.getChild("tail_3");
@@ -122,39 +121,30 @@ public class GeckoModel<T extends Gecko> extends MowzieModelBase<T> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
+	public void setupAnim(LivingEntityRenderState state) {
+		super.setupAnim(state);
+		float tongueControl = (int) (Mth.sin(0.15F * state.ageInTicks - Mth.cos(0.15F * state.ageInTicks)) + 1.0F) / 2.0F + 0.5F;
+		this.tongue.visible = tongueControl == 1;
+		this.walk(this.tongue, 2.0F, 1.0F, false, 0.0F, 0.0F, state.ageInTicks, 1.0F);
+		this.chainWave(this.tail, 0.2F, 0.1F, 0.0F, state.ageInTicks, 1.0F);
+		this.chainSwing(this.tail, 0.4F, 0.15F, 3.0F, state.ageInTicks, 1.0F);
 
-	@Override
-	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		this.faceTarget(this.head, 1, netHeadYaw, headPitch);
+		this.faceTarget(this.head, 1, state.yRot, state.xRot);
 
-		if (limbSwingAmount > 0.4) {
-			limbSwingAmount = 0.4F;
+		if (state.walkAnimationSpeed > 0.4) {
+			state.walkAnimationSpeed = 0.4F;
 		}
 
 		float globalSpeed = 1, globalDegree = 1, frontOffset = 0.85F;
 
-		this.walk(this.legleft_f1, globalSpeed, globalDegree, false, frontOffset, 0.0F, limbSwing, limbSwingAmount);
-		this.walk(this.legleft_f2, globalSpeed, 1.5F * globalDegree, false, 2.0F + frontOffset, -0.4F * globalDegree, limbSwing, limbSwingAmount);
-		this.walk(this.legright_f1, globalSpeed, globalDegree, true, frontOffset, 0.0F, limbSwing, limbSwingAmount);
-		this.walk(this.legright_f2, globalSpeed, 1.5F * globalDegree, true, 2.0F + frontOffset, -0.4F * globalDegree, limbSwing, limbSwingAmount);
+		this.walk(this.legleft_f1, globalSpeed, globalDegree, false, frontOffset, 0.0F, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.legleft_f2, globalSpeed, 1.5F * globalDegree, false, 2.0F + frontOffset, -0.4F * globalDegree, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.legright_f1, globalSpeed, globalDegree, true, frontOffset, 0.0F, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.legright_f2, globalSpeed, 1.5F * globalDegree, true, 2.0F + frontOffset, -0.4F * globalDegree, state.walkAnimationPos, state.walkAnimationSpeed);
 
-		this.walk(this.legleft_b1, globalSpeed, globalDegree, false, 0.0F, -2.5F * globalDegree, limbSwing, limbSwingAmount);
-		this.walk(this.legleft_b2, globalSpeed, globalDegree, false, -1.0F, 2.5F * globalDegree, limbSwing, limbSwingAmount);
-		this.walk(this.legright_b1, globalSpeed, globalDegree, true, 0.0F, -2.5F * globalDegree, limbSwing, limbSwingAmount);
-		this.walk(this.legright_b2, globalSpeed, globalDegree, true, -1.0F, 2.5F * globalDegree, limbSwing, limbSwingAmount);
-	}
-
-	@Override
-	public void prepareMobModel(T entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		this.setInitPose();
-		float frame = entity.tickCount + partialTick;
-		float tongueControl = (int) (Mth.sin(0.15F * frame - Mth.cos(0.15F * frame)) + 1.0F) / 2.0F + 0.5F;
-		this.tongue.visible = tongueControl == 1;
-		this.walk(this.tongue, 2.0F, 1.0F, false, 0.0F, 0.0F, frame, 1.0F);
-		this.chainWave(this.tail, 0.2F, 0.1F, 0.0F, frame, 1.0F);
-		this.chainSwing(this.tail, 0.4F, 0.15F, 3.0F, frame, 1.0F);
+		this.walk(this.legleft_b1, globalSpeed, globalDegree, false, 0.0F, -2.5F * globalDegree, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.legleft_b2, globalSpeed, globalDegree, false, -1.0F, 2.5F * globalDegree, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.legright_b1, globalSpeed, globalDegree, true, 0.0F, -2.5F * globalDegree, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.legright_b2, globalSpeed, globalDegree, true, -1.0F, 2.5F * globalDegree, state.walkAnimationPos, state.walkAnimationSpeed);
 	}
 }

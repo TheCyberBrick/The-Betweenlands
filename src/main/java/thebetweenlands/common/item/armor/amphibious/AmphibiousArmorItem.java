@@ -3,20 +3,18 @@ package thebetweenlands.common.item.armor.amphibious;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -27,18 +25,17 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.EquipmentModel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-
-import javax.annotation.Nullable;
 
 import net.neoforged.neoforge.common.Tags;
 import thebetweenlands.api.item.amphibious.AmphibiousArmorUpgrade;
 import thebetweenlands.api.item.amphibious.TickingAmphibiousArmorUpgrade;
 import thebetweenlands.client.BLModelLayers;
 import thebetweenlands.client.model.armor.AmphibiousArmorModel;
-import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.component.item.AmphibiousUpgrades;
 import thebetweenlands.common.component.item.UpgradeDamage;
 import thebetweenlands.common.inventory.AmphibiousArmorMenu;
@@ -60,7 +57,7 @@ public class AmphibiousArmorItem extends ArmorItem {
 
 	private ServerPlayer serverPlayer;
 
-	public AmphibiousArmorItem(Type type, Properties properties) {
+	public AmphibiousArmorItem(ArmorType type, Properties properties) {
 		super(ArmorMaterialRegistry.AMPHIBIOUS, type, properties);
 	}
 
@@ -181,12 +178,12 @@ public class AmphibiousArmorItem extends ArmorItem {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
 
 		if (player.isShiftKeyDown()) {
 			if (level.isClientSide()) {
-				return InteractionResultHolder.success(stack);
+				return InteractionResult.SUCCESS;
 			} else {
 				player.openMenu(new MenuProvider() {
 					@Override
@@ -202,7 +199,7 @@ public class AmphibiousArmorItem extends ArmorItem {
 					ItemStack.STREAM_CODEC.encode(buf, stack);
 					buf.writeInt(AmphibiousArmorItem.getUpgradeSlotCount(stack));
 				});
-				return InteractionResultHolder.consume(stack);
+				return InteractionResult.CONSUME;
 			}
 		}
 		return super.use(level, player, hand);
@@ -259,7 +256,7 @@ public class AmphibiousArmorItem extends ArmorItem {
 			ItemStack upgradeItem = inv.getItem(i);
 
 			if (!upgradeItem.isEmpty()) {
-				Holder<AmphibiousArmorUpgrade> itemUpgrade = ArmorEffectHelper.getUpgrade(((AmphibiousArmorItem) stack.getItem()).getType().getSlot(), upgradeItem);
+				Holder<AmphibiousArmorUpgrade> itemUpgrade = ArmorEffectHelper.getUpgrade(upgradeItem);
 
 				if (itemUpgrade.value() == upgrade && (damageEvent == AmphibiousArmorUpgrade.DamageEvent.ALL || itemUpgrade.value().isApplicableDamageEvent(damageEvent))) {
 					int damage = upgradeItem.getOrDefault(DataComponentRegistry.UPGRADE_DAMAGE, UpgradeDamage.EMPTY).damage();
@@ -269,7 +266,7 @@ public class AmphibiousArmorItem extends ArmorItem {
 						if (itemUpgrade.value().canBreak()) {
 							if (player != null && !player.level().isClientSide()) {
 								player.playSound(SoundEvents.ITEM_BREAK, 1F, 1F);
-								player.sendSystemMessage(Component.translatable("item.thebetweenlands.amphibious_upgrade.broke", upgradeItem.getDisplayName().getString()));
+								player.displayClientMessage(Component.translatable("item.thebetweenlands.amphibious_upgrade.broke", upgradeItem.getDisplayName().getString()), false);
 							}
 
 							upgradeItem.shrink(1);
@@ -295,7 +292,7 @@ public class AmphibiousArmorItem extends ArmorItem {
 	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
 		if (stack.has(DataComponentRegistry.AMPHIBIOUS_UPGRADES)) {
 			for (Object2IntMap.Entry<Item> upgrade : stack.get(DataComponentRegistry.AMPHIBIOUS_UPGRADES).getAllUniqueStacksWithSlotCounts().object2IntEntrySet()) {
-				tooltip.add(Component.translatable("item.thebetweenlands.amphibious_armor.upgrade", upgrade.getKey().getDescription().getString(), String.valueOf(upgrade.getIntValue())).withStyle(ChatFormatting.GRAY));
+				tooltip.add(Component.translatable("item.thebetweenlands.amphibious_armor.upgrade", upgrade.getKey().getName().getString(), String.valueOf(upgrade.getIntValue())).withStyle(ChatFormatting.GRAY));
 			}
 		}
 	}
@@ -310,23 +307,18 @@ public class AmphibiousArmorItem extends ArmorItem {
 		return count;
 	}
 
-	@Override
-	public @Nullable ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
-		return TheBetweenlands.prefix("textures/models/armor/amphibious_layer.png");
-	}
-
 	public static final class ArmorRender implements IClientItemExtensions {
 		public static final ArmorRender INSTANCE = new ArmorRender();
 
 		@Override
-		public HumanoidModel<?> getHumanoidArmorModel(LivingEntity entity, ItemStack stack, EquipmentSlot slot, HumanoidModel<?> original) {
-			return new AmphibiousArmorModel(slot, Minecraft.getInstance().getEntityModels().bakeLayer(BLModelLayers.AMPHIBIOUS_ARMOR));
+		public Model getHumanoidArmorModel(ItemStack stack, EquipmentModel.LayerType type, Model original) {
+			return new AmphibiousArmorModel(Minecraft.getInstance().getEntityModels().bakeLayer(BLModelLayers.AMPHIBIOUS_ARMOR));
 		}
 
 		@Override
 		public void setupModelAnimations(LivingEntity livingEntity, ItemStack stack, EquipmentSlot slot, Model model, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
 			if (model instanceof AmphibiousArmorModel armor) {
-				armor.setupAnim(livingEntity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+				//armor.setupAnim(livingEntity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 			}
 		}
 	}

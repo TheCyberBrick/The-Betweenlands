@@ -49,7 +49,6 @@ public class ShaderHelper implements ResourceManagerReloadListener {
 
 	/**
 	 * Returns whether shaders are supported and enabled
-	 * @return
 	 */
 	public boolean canUseShaders() {
 		if(this.isShaderSupported()) {
@@ -67,7 +66,6 @@ public class ShaderHelper implements ResourceManagerReloadListener {
 
 	/**
 	 * Returns whether the world shader is active
-	 * @return
 	 */
 	public boolean isWorldShaderActive() {
 		return this.canUseShaders() && this.worldShader != null;
@@ -75,7 +73,6 @@ public class ShaderHelper implements ResourceManagerReloadListener {
 
 	/**
 	 * Returns whether shaders are supported
-	 * @return
 	 */
 	public boolean isShaderSupported() {
 		this.checkCapabilities();
@@ -84,7 +81,6 @@ public class ShaderHelper implements ResourceManagerReloadListener {
 
 	/**
 	 * Returns whether HDR is active
-	 * @return
 	 */
 	public boolean isHDRActive() {
 		//return this.isHDRSupported();
@@ -93,7 +89,6 @@ public class ShaderHelper implements ResourceManagerReloadListener {
 
 	/**
 	 * Returns whether HDR is supported
-	 * @return
 	 */
 	public boolean isHDRSupported() {
 		return this.isGL30Supported() && (this.isARBFloatBufferSupported() || this.isFloatBufferSupported());
@@ -101,7 +96,6 @@ public class ShaderHelper implements ResourceManagerReloadListener {
 
 	/**
 	 * Returns whether GL 3.0 is supported
-	 * @return
 	 */
 	public boolean isGL30Supported() {
 		this.checkCapabilities();
@@ -110,7 +104,6 @@ public class ShaderHelper implements ResourceManagerReloadListener {
 
 	/**
 	 * Returns whether float buffers are supported
-	 * @return
 	 */
 	public boolean isFloatBufferSupported() {
 		return this.isGL30Supported();
@@ -118,7 +111,6 @@ public class ShaderHelper implements ResourceManagerReloadListener {
 
 	/**
 	 * Returns whether ARB float buffers are supported
-	 * @return
 	 */
 	public boolean isARBFloatBufferSupported() {
 		this.checkCapabilities();
@@ -205,7 +197,7 @@ public class ShaderHelper implements ResourceManagerReloadListener {
 				//TODO verify
 				Minecraft.getInstance().levelRenderer.doEntityOutline(); //Minecraft.getInstance().entityRenderer.setupOverlayRendering();
 
-				targetFramebuffer2.clear(Minecraft.ON_OSX);
+				targetFramebuffer2.clear();
 
 				for(int i = 0; i < renderPasses; i++) {
 					//Renders the shader to the blitBuffer

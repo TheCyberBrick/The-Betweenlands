@@ -21,9 +21,9 @@ public class BLDataMapProvider extends DataMapProvider {
 		super(output, lookupProvider);
 	}
 
-	@Override
 	@SuppressWarnings("deprecation")
-	protected void gather() {
+	@Override
+	protected void gather(HolderLookup.Provider provider) {
 		var fuelMap = this.builder(NeoForgeDataMaps.FURNACE_FUELS);
 		fuelMap.add(ItemRegistry.WEEDWOOD_STICK, new FurnaceFuel(100), false);
 		fuelMap.add(ItemRegistry.SULFUR, new FurnaceFuel(1600), false);

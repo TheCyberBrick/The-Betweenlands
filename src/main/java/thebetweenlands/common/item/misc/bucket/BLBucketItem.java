@@ -10,9 +10,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.Interaction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.player.Player;
@@ -24,12 +21,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.EffectCures;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.*;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -60,25 +56,17 @@ public class BLBucketItem extends Item {
 	}
 
 	@Override
-	public ItemStack getCraftingRemainingItem(ItemStack stack) {
-		var copy = new ItemStack(this);
-		copy.applyComponents(stack.getComponents());
-
-		var tank = copy.getCapability(Capabilities.FluidHandler.ITEM);
-		if (tank != null) {
-			tank.drain(FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.EXECUTE);
-		}
-
-		return copy;
-	}
-
-	@Override
-	public boolean hasCraftingRemainingItem(ItemStack stack) {
+	public ItemStack getCraftingRemainder(ItemStack stack) {
 		var tank = stack.getCapability(Capabilities.FluidHandler.ITEM);
-		if (tank != null) {
-			return tank.getFluidInTank(0).getAmount() > 0;
+		if (tank != null && tank.getFluidInTank(0).getAmount() > 0) {
+			var copy = new ItemStack(this);
+			copy.applyComponents(stack.getComponents());
+
+			tank.drain(FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.EXECUTE);
+			return copy;
 		}
-		return false;
+
+		return ItemStack.EMPTY;
 	}
 
 	@Override
@@ -90,8 +78,8 @@ public class BLBucketItem extends Item {
 	}
 
 	@Override
-	public UseAnim getUseAnimation(ItemStack stack) {
-		return isMilkBucket(stack) ? UseAnim.DRINK : UseAnim.NONE;
+	public ItemUseAnimation getUseAnimation(ItemStack stack) {
+		return isMilkBucket(stack) ? ItemUseAnimation.DRINK : ItemUseAnimation.NONE;
 	}
 
 	@Override
@@ -100,7 +88,7 @@ public class BLBucketItem extends Item {
 	}
 
 	@Override
-	public int getBurnTime(ItemStack stack, RecipeType<?> type) {
+	public int getBurnTime(ItemStack stack, @Nullable RecipeType<?> type, FuelValues fuel) {
 		var fluid = stack.getOrDefault(DataComponentRegistry.STORED_FLUID, SimpleFluidContent.EMPTY).copy();
 		if (fluid.is(Fluids.LAVA)) {
 			if (fluid.getAmount() >= FluidType.BUCKET_VOLUME) {
@@ -111,11 +99,11 @@ public class BLBucketItem extends Item {
 			return 300;
 		}
 
-		return super.getBurnTime(stack, type);
+		return super.getBurnTime(stack, type, fuel);
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		var stack = player.getItemInHand(hand);
 
 		if (isMilkBucket(stack)) {
@@ -124,18 +112,18 @@ public class BLBucketItem extends Item {
 
 		var tank = stack.getCapability(Capabilities.FluidHandler.ITEM);
 		if (tank == null) {
-			return InteractionResultHolder.fail(stack);
+			return InteractionResult.FAIL;
 		}
 
 		var pickup = this.tryPickupFluid(stack, level, player);
-		if (pickup.getResult() == InteractionResult.SUCCESS) {
+		if (pickup == InteractionResult.SUCCESS) {
 			return pickup;
 		} else {
 			var fluid = stack.getOrDefault(DataComponentRegistry.STORED_FLUID, SimpleFluidContent.EMPTY);
 			if (fluid.getAmount() >= FluidType.BUCKET_VOLUME) {
 				return this.tryPlaceFluid(stack, level, player, hand);
 			} else {
-				return InteractionResultHolder.fail(stack);
+				return InteractionResult.FAIL;
 			}
 		}
 	}
@@ -176,7 +164,7 @@ public class BLBucketItem extends Item {
 
 						level.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.PLAYERS, 1, 1);
 
-						return InteractionResult.sidedSuccess(level.isClientSide());
+						return InteractionResult.SUCCESS;
 					}
 				}
 			}
@@ -207,7 +195,7 @@ public class BLBucketItem extends Item {
 		}
 
 		if (!level.isClientSide()) {
-			entity.removeEffectsCuredBy(EffectCures.MILK);
+			entity.removeAllEffects();
 		}
 
 		if (entity instanceof Player player && !player.getAbilities().instabuild) {
@@ -221,13 +209,13 @@ public class BLBucketItem extends Item {
 		return stack;
 	}
 
-	private InteractionResultHolder<ItemStack> tryPlaceFluid(ItemStack stack, Level level, Player player, InteractionHand hand) {
+	private InteractionResult tryPlaceFluid(ItemStack stack, Level level, Player player, InteractionHand hand) {
 		if (stack.getOrDefault(DataComponentRegistry.STORED_FLUID, SimpleFluidContent.EMPTY).getAmount() < FluidType.BUCKET_VOLUME)
-			return InteractionResultHolder.pass(stack);
+			return InteractionResult.PASS;
 
 		var trace = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
 		if (trace.getType() != HitResult.Type.BLOCK)
-			return InteractionResultHolder.pass(stack);
+			return InteractionResult.PASS;
 
 		var pos = trace.getBlockPos();
 		if (level.mayInteract(player, pos)) {
@@ -243,21 +231,21 @@ public class BLBucketItem extends Item {
 
 					player.awardStat(Stats.ITEM_USED.get(this));
 
-					return InteractionResultHolder.sidedSuccess(emptyStack, level.isClientSide());
+					return InteractionResult.SUCCESS;
 				}
 			}
 		}
 
-		return InteractionResultHolder.fail(stack);
+		return InteractionResult.FAIL;
 	}
 
-	private InteractionResultHolder<ItemStack> tryPickupFluid(ItemStack stack, Level level, Player player) {
+	private InteractionResult tryPickupFluid(ItemStack stack, Level level, Player player) {
 		if (!stack.getOrDefault(DataComponentRegistry.STORED_FLUID, SimpleFluidContent.EMPTY).isEmpty())
-			return InteractionResultHolder.pass(stack);
+			return InteractionResult.PASS;
 
 		var trace = getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY);
 		if (trace.getType() != HitResult.Type.BLOCK)
-			return InteractionResultHolder.pass(stack);
+			return InteractionResult.PASS;
 
 		var pos = trace.getBlockPos();
 		if (level.mayInteract(player, pos)) {
@@ -271,12 +259,12 @@ public class BLBucketItem extends Item {
 						CriteriaTriggers.FILLED_BUCKET.trigger((ServerPlayer) player, stack);
 					}
 
-					return InteractionResultHolder.success(filledStack);
+					return InteractionResult.SUCCESS;
 				}
 			}
 		}
 
-		return InteractionResultHolder.fail(stack);
+		return InteractionResult.FAIL;
 	}
 
 	private static boolean isMilkBucket(ItemStack stack) {

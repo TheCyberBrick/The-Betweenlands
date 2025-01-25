@@ -3,7 +3,6 @@ package thebetweenlands.common.block.terrain;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.QuartPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -135,16 +134,16 @@ public abstract class SpreadingDeathBlock extends Block {
 	}
 
 	protected void convertBiome(ServerLevel level, BlockPos pos, ResourceKey<Biome> biomeKey) {
-		Holder<Biome> biome = level.registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(biomeKey);
+		Holder<Biome> biome = level.registryAccess().holderOrThrow(biomeKey);
 		ChunkAccess chunk = level.getChunk(pos);
-		int minY = QuartPos.fromBlock(level.getMinBuildHeight());
+		int minY = QuartPos.fromBlock(level.getMinY());
 		int maxY = minY + QuartPos.fromBlock(level.getHeight()) - 1;
 
 		int x = QuartPos.fromBlock(pos.getX());
 		int z = QuartPos.fromBlock(pos.getZ());
 		for (LevelChunkSection section : chunk.getSections()) {
 			for (int sy = 0; sy < 16; sy += 4) {
-				int y = Mth.clamp(QuartPos.fromBlock(chunk.getMinSection() + sy), minY, maxY);
+				int y = Mth.clamp(QuartPos.fromBlock(chunk.getMinSectionY() + sy), minY, maxY);
 				if (section.getBiomes().get(x & 3, y & 3, z & 3).is(biomeKey))
 					continue;
 				if (section.getBiomes() instanceof PalettedContainer<Holder<Biome>> container)
@@ -152,7 +151,7 @@ public abstract class SpreadingDeathBlock extends Block {
 			}
 		}
 
-		if (!chunk.isUnsaved()) chunk.setUnsaved(true);
+		chunk.markUnsaved();
 		level.getChunkSource().chunkMap.resendBiomesForChunks(List.of(chunk));
 	}
 

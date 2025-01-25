@@ -24,7 +24,7 @@ public record RenameItemPacket(String name) implements CustomPacketPayload {
 		ctx.enqueueWork(() -> {
 			if (ctx.flow().isServerbound()) {
 				ItemStack stack = ctx.player().getInventory().getSelected();
-				if (message.name().isEmpty() || Component.translatable(stack.getDescriptionId()).getString().equals(message.name())) {
+				if (message.name().isEmpty() || stack.getHoverName().getString().equals(message.name())) {
 					stack.remove(DataComponents.CUSTOM_NAME);
 				} else {
 					stack.set(DataComponents.CUSTOM_NAME, Component.literal(message.name()));

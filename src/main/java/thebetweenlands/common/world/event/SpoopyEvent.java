@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 import thebetweenlands.client.BetweenlandsClient;
 
 import java.util.Calendar;
@@ -27,7 +28,7 @@ public class SpoopyEvent extends SeasonalEnvironmentEvent {
 		return 8;
 	}
 
-	public static boolean isSpoooopy(Level level) {
+	public static boolean isSpoooopy(@Nullable Level level) {
 		if (level != null) {
 //			WorldProviderBetweenlands provider = WorldProviderBetweenlands.getProvider(level);
 //			if (provider != null) {

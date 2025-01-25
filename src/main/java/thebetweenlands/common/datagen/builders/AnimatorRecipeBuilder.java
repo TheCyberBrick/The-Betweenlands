@@ -1,24 +1,29 @@
 package thebetweenlands.common.datagen.builders;
 
 import net.minecraft.advancements.Criterion;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.storage.loot.LootTable;
 import javax.annotation.Nullable;
-import thebetweenlands.common.item.recipe.BasicAnimatorRecipe;
+
+import thebetweenlands.common.TheBetweenlands;
+import thebetweenlands.common.recipe.BasicAnimatorRecipe;
 
 import java.util.Optional;
 
 public class AnimatorRecipeBuilder implements RecipeBuilder {
 
+	private final HolderGetter<Item> getter;
 	private final Ingredient input;
 	@Nullable
 	private ItemStack resultStack = null;
@@ -32,24 +37,21 @@ public class AnimatorRecipeBuilder implements RecipeBuilder {
 	private ResourceKey<LootTable> lootTable;
 	private boolean closeOnFinish;
 
-	private AnimatorRecipeBuilder(Ingredient input) {
+	private AnimatorRecipeBuilder(HolderGetter<Item> getter, Ingredient input) {
+		this.getter = getter;
 		this.input = input;
 	}
 
-	public static AnimatorRecipeBuilder animator(TagKey<Item> input) {
-		return new AnimatorRecipeBuilder(Ingredient.of(input));
+	public static AnimatorRecipeBuilder animator(HolderGetter<Item> getter, TagKey<Item> input) {
+		return new AnimatorRecipeBuilder(getter, Ingredient.of(getter.getOrThrow(input)));
 	}
 
-	public static AnimatorRecipeBuilder animator(ItemLike input) {
-		return new AnimatorRecipeBuilder(Ingredient.of(input));
+	public static AnimatorRecipeBuilder animator(HolderGetter<Item> getter, ItemLike input) {
+		return new AnimatorRecipeBuilder(getter, Ingredient.of(input));
 	}
 
-	public static AnimatorRecipeBuilder animator(ItemStack input) {
-		return new AnimatorRecipeBuilder(Ingredient.of(input));
-	}
-
-	public static AnimatorRecipeBuilder animator(Ingredient input) {
-		return new AnimatorRecipeBuilder(input);
+	public static AnimatorRecipeBuilder animator(HolderGetter<Item> getter, Ingredient input) {
+		return new AnimatorRecipeBuilder(getter, input);
 	}
 
 	public AnimatorRecipeBuilder setResultStack(ItemStack output) {
@@ -111,12 +113,12 @@ public class AnimatorRecipeBuilder implements RecipeBuilder {
 	public void save(RecipeOutput output) {
 		if (this.resultStack.isEmpty())
 			throw new IllegalArgumentException("Empty result recipes must define a recipe ID");
-		RecipeBuilder.super.save(output);
+		this.save(output, ResourceKey.create(Registries.RECIPE, TheBetweenlands.prefix("animator/" + RecipeBuilder.getDefaultRecipeId(this.getResult()).getPath())));
 	}
 
 	@Override
-	public void save(RecipeOutput output, ResourceLocation id) {
-		output.accept(id.withPrefix("animator/"), new BasicAnimatorRecipe(this.input, Optional.ofNullable(this.resultStack),
+	public void save(RecipeOutput output, ResourceKey<Recipe<?>> id) {
+		output.accept(id, new BasicAnimatorRecipe(this.input, Optional.ofNullable(this.resultStack),
 			Optional.ofNullable(this.resultEntity), this.requiredFuel, this.requiredLife,
 			Optional.ofNullable(this.renderEntity), Optional.ofNullable(this.lootTable), this.closeOnFinish), null);
 	}

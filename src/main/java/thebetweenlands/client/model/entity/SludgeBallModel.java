@@ -1,7 +1,5 @@
 package thebetweenlands.client.model.entity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -10,17 +8,11 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
-
-import java.util.function.Function;
 
 public class SludgeBallModel extends Model {
 
-	private final ModelPart root;
-
 	public SludgeBallModel(ModelPart root) {
-		super(RenderType::entityTranslucent);
-		this.root = root;
+		super(root, RenderType::entityTranslucent);
 	}
 
 	public static LayerDefinition create() {
@@ -43,10 +35,5 @@ public class SludgeBallModel extends Model {
 			PartPose.offset(0.0F, 15.0F, 0.0F));
 
 		return LayerDefinition.create(definition, 128, 64);
-	}
-
-	@Override
-	public void renderToBuffer(PoseStack stack, VertexConsumer consumer, int light, int overlay, int color) {
-		this.root.render(stack, consumer, light, overlay, color);
 	}
 }

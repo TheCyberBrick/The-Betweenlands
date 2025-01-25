@@ -38,7 +38,6 @@ public class AspectManager {
 	/**
 	 * Returns a list of all generated and matched aspects
 	 *
-	 * @return
 	 */
 	public Map<ResourceKey<AspectItem>, List<Aspect>> getMatchedAspects() {
 		return Collections.unmodifiableMap(this.matchedAspects);
@@ -47,8 +46,6 @@ public class AspectManager {
 	/**
 	 * Returns the aspect seed based on the world seed
 	 *
-	 * @param worldSeed
-	 * @return
 	 */
 	public static long getAspectsSeed(long worldSeed) {
 		Random rnd = new Random();
@@ -59,8 +56,6 @@ public class AspectManager {
 	/**
 	 * Returns the aspect manager for the specified world
 	 *
-	 * @param level
-	 * @return
 	 */
 	@Nullable
 	public static AspectManager get(Level level) {
@@ -76,8 +71,6 @@ public class AspectManager {
 	/**
 	 * Loads all static aspects from an NBT and complements any missing data
 	 *
-	 * @param nbt
-	 * @param aspectSeed
 	 */
 	public void loadAndPopulateStaticAspects(@Nullable CompoundTag nbt, HolderLookup.Provider provider, long aspectSeed) {
 		if (nbt != null && nbt.contains("entries")) {
@@ -106,7 +99,6 @@ public class AspectManager {
 	/**
 	 * Loads all static aspects from an NBT
 	 *
-	 * @param nbt
 	 */
 	public void loadStaticAspects(CompoundTag nbt, HolderLookup.Provider provider) {
 		this.matchedAspects.clear();
@@ -139,7 +131,6 @@ public class AspectManager {
 	/**
 	 * Saves all static aspects to an NBT
 	 *
-	 * @param nbt
 	 */
 	public void saveStaticAspects(CompoundTag nbt, HolderLookup.Provider provider) {
 		ListTag entryList = new ListTag();
@@ -162,8 +153,6 @@ public class AspectManager {
 	/**
 	 * Writes an aspect item to the specified NBT
 	 *
-	 * @param tag
-	 * @return
 	 */
 	public static CompoundTag writeAspectItemToNbt(ResourceKey<AspectItem> aspectItem, CompoundTag tag, HolderLookup.Provider provider) {
 		tag.put("item", provider.holderOrThrow(aspectItem).value().item().getDefaultInstance().save(provider));
@@ -173,8 +162,6 @@ public class AspectManager {
 	/**
 	 * Reads an aspect item from the specified NBT
 	 *
-	 * @param tag
-	 * @return
 	 */
 	@Nullable
 	public static ResourceKey<AspectItem> readAspectItemFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
@@ -187,7 +174,6 @@ public class AspectManager {
 	/**
 	 * Resets all static aspects and generates a new distribution with the specified seed
 	 *
-	 * @param aspectSeed
 	 */
 	public void resetStaticAspects(HolderLookup.Provider provider, long aspectSeed) {
 		this.generateStaticAspects(provider, aspectSeed);
@@ -224,7 +210,6 @@ public class AspectManager {
 	/**
 	 * Returns a list of all static aspects on an item
 	 *
-	 * @return
 	 */
 	@Nonnull
 	public List<Aspect> getStaticAspects(ItemStack stack, HolderLookup.Provider registries) {
@@ -237,8 +222,6 @@ public class AspectManager {
 	/**
 	 * Returns a list of all static aspects on the specified item
 	 *
-	 * @param item
-	 * @return
 	 */
 	@Nonnull
 	public List<Aspect> getStaticAspects(@Nullable ResourceKey<AspectItem> item) {
@@ -251,8 +234,6 @@ public class AspectManager {
 	/**
 	 * Returns the matching aspect item for the specified stack
 	 *
-	 * @param stack
-	 * @return
 	 */
 	@Nullable
 	public static ResourceKey<AspectItem> getAspectItem(ItemStack stack, HolderLookup.Provider registries) {
@@ -271,8 +252,6 @@ public class AspectManager {
 	 * this will only return the discovered aspects in the discovery container.
 	 * If the discovery container is null this will return all static aspects on an item.
 	 *
-	 * @param item
-	 * @return
 	 */
 	public List<Aspect> getDiscoveredStaticAspects(ResourceKey<AspectItem> item, @Nullable DiscoveryContainerData discoveryContainer) {
 		List<Aspect> aspects = new ArrayList<>();
@@ -289,8 +268,6 @@ public class AspectManager {
 	 * this will only return the discovered aspect types in the discovery container.
 	 * If the discovery container is null this will return all static aspect types on an item.
 	 *
-	 * @param item
-	 * @return
 	 */
 	public List<Holder<AspectType>> getDiscoveredAspectTypes(ResourceKey<AspectItem> item, DiscoveryContainerData discoveryContainer) {
 		List<Holder<AspectType>> aspects = new ArrayList<>();

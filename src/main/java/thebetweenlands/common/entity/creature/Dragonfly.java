@@ -117,7 +117,7 @@ public class Dragonfly extends AmbientCreature implements BLEntity {
 
 	public void flyAbout() {
 		if (this.currentFlightTarget != null) {
-			if (!this.level().isAreaLoaded(this.currentFlightTarget, 6) || !this.level().isEmptyBlock(this.currentFlightTarget) || this.currentFlightTarget.getY() < this.level().getMinBuildHeight() || this.level().getBlockState(this.currentFlightTarget.above()).liquid()) {
+			if (!this.level().isAreaLoaded(this.currentFlightTarget, 6) || !this.level().isEmptyBlock(this.currentFlightTarget) || this.currentFlightTarget.getY() < this.level().getMinY() || this.level().getBlockState(this.currentFlightTarget.above()).liquid()) {
 				this.currentFlightTarget = null;
 			}
 		}
@@ -210,7 +210,7 @@ public class Dragonfly extends AmbientCreature implements BLEntity {
 	}
 
 	@Override
-	public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+	public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnGroupData) {
 		this.spawnPos = this.blockPosition();
 		return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
 	}

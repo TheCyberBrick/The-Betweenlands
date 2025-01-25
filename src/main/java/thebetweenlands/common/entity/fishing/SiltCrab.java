@@ -1,6 +1,7 @@
 package thebetweenlands.common.entity.fishing;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
@@ -66,8 +67,8 @@ public class SiltCrab extends PathfinderMob implements BLEntity {
 	}
 
 	@Override
-	protected void customServerAiStep() {
-		super.customServerAiStep();
+	protected void customServerAiStep(ServerLevel level) {
+		super.customServerAiStep(level);
 		if (this.aggroCooldown == 200 && !this.canAttack) {
 			this.goalSelector.removeGoal(this.avoidPlayerGoal);
 			this.goalSelector.addGoal(0, this.attackGoal);

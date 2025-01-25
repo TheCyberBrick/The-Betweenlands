@@ -49,7 +49,7 @@ public class EventCommand {
 	private static int toggleEventForWorld(CommandSourceStack source, ResourceLocation eventName) throws CommandSyntaxException {
 		performBasicChecks(source, eventName);
 
-		EnvironmentEvent event = BLRegistries.ENVIRONMENT_EVENTS.get(eventName);
+		EnvironmentEvent event = BLRegistries.ENVIRONMENT_EVENTS.getValue(eventName);
 		boolean isActive = event.isActive();
 		event.setActive(source.getLevel(), !isActive);
 		if (event.isActive() != isActive) {
@@ -77,7 +77,7 @@ public class EventCommand {
 	private static int toggleEventForWorld(CommandSourceStack source, ResourceLocation eventName, boolean active) throws CommandSyntaxException {
 		performBasicChecks(source, eventName);
 
-		EnvironmentEvent event = BLRegistries.ENVIRONMENT_EVENTS.get(eventName);
+		EnvironmentEvent event = BLRegistries.ENVIRONMENT_EVENTS.getValue(eventName);
 		if (event.isActive() == active) {
 			source.sendFailure(Component.translatable("commands.thebetweenlands.event.already_" + (active ? "off" : "on"), Component.translatable(event.getDescriptionId())));
 			return 0;

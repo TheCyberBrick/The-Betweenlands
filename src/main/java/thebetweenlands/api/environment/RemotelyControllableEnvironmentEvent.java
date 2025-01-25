@@ -6,7 +6,6 @@ import net.minecraft.world.level.Level;
 public interface RemotelyControllableEnvironmentEvent extends EnvironmentEvent {
 	/**
 	 * Returns whether this event can be controlled by the remote
-	 * @return
 	 */
 	default boolean isRemotelyControllable() {
 		return true;
@@ -25,7 +24,6 @@ public interface RemotelyControllableEnvironmentEvent extends EnvironmentEvent {
 	 * Returns whether the current event state was set by the remote.
 	 * Should be false after {@link #resetStateFromRemote(Level)} was called
 	 * or if the event's state was overridden (e.g. by a player, command, etc)
-	 * @return
 	 */
 	boolean isCurrentStateFromRemote();
 

@@ -72,9 +72,6 @@ public abstract class DecayableCropBlock extends CropBlock implements FarmablePl
 	/**
 	 * Returns whether the soil is decayed
 	 *
-	 * @param level
-	 * @param pos
-	 * @return
 	 */
 	public boolean isDecayed(LevelReader level, BlockPos pos) {
 		for (int i = 0; i < this.getMaxHeight() + 1; i++) {
@@ -89,9 +86,6 @@ public abstract class DecayableCropBlock extends CropBlock implements FarmablePl
 	/**
 	 * Returns whether the soil is composted
 	 *
-	 * @param level
-	 * @param pos
-	 * @return
 	 */
 	public boolean isComposted(LevelReader level, BlockPos pos) {
 		for (int i = 0; i < this.getMaxHeight() + 1; i++) {
@@ -106,9 +100,6 @@ public abstract class DecayableCropBlock extends CropBlock implements FarmablePl
 	/**
 	 * Returns whether the soil is fogged
 	 *
-	 * @param level
-	 * @param pos
-	 * @return
 	 */
 	public boolean isFogged(LevelReader level, BlockPos pos) {
 		for (int i = 0; i < this.getMaxHeight() + 1; i++) {
@@ -132,9 +123,6 @@ public abstract class DecayableCropBlock extends CropBlock implements FarmablePl
 	/**
 	 * Called when the crop is harvested. Updates the soil and e.g. consumes compost if the block below is dug soil
 	 *
-	 * @param level
-	 * @param pos
-	 * @param compost
 	 */
 	protected void harvestAndUpdateSoil(Level level, BlockPos pos, int compost) {
 		BlockState stateDown = level.getBlockState(pos.below());
@@ -174,11 +162,6 @@ public abstract class DecayableCropBlock extends CropBlock implements FarmablePl
 	/**
 	 * Returns by how many steps it should age per growth chance
 	 *
-	 * @param level
-	 * @param pos
-	 * @param state
-	 * @param random
-	 * @return
 	 */
 	protected int getGrowthSpeed(Level level, BlockPos pos, BlockState state, RandomSource random) {
 		return 1 + (this.isFogged(level, pos) ? random.nextInt(3) + 2 : 0);
@@ -187,11 +170,6 @@ public abstract class DecayableCropBlock extends CropBlock implements FarmablePl
 	/**
 	 * Returns the growth chance
 	 *
-	 * @param level
-	 * @param pos
-	 * @param state
-	 * @param random
-	 * @return
 	 */
 	protected float getGrowthChance(Level level, BlockPos pos, BlockState state, RandomSource random) {
 		return this.isFogged(level, pos) ? 1 : 0.5F;
@@ -200,10 +178,6 @@ public abstract class DecayableCropBlock extends CropBlock implements FarmablePl
 	/**
 	 * Returns whether the plant can grow
 	 *
-	 * @param level
-	 * @param pos
-	 * @param state
-	 * @return
 	 */
 	protected boolean canGrow(LevelReader level, BlockPos pos, BlockState state) {
 		return !state.getValue(DECAYED) && this.isComposted(level, pos);
@@ -212,11 +186,6 @@ public abstract class DecayableCropBlock extends CropBlock implements FarmablePl
 	/**
 	 * Returns whether the plant can grow a block higher
 	 *
-	 * @param level
-	 * @param pos
-	 * @param state
-	 * @param height
-	 * @return
 	 */
 	protected boolean canGrowUp(LevelReader level, BlockPos pos, BlockState state, int height) {
 		return level.isEmptyBlock(pos.above()) && (this.getMaxHeight() == -1 || height < this.getMaxHeight());
@@ -225,8 +194,6 @@ public abstract class DecayableCropBlock extends CropBlock implements FarmablePl
 	/**
 	 * Grows the plant one block higher
 	 *
-	 * @param level
-	 * @param pos   Position of the currently highest block of the plant
 	 */
 	protected void growUp(Level level, BlockPos pos) {
 		level.setBlockAndUpdate(pos.above(), this.defaultBlockState().setValue(DECAYED, level.getBlockState(pos).getValue(DECAYED)));

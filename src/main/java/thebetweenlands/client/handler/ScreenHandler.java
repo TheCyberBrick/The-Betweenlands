@@ -7,6 +7,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -35,7 +36,7 @@ public class ScreenHandler {
 
 	private static double obstructionPercentage = 0;
 	private static double prevObstructionPercentage = 0;
-	private static double dispersionIndicatorPercentage = 0;
+	private static final double dispersionIndicatorPercentage = 0;
 	private static double prevDispersionIndicatorPercentage = 0;
 
 //	private static final ResizableFramebuffer ringOfDispersionWorldFramebuffer = new ResizableFramebuffer(true);
@@ -457,7 +458,7 @@ public class ScreenHandler {
 //		GlStateManager.enableDepth();
 //	}
 
-	private static void drawAspectTooltip(RenderTooltipEvent.Color event) {
+	private static void drawAspectTooltip(RenderTooltipEvent.Texture event) {
 		if (Screen.hasShiftDown()) {
 			Minecraft mc = Minecraft.getInstance();
 			if(mc.level == null) return;
@@ -478,13 +479,11 @@ public class ScreenHandler {
 					String aspectText = AspectType.getAspectName(aspect.type()).getString() + " (" + aspect.getRoundedDisplayAmount() + ")";
 					String aspectTypeText = AspectType.getAspectType(aspect.type()).getString();
 
-					event.getGraphics().setColor(1, 1, 1, 1);
-
 					event.getGraphics().drawString(fontRenderer, aspectText, 6 + 17, 2 + yOffset, 0xFFFFFFFF);
 					event.getGraphics().drawString(fontRenderer, aspectTypeText, 6 + 17, 2 + 9 + yOffset, 0xFFFFFFFF);
 
 					var sprite = BetweenlandsClient.getAspectIconManager().get(aspect.type());
-					event.getGraphics().blit(2, 2 + yOffset, 0, sprite.contents().width(), sprite.contents().height(), sprite);
+					event.getGraphics().blitSprite(RenderType::guiTextured, sprite, 2, 2 + yOffset, sprite.contents().width(), sprite.contents().height());
 
 					int entryWidth = Math.max(fontRenderer.width(aspectText), fontRenderer.width(aspectTypeText)) + 26;
 					if (entryWidth > width) {
@@ -512,8 +511,6 @@ public class ScreenHandler {
 				event.getGraphics().fillGradient(rectX + width + 2, rectY - 3 + 1, rectX + width + 3, rectY + height + 3 - 1, borderColorStart, borderColorEnd);
 				event.getGraphics().fillGradient(rectX - 3, rectY - 3, rectX + width + 3, rectY - 3 + 1, borderColorStart, borderColorStart);
 				event.getGraphics().fillGradient(rectX - 3, rectY + height + 2, rectX + width + 3, rectY + height + 3, borderColorEnd, borderColorEnd);
-
-				event.getGraphics().setColor(1, 1, 1, 1);
 
 				stack.popPose();
 			}

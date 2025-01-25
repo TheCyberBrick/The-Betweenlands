@@ -196,8 +196,6 @@ public class RiftEvent extends TimedEnvironmentEvent {
 
 	/**
 	 * Returns the current visibility of the rift [0, 1]
-	 * @param partialTicks
-	 * @return
 	 */
 	public float getVisibility(float partialTicks) {
 		return (this.lastActivationTicks + (this.getActivationTicks() - this.lastActivationTicks) * partialTicks) / (float)MAX_ACTIVATION_TICKS;
@@ -205,7 +203,6 @@ public class RiftEvent extends TimedEnvironmentEvent {
 
 	/**
 	 * Returns the current active ticks
-	 * @return
 	 */
 	public int getActivationTicks() {
 		return this.dataManager.get(ACTIVATION_TICKS);
@@ -213,7 +210,6 @@ public class RiftEvent extends TimedEnvironmentEvent {
 
 	/**
 	 * Returns the current rift configuration
-	 * @return
 	 */
 	public RiftConfiguration getRiftConfiguration() {
 		return this.dataManager.get(RIFT_CONFIGURATION);
@@ -221,7 +217,6 @@ public class RiftEvent extends TimedEnvironmentEvent {
 
 	/**
 	 * Returns the rift variant
-	 * @return
 	 */
 	public RiftVariant getVariant() {
 		List<RiftVariant> availableVariants = BetweenlandsClient.getRiftVariantLoader().getRiftVariants();
@@ -234,8 +229,6 @@ public class RiftEvent extends TimedEnvironmentEvent {
 
 	/**
 	 * Returns the scale of the rift
-	 * @param partialTicks
-	 * @return
 	 */
 	public float getRiftScale(float partialTicks) {
 		RiftVariant variant = this.getVariant();
@@ -244,7 +237,6 @@ public class RiftEvent extends TimedEnvironmentEvent {
 
 	/**
 	 * Returns whether the U coordinates of the rift are mirrored
-	 * @return
 	 */
 	public boolean getRiftMirrorU() {
 		return this.getRiftConfiguration().mirrorU && this.getVariant().mirrorU();
@@ -252,7 +244,6 @@ public class RiftEvent extends TimedEnvironmentEvent {
 
 	/**
 	 * Returns whether the V coordinates of the rift are mirrored
-	 * @return
 	 */
 	public boolean getRiftMirrorV() {
 		return this.getRiftConfiguration().mirrorV && this.getVariant().mirrorV();
@@ -260,8 +251,6 @@ public class RiftEvent extends TimedEnvironmentEvent {
 
 	/**
 	 * Returns the angles of the rift: [yaw, pitch, roll]
-	 * @param partialTicks
-	 * @return
 	 */
 	public float[] getRiftAngles(float partialTicks) {
 		RiftVariant variant = this.getVariant();

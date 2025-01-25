@@ -2,6 +2,7 @@ package thebetweenlands.common.entity.projectile;
 
 import it.unimi.dsi.fastutil.doubles.DoubleDoubleImmutablePair;
 import net.minecraft.core.Holder;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -31,11 +32,8 @@ public class ThrownElixir extends ThrowableItemProjectile implements ItemSupplie
 	}
 
 	public ThrownElixir(Level level, LivingEntity shooter) {
-		super(EntityRegistry.ELIXIR.get(), shooter, level);
-	}
-
-	public ThrownElixir(Level level, double x, double y, double z) {
-		super(EntityRegistry.ELIXIR.get(), x, y, z, level);
+		super(EntityRegistry.ELIXIR.get(), level);
+		this.setOwner(shooter);
 	}
 
 	@Override
@@ -51,11 +49,11 @@ public class ThrownElixir extends ThrowableItemProjectile implements ItemSupplie
 	@Override
 	protected void onHit(HitResult result) {
 		super.onHit(result);
-		if (!this.level().isClientSide()) {
+		if (this.level() instanceof ServerLevel level) {
 			ItemStack itemstack = this.getItem();
 			ElixirContents contents = itemstack.getOrDefault(DataComponentRegistry.ELIXIR_CONTENTS, ElixirContents.EMPTY);
 			if (contents.elixir().isPresent()) {
-				this.applySplash(contents.createEffect(contents.elixir().get(), 1.0D), result.getType() == HitResult.Type.ENTITY ? ((EntityHitResult)result).getEntity() : null);
+				this.applySplash(level, contents.createEffect(contents.elixir().get(), 1.0D), result.getType() == HitResult.Type.ENTITY ? ((EntityHitResult)result).getEntity() : null);
 			}
 
 			this.level().levelEvent(2002, this.blockPosition(), contents.getElixirColor());
@@ -63,7 +61,7 @@ public class ThrownElixir extends ThrowableItemProjectile implements ItemSupplie
 		}
 	}
 
-	private void applySplash(MobEffectInstance effect, @Nullable Entity p_entity) {
+	private void applySplash(ServerLevel level, MobEffectInstance effect, @Nullable Entity p_entity) {
 		AABB aabb = this.getBoundingBox().inflate(4.0, 2.0, 4.0);
 		List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class, aabb);
 		if (!list.isEmpty()) {
@@ -82,7 +80,7 @@ public class ThrownElixir extends ThrowableItemProjectile implements ItemSupplie
 
 						Holder<MobEffect> holder = effect.getEffect();
 						if (holder.value().isInstantenous()) {
-							holder.value().applyInstantenousEffect(this, this.getOwner(), livingentity, effect.getAmplifier(), d1);
+							holder.value().applyInstantenousEffect(level, this, this.getOwner(), livingentity, effect.getAmplifier(), d1);
 						} else {
 							int i = effect.mapDuration(p_267930_ -> (int)(d1 * (double)p_267930_ + 0.5));
 							MobEffectInstance mobeffectinstance1 = new MobEffectInstance(

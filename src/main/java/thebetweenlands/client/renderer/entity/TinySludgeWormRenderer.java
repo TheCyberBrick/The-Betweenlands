@@ -4,19 +4,22 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import thebetweenlands.client.BLModelLayers;
 import thebetweenlands.client.model.entity.TinySludgeWormModel;
+import thebetweenlands.client.state.SludgeWormRenderState;
 import thebetweenlands.common.TheBetweenlands;
-import thebetweenlands.common.entity.monster.SludgeWormMultipart;
 import thebetweenlands.common.entity.monster.TinySludgeWorm;
 
-public class TinySludgeWormRenderer extends MobRenderer<TinySludgeWorm, TinySludgeWormModel> {
+import java.util.ArrayList;
+import java.util.List;
+
+public class TinySludgeWormRenderer extends MobRenderer<TinySludgeWorm, SludgeWormRenderState, TinySludgeWormModel> {
 	public static final ResourceLocation TEXTURE = TheBetweenlands.prefix("textures/entity/sludge_worm_tiny.png");
 
 	public TinySludgeWormRenderer(EntityRendererProvider.Context context) {
@@ -24,107 +27,97 @@ public class TinySludgeWormRenderer extends MobRenderer<TinySludgeWorm, TinySlud
 	}
 
 	@Override
-	public void render(TinySludgeWorm entity, float entityYaw, float partialTicks, PoseStack stack, MultiBufferSource buffer, int packedLight) {
-		Minecraft minecraft = Minecraft.getInstance();
-		boolean isVisible = this.isBodyVisible(entity);
-		boolean isTranslucentToPlayer = !isVisible && !entity.isInvisibleTo(minecraft.player);
-		boolean isGlowing = minecraft.shouldEntityAppearGlowing(entity);
-		int overlay = getOverlayCoords(entity, this.getWhiteOverlayProgress(entity, partialTicks));
+	public void render(SludgeWormRenderState state, PoseStack stack, MultiBufferSource buffer, int packedLight) {
+		boolean isVisible = this.isBodyVisible(state);
+		boolean isTranslucentToPlayer = !isVisible && !state.isInvisibleToPlayer;
+		int overlay = getOverlayCoords(state, this.getWhiteOverlayProgress(state));
 		int color = isTranslucentToPlayer ? 654311423 : -1;
 
 		stack.pushPose();
-		float totalAngleDiff = 0.0f;
+		float avgWibbleStrength = SludgeWormRenderer.getAvgWibbleStrength(state);
 
-		for (int i = 0; i < entity.parts.length; i++) {
-			Entity prevPart = entity;
-			if (i > 0)
-				prevPart = entity.parts[i - 1];
-			SludgeWormMultipart part = entity.parts[i];
-			double yawDiff = (prevPart.getYRot() - part.getYRot()) % 360.0F;
-			double yawInterpolant = 2 * yawDiff % 360.0F - yawDiff;
-			totalAngleDiff += (float) Math.abs(yawInterpolant);
-		}
-
-		float avgAngleDiff = totalAngleDiff;
-
-		if (entity.parts.length > 0)
-			avgAngleDiff /= (entity.parts.length - 1);
-
-		float avgWibbleStrength = Math.clamp(1.0F - avgAngleDiff / 60.0F, 0, 1);
-		float x = 0F;
-		float y = 0F;
-		float z = 0F;
-
-		var renderType = this.getRenderType(entity, isVisible, isTranslucentToPlayer, isGlowing);
+		var renderType = this.getRenderType(state, isVisible, isTranslucentToPlayer, state.appearsGlowing);
 		if (renderType != null) {
 			VertexConsumer consumer = buffer.getBuffer(renderType);
-			this.renderHead(stack, consumer, packedLight, overlay, color, entity, 1, x, y + 1.5F, z, entityYaw, avgWibbleStrength, partialTicks);
-
-			double ex = entity.xOld + (entity.getX() - entity.xOld) * (double) partialTicks;
-			double ey = entity.yOld + (entity.getY() - entity.yOld) * (double) partialTicks;
-			double ez = entity.zOld + (entity.getZ() - entity.zOld) * (double) partialTicks;
-			double rx = ex - x;
-			double ry = ey - y;
-			double rz = ez - z;
+			this.renderHead(state, stack, consumer, packedLight, overlay, color, avgWibbleStrength);
 			float zOffset = 0;
 
-			for (int i = 0; i < entity.parts.length - 1; i++) {
-				this.renderBodyPart(stack, consumer, packedLight, overlay, color, entity, entity.parts[i], i > 0 ? entity.parts[i - 1] : entity, rx, ry, rz, i, avgWibbleStrength, zOffset -= 0.001F, partialTicks);
+			for (int i = 1; i < state.parts.length - 1; i++) {
+				this.renderBodyPart(stack, consumer, packedLight, overlay, color, state.parts[i], state.parts[i - 1], state.x, state.y, state.z, avgWibbleStrength, zOffset -= 0.001F);
 			}
-
-			this.renderTailPart(stack, consumer, packedLight, overlay, color, entity, entity.parts[entity.parts.length - 1], entity.parts[entity.parts.length - 2], rx, ry, rz, entity.parts.length - 1, avgWibbleStrength, partialTicks);
+			this.renderTailPart(stack, consumer, packedLight, overlay, color, state.parts[state.parts.length - 1], state.parts[state.parts.length - 2], state.x, state.y, state.z, avgWibbleStrength);
 		}
 		stack.popPose();
 	}
 
-	public void renderHead(PoseStack stack, VertexConsumer consumer, int light, int overlay, int colour, TinySludgeWorm entity, int frame, double x, double y, double z, float yaw, float avgWibbleStrength, float partialTicks) {
-		double yawDiff = (yaw - entity.parts[1].getYRot()) % 360.0F;
+	public void renderHead(SludgeWormRenderState state, PoseStack stack, VertexConsumer consumer, int light, int overlay, int color, float avgWibbleStrength) {
+		double yawDiff = (state.yRot - state.parts[1].yRot()) % 360.0F;
 		double yawInterpolant = 2 * yawDiff % 360.0F - yawDiff;
 		float wibbleStrength = Math.min(avgWibbleStrength, Math.clamp(1.0F - (float) Math.abs(yawInterpolant) / 60.0F, 0, 1));
 		stack.pushPose();
-		stack.translate(x, y, z);
-		stack.scale(-1F, -1F, 1F);
-		stack.mulPose(Axis.YP.rotationDegrees(180F + yaw));
-		this.model.renderHead(stack, consumer, light, overlay, colour, entity, frame, wibbleStrength * 0.5F, partialTicks);
+		stack.translate(0.0F, 1.5F, 0.0F);
+		stack.scale(-1.0F, -1.0F, 1.0F);
+		stack.mulPose(Axis.YP.rotationDegrees(180.0F + state.yRot));
+		this.model.renderHead(state.parts[0], stack, consumer, light, overlay, color, state.xRot, wibbleStrength);
 		stack.popPose();
 	}
 
-	public void renderBodyPart(PoseStack stack, VertexConsumer consumer, int light, int overlay, int colour, TinySludgeWorm entity, SludgeWormMultipart part, Entity prevPart, double rx, double ry, double rz, int frame, float avgWibbleStrength, float zOffset, float partialTicks) {
-		double x = part.xOld + (part.xo - part.xOld) * (double) partialTicks - rx;
-		double y = part.yOld + (part.yo - part.yOld) * (double) partialTicks - ry;
-		double z = part.zOld + (part.zo - part.zOld) * (double) partialTicks - rz;
-		float yaw = part.yRotO + (part.getYRot() - part.yRotO) * partialTicks;
-		double yawDiff = (prevPart.getYRot() - part.getYRot()) % 360.0F;
+	protected void renderBodyPart(PoseStack stack, VertexConsumer consumer, int light, int overlay, int color, SludgeWormRenderState.WormPartInfo part, SludgeWormRenderState.WormPartInfo prevPart, double rx, double ry, double rz, float avgWibbleStrength, float zOffset) {
+		double x = part.pos().x() - rx;
+		double y = part.pos().y() - ry;
+		double z = part.pos().z() - rz;
+		float yaw = part.yRot();
+		double yawDiff = (prevPart.yRot() - part.yRot()) % 360.0F;
 		double yawInterpolant = 2 * yawDiff % 360.0F - yawDiff;
 		float wibbleStrength = Math.min(avgWibbleStrength, Math.clamp(1.0F - (float) Math.abs(yawInterpolant) / 60.0F, 0, 1));
 
 		stack.pushPose();
-		stack.translate(x, y - 1.125f + zOffset, z);
+		stack.translate(x, y - 1.125F + zOffset, z);
 		stack.mulPose(Axis.YN.rotationDegrees(yaw));
-		this.model.renderBody(stack, consumer, light, overlay, colour, entity, frame, wibbleStrength * 0.5F, partialTicks);
+		this.model.renderBody(part, stack, consumer, light, overlay, color, wibbleStrength);
 		stack.popPose();
 	}
 
-	public void renderTailPart(PoseStack stack, VertexConsumer consumer, int light, int overlay, int colour, TinySludgeWorm entity, SludgeWormMultipart part, Entity prevPart, double rx, double ry, double rz, int frame, float avgWibbleStrength, float partialTicks) {
-		double x = part.xOld + (part.xo - part.xOld) * (double) partialTicks - rx;
-		double y = part.yOld + (part.yo - part.yOld) * (double) partialTicks - ry;
-		double z = part.zOld + (part.zo - part.zOld) * (double) partialTicks - rz;
-		float yaw = part.yRotO + (part.getYRot() - part.yRotO) * partialTicks;
-		double yawDiff = (prevPart.getYRot() - part.getYRot()) % 360.0F;
+	protected void renderTailPart(PoseStack stack, VertexConsumer consumer, int light, int overlay, int color, SludgeWormRenderState.WormPartInfo part, SludgeWormRenderState.WormPartInfo prevPart, double rx, double ry, double rz, float avgWibbleStrength) {
+		double x = part.pos().x() - rx;
+		double y = part.pos().y() - ry;
+		double z = part.pos().z() - rz;
+		float yaw = part.yRot();
+		double yawDiff = (prevPart.yRot() - part.yRot()) % 360.0F;
 		double yawInterpolant = 2 * yawDiff % 360.0F - yawDiff;
 		float wibbleStrength = Math.min(avgWibbleStrength, Math.clamp(1.0F - (float) Math.abs(yawInterpolant) / 60.0F, 0, 1));
 
 		stack.pushPose();
-		stack.translate(x, y + 1.525f, z);
-		stack.scale(-1F, -1F, 1F);
-		stack.mulPose(Axis.YP.rotationDegrees(180F + yaw));
-		this.model.renderTail(stack, consumer, light, overlay, colour, entity, frame, wibbleStrength * 0.5F, partialTicks);
+		stack.translate(x, y + 1.525F, z);
+		stack.scale(-1.0F, -1.0F, 1.0F);
+		stack.mulPose(Axis.YP.rotationDegrees(180.0F + yaw));
+		this.model.renderTail(part, stack, consumer, light, overlay, color, wibbleStrength);
 		stack.popPose();
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(TinySludgeWorm entity) {
-		return TEXTURE;
+	public SludgeWormRenderState createRenderState() {
+		return new SludgeWormRenderState();
 	}
 
+	@Override
+	public void extractRenderState(TinySludgeWorm entity, SludgeWormRenderState state, float partialTick) {
+		super.extractRenderState(entity, state, partialTick);
+		List<SludgeWormRenderState.WormPartInfo> partList = new ArrayList<>();
+		partList.addFirst(new SludgeWormRenderState.WormPartInfo(entity.position(), state.yRot, Mth.lerp(partialTick, entity.tickCount, entity.tickCount + 1)));
+		for (int i = 0; i < entity.parts.length; i++) {
+			var part = entity.parts[i];
+			double x = Mth.lerp(partialTick, part.xOld, part.getX());
+			double y = Mth.lerp(partialTick, part.yOld, part.getY());
+			double z = Mth.lerp(partialTick, part.zOld, part.getZ());
+			float smoothFrame = Mth.lerp(partialTick, entity.tickCount + i - 1, entity.tickCount + i);
+			partList.add(new SludgeWormRenderState.WormPartInfo(new Vec3(x, y, z), part.getYRot(partialTick), smoothFrame));
+		}
+		state.parts = partList.toArray(SludgeWormRenderState.WormPartInfo[]::new);
+	}
+
+	@Override
+	public ResourceLocation getTextureLocation(SludgeWormRenderState state) {
+		return TEXTURE;
+	}
 }

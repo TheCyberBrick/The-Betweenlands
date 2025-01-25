@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import thebetweenlands.api.environment.PredictableEnvironmentEvent;
@@ -131,26 +132,28 @@ public abstract class TimedEnvironmentEvent extends BLEnvironmentEvent implement
 	@Override
 	public void tick(Level level) {
 		super.tick(level);
-		var storage = level.getExistingData(AttachmentRegistry.WORLD_STORAGE);
-		if(storage.isPresent() && !storage.get().getEnvironmentEventRegistry().isDisabled() && !this.isCurrentStateFromRemote() && level.getGameRules().getBoolean(TheBetweenlands.TIMED_EVENT_GAMERULE)) {
-			if(this.isActive() || this.canActivate(level)) {
-				this.dataManager.set(TICKS, this.getTicks() - 1);
-			}
-
-			if(!level.isClientSide() && this.getTicks() <= 0) {
-				int nextDuration = this.dataManager.get(NEXT_DURATION);
-
-				if(this.isActive() || this.canActivate(level)) {
-					this.setActive(level, !this.isActive());
+		if (level instanceof ServerLevel sl) {
+			var storage = level.getExistingData(AttachmentRegistry.WORLD_STORAGE);
+			if (storage.isPresent() && !storage.get().getEnvironmentEventRegistry().isDisabled() && !this.isCurrentStateFromRemote() && sl.getGameRules().getBoolean(TheBetweenlands.TIMED_EVENT_GAMERULE)) {
+				if (this.isActive() || this.canActivate(level)) {
+					this.dataManager.set(TICKS, this.getTicks() - 1);
 				}
 
-				this.dataManager.set(TICKS, nextDuration).syncImmediately();
-				this.dataManager.set(START_TICKS, nextDuration);
+				if (this.getTicks() <= 0) {
+					int nextDuration = this.dataManager.get(NEXT_DURATION);
 
-				if(!this.isActive()) {
-					this.dataManager.set(NEXT_DURATION, this.getOnTime(level.getRandom()));
-				} else {
-					this.dataManager.set(NEXT_DURATION, this.getOffTime(level.getRandom()));
+					if (this.isActive() || this.canActivate(level)) {
+						this.setActive(level, !this.isActive());
+					}
+
+					this.dataManager.set(TICKS, nextDuration).syncImmediately();
+					this.dataManager.set(START_TICKS, nextDuration);
+
+					if (!this.isActive()) {
+						this.dataManager.set(NEXT_DURATION, this.getOnTime(level.getRandom()));
+					} else {
+						this.dataManager.set(NEXT_DURATION, this.getOffTime(level.getRandom()));
+					}
 				}
 			}
 		}
@@ -158,7 +161,6 @@ public abstract class TimedEnvironmentEvent extends BLEnvironmentEvent implement
 
 	/**
 	 * Returns whether the event can activate right now
-	 * @return
 	 */
 	protected boolean canActivate(Level level) {
 		return true;
@@ -166,8 +168,6 @@ public abstract class TimedEnvironmentEvent extends BLEnvironmentEvent implement
 
 	/**
 	 * Sets how many ticks this event stays on/off
-	 * @param ticks
-	 * @return
 	 */
 	public void setTicks(int ticks) {
 		int currTicks = this.getTicks();
@@ -178,7 +178,6 @@ public abstract class TimedEnvironmentEvent extends BLEnvironmentEvent implement
 
 	/**
 	 * Returns the time in ticks this event stays on/off
-	 * @return
 	 */
 	public int getTicks() {
 		return this.dataManager.get(TICKS);
@@ -186,7 +185,6 @@ public abstract class TimedEnvironmentEvent extends BLEnvironmentEvent implement
 
 	/**
 	 * Returns the maximum ticks
-	 * @return
 	 */
 	public int getStartTicks() {
 		return this.dataManager.get(START_TICKS);
@@ -194,7 +192,6 @@ public abstract class TimedEnvironmentEvent extends BLEnvironmentEvent implement
 
 	/**
 	 * Returns how many ticks have elapsed since changing state
-	 * @return
 	 */
 	public int getTicksElapsed() {
 		return this.getStartTicks() - this.getTicks();
@@ -250,15 +247,11 @@ public abstract class TimedEnvironmentEvent extends BLEnvironmentEvent implement
 
 	/**
 	 * Returns how many ticks the event is not active.
-	 * @param rnd
-	 * @return
 	 */
 	public abstract int getOffTime(RandomSource rnd);
 
 	/**
 	 * Returns how many ticks the event is active.
-	 * @param rnd
-	 * @return
 	 */
 	public abstract int getOnTime(RandomSource rnd);
 

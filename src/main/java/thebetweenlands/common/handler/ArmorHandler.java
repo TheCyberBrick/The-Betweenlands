@@ -1,7 +1,6 @@
 package thebetweenlands.common.handler;
 
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,7 +23,13 @@ import thebetweenlands.common.registries.ArmorMaterialRegistry;
 import thebetweenlands.common.registries.DataComponentRegistry;
 import thebetweenlands.common.registries.ItemRegistry;
 
+import java.util.function.Predicate;
+
 public class ArmorHandler {
+
+	private static final Predicate<ItemStack> SYRMORITE = stack ->
+		stack.is(ItemRegistry.SYRMORITE_HELMET) || stack.is(ItemRegistry.SYRMORITE_CHESTPLATE) ||
+		stack.is(ItemRegistry.SYRMORITE_LEGGINGS) || stack.is(ItemRegistry.SYRMORITE_BOOTS);
 
 	public static void init() {
 		NeoForge.EVENT_BUS.addListener(ArmorHandler::ignoreDamageWhenStackingAmphibiousUpgrades);
@@ -42,11 +47,11 @@ public class ArmorHandler {
 			Iterable<ItemStack> armorStacks = entity.getArmorAndBodyArmorSlots();
 			float reductionAmount = 0.25F;
 			for (ItemStack stack : armorStacks) {
-				if (!stack.isEmpty() && stack.getItem() instanceof ArmorItem armor && armor.getMaterial().is(ArmorMaterialRegistry.SYRMORITE)) {
+				if (SYRMORITE.test(stack)) {
 					damageMultiplier -= reductionAmount;
 				}
 			}
-			if (damageMultiplier < 0.001F) {
+			if (damageMultiplier <= 0.0F) {
 				event.setNewDamage(0.01F); //Set to tiny amount so armor still takes damage
 				entity.clearFire();
 			} else {

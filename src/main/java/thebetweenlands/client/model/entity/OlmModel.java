@@ -6,13 +6,12 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.creature.Olm;
 
-public class OlmModel extends MowzieModelBase<Olm> {
+public class OlmModel extends MowzieModelBase<LivingEntityRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart leg_front_left1a;
 	private final ModelPart leg_front_right1a;
 	private final ModelPart leg_back_left1a;
@@ -23,7 +22,7 @@ public class OlmModel extends MowzieModelBase<Olm> {
 	private final ModelPart gills_top;
 
 	public OlmModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		var frontBody =  root.getChild("body_main").getChild("body_2").getChild("body_3").getChild("body_4");
 		this.leg_front_left1a = frontBody.getChild("left_front_leg_1");
 		this.leg_front_right1a = frontBody.getChild("right_front_leg_1");
@@ -131,29 +130,20 @@ public class OlmModel extends MowzieModelBase<Olm> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void setupAnim(Olm entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		this.head.xRot = (float) Mth.clamp(Math.toRadians(headPitch), -5, 5);
-	}
-
-	@Override
-	public void prepareMobModel(Olm entity, float limbSwing, float limbSwingAmount, float partialTick) {
+	public void setupAnim(LivingEntityRenderState state) {
 		float globalDegree = -0.5F;
 		float rippleSpeed = -1.0F;
-		float frame = entity.tickCount + partialTick;
-		this.setInitPose();
-		this.swing(this.gills_left1a, rippleSpeed * 0.125F, globalDegree * 0.5F, true, 0.0F, 0.0F, frame, 1.0F);
-		this.swing(this.gills_right1a, rippleSpeed * 0.125F, globalDegree * 0.5F, false, 0.0F, 0.0F, frame, 1.0F);
-		this.walk(this.gills_top, rippleSpeed * 0.125F, globalDegree * 0.5F, false, 0.0F, 0.0F, frame, 1.0F);
-		this.chainSwing(this.root().getAllParts().toArray(ModelPart[]::new), rippleSpeed * 0.5F, globalDegree, 1.5F, limbSwing, limbSwingAmount * 0.75F);
-		this.chainFlap(this.root().getAllParts().toArray(ModelPart[]::new), rippleSpeed, -globalDegree * 0.25F, 1.5F,  limbSwing, limbSwingAmount * 0.75F);
-		this.swing(this.leg_back_left1a, rippleSpeed, globalDegree * 3.0F, true, 1.0F, 0.0F, limbSwing, limbSwingAmount);
-		this.swing(this.leg_back_right1a, rippleSpeed, globalDegree * 3.0F, true, 1.0F, 0.0F, limbSwing, limbSwingAmount);
-		this.swing(this.leg_front_left1a, rippleSpeed, globalDegree * 3.0F, false, 1.0F, 0.0F, limbSwing, limbSwingAmount);
-		this.swing(this.leg_front_right1a, rippleSpeed, globalDegree * 3.0F, false, 1.0F, 0.0F, limbSwing, limbSwingAmount);
+		super.setupAnim(state);
+		this.swing(this.gills_left1a, rippleSpeed * 0.125F, globalDegree * 0.5F, true, 0.0F, 0.0F, state.ageInTicks, 1.0F);
+		this.swing(this.gills_right1a, rippleSpeed * 0.125F, globalDegree * 0.5F, false, 0.0F, 0.0F, state.ageInTicks, 1.0F);
+		this.walk(this.gills_top, rippleSpeed * 0.125F, globalDegree * 0.5F, false, 0.0F, 0.0F, state.ageInTicks, 1.0F);
+		this.chainSwing(this.root().getAllParts().toArray(ModelPart[]::new), rippleSpeed * 0.5F, globalDegree, 1.5F, state.walkAnimationPos, state.walkAnimationSpeed * 0.75F);
+		this.chainFlap(this.root().getAllParts().toArray(ModelPart[]::new), rippleSpeed, -globalDegree * 0.25F, 1.5F,  state.walkAnimationPos, state.walkAnimationSpeed * 0.75F);
+		this.swing(this.leg_back_left1a, rippleSpeed, globalDegree * 3.0F, true, 1.0F, 0.0F, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.swing(this.leg_back_right1a, rippleSpeed, globalDegree * 3.0F, true, 1.0F, 0.0F, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.swing(this.leg_front_left1a, rippleSpeed, globalDegree * 3.0F, false, 1.0F, 0.0F, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.swing(this.leg_front_right1a, rippleSpeed, globalDegree * 3.0F, false, 1.0F, 0.0F, state.walkAnimationPos, state.walkAnimationSpeed);
+
+		this.head.xRot = (float) Mth.clamp(Math.toRadians(state.xRot), -5, 5);
 	}
 }

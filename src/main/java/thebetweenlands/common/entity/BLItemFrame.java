@@ -91,7 +91,7 @@ public class BLItemFrame extends ItemFrame {
 					if (player instanceof ServerPlayer sp) {
 						AdvancementCriteriaRegistry.ITEM_FRAME_INVISIBLE.get().trigger(sp);
 					}
-					return InteractionResult.sidedSuccess(this.level().isClientSide());
+					return InteractionResult.SUCCESS;
 				}
 			} else if (itemstack.is(BlockRegistry.GLOWING_GOOP.asItem()) && !this.isFrameGlowing()) {
 				itemstack.shrink(1);
@@ -99,7 +99,7 @@ public class BLItemFrame extends ItemFrame {
 				if (player instanceof ServerPlayer sp) {
 					AdvancementCriteriaRegistry.ITEM_FRAME_GLOWING.get().trigger(sp);
 				}
-				return InteractionResult.sidedSuccess(this.level().isClientSide());
+				return InteractionResult.SUCCESS;
 			}
 		}
 

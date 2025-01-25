@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.TriState;
 
 public class BLRenderTypes extends RenderType {
 
@@ -33,7 +34,7 @@ public class BLRenderTypes extends RenderType {
 			true,
 			RenderType.CompositeState.builder()
 				.setShaderState(RENDERTYPE_ENERGY_SWIRL_SHADER)
-				.setTextureState(new RenderStateShard.TextureStateShard(location, false, false))
+				.setTextureState(new RenderStateShard.TextureStateShard(location, TriState.FALSE, false))
 				.setTexturingState(new RenderStateShard.OffsetTexturingStateShard(u, v))
 				.setTransparencyState(TRANSLUCENT_TRANSPARENCY)
 				.setCullState(NO_CULL)

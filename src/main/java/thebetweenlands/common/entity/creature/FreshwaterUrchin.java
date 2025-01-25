@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
@@ -33,7 +34,7 @@ public class FreshwaterUrchin extends ProximitySpawnerEntity {
 	private static final EntityDataAccessor<Integer> SPIKE_COOLDOWN = SynchedEntityData.defineId(FreshwaterUrchin.class, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Integer> SPIKE_BOX_SIZE = SynchedEntityData.defineId(FreshwaterUrchin.class, EntityDataSerializers.INT);
 	private boolean shootSpikes;
-	public int MAX_SPIKE_TIMER = 10;
+	public final int MAX_SPIKE_TIMER = 10;
 	public static final byte EVENT_ATTACK = 66;
 
 	public FreshwaterUrchin(EntityType<? extends PathfinderMob> type, Level level) {
@@ -185,12 +186,12 @@ public class FreshwaterUrchin extends ProximitySpawnerEntity {
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float damage) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
 		Entity attacker = source.getDirectEntity();
 		if (attacker instanceof LivingEntity entity && attacker.invulnerableTime <= 0 && entity.getMainHandItem().isEmpty() && !(attacker instanceof FreshwaterUrchin))
-			attacker.hurt(this.damageSources().source(DamageTypeRegistry.URCHIN_SPIKE, this), (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE));
+			attacker.hurtServer(level, this.damageSources().source(DamageTypeRegistry.URCHIN_SPIKE, this), (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE));
 
-		return super.hurt(source, damage);
+		return super.hurtServer(level, source, damage);
 	}
 
 	@Override

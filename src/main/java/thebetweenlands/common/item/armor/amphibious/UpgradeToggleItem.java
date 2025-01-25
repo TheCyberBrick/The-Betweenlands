@@ -5,7 +5,7 @@ import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -29,7 +29,7 @@ public class UpgradeToggleItem extends HoverTextItem {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		this.initToggleMap();
 		ItemStack stack = player.getItemInHand(hand);
 		if (player.isShiftKeyDown()) {
@@ -45,11 +45,11 @@ public class UpgradeToggleItem extends HoverTextItem {
 			}
 			ResourceLocation upgradeLoc = BLRegistries.AMPHIBIOUS_ARMOR_UPGRADES.getKey(stack.get(DataComponentRegistry.SELECTED_UPGRADE));
 			player.displayClientMessage(Component.translatable("item.thebetweenlands.stone.selected", Component.translatable(Util.makeDescriptionId("amphibious_upgrade", upgradeLoc))), true);
-			return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+			return InteractionResult.SUCCESS;
 		} else {
 			var upgrade = stack.getOrDefault(DataComponentRegistry.SELECTED_UPGRADE, AmphibiousArmorUpgradeRegistry.NONE.get());
 			if (!(upgrade instanceof ToggleableAmphibiousArmorUpgrade toggle) || !TOGGLE_LIST.contains(toggle)) {
-				return InteractionResultHolder.pass(stack);
+				return InteractionResult.PASS;
 			}
 
 			for (ItemStack armorStack : player.getInventory().armor) {
@@ -58,7 +58,7 @@ public class UpgradeToggleItem extends HoverTextItem {
 						boolean result = toggle.onToggle(level, player, stack);
 						ResourceLocation upgradeLoc = BLRegistries.AMPHIBIOUS_ARMOR_UPGRADES.getKey(upgrade);
 						player.displayClientMessage(Component.translatable("item.thebetweenlands.biopathic_linkstone.toggle", Component.translatable(Util.makeDescriptionId("amphibious_upgrade", upgradeLoc)), String.valueOf(result)), true);
-						return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+						return InteractionResult.SUCCESS;
 					}
 				}
 			}

@@ -7,15 +7,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -31,7 +27,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
-import thebetweenlands.api.BLRegistries;
+
 import thebetweenlands.client.particle.ParticleFactory;
 import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.block.misc.HorizontalBaseEntityBlock;
@@ -63,7 +59,7 @@ public class RepellerBlock extends HorizontalBaseEntityBlock implements SwampWat
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (state.getValue(HALF) == DoubleBlockHalf.UPPER && level.getBlockState(pos.below()).is(this)) {
 			this.useItemOn(stack, level.getBlockState(pos.below()), level, pos.below(), player, hand, hitResult);
 		} else if (state.getValue(HALF) == DoubleBlockHalf.LOWER) {
@@ -71,7 +67,7 @@ public class RepellerBlock extends HorizontalBaseEntityBlock implements SwampWat
 				if (stack.is(ItemRegistry.SHIMMER_STONE) && !repeller.hasShimmerstone()) {
 					repeller.addShimmerstone();
 					stack.consume(1, player);
-					return ItemInteractionResult.sidedSuccess(level.isClientSide());
+					return InteractionResult.SUCCESS;
 				} else if (stack.getItem() instanceof AspectVialItem) {
 					if (repeller.hasShimmerstone()) {
 						if (repeller.getFuel() < repeller.getMaxFuel()) {
@@ -87,11 +83,11 @@ public class RepellerBlock extends HorizontalBaseEntityBlock implements SwampWat
 											if (leftAmount > 0) {
 												stack.set(DataComponentRegistry.ASPECT_CONTENTS, new AspectContents(contents.aspect().get(), leftAmount));
 											} else {
-												player.setItemInHand(hand, stack.getCraftingRemainingItem());
+												player.setItemInHand(hand, stack.getCraftingRemainder());
 											}
 										}
 									}
-									return ItemInteractionResult.sidedSuccess(level.isClientSide());
+									return InteractionResult.SUCCESS;
 								}
 							}
 						}
@@ -101,12 +97,12 @@ public class RepellerBlock extends HorizontalBaseEntityBlock implements SwampWat
 						}
 					}
 				} else if (stack.getItem() instanceof DentrothystVialItem vial && repeller.getFuel() > 0) {
-					ItemStack newStack = AspectContents.createItemStack(vial.getFullAspectBottle().value(), level.registryAccess().registryOrThrow(BLRegistries.Keys.ASPECT_TYPES).getHolderOrThrow(AspectTypeRegistry.BYARIIS), repeller.removeFuel(Amounts.VIAL));
+					ItemStack newStack = AspectContents.createItemStack(vial.getFullAspectBottle().value(), level.registryAccess().holderOrThrow(AspectTypeRegistry.BYARIIS), repeller.removeFuel(Amounts.VIAL));
 					stack.shrink(1);
 					if (!player.getInventory().add(newStack)) {
 						player.drop(newStack, false);
 					}
-					return ItemInteractionResult.sidedSuccess(level.isClientSide());
+					return InteractionResult.SUCCESS;
 				}
 			}
 		}
@@ -124,29 +120,30 @@ public class RepellerBlock extends HorizontalBaseEntityBlock implements SwampWat
 				if (!player.getInventory().add(stack)) {
 					player.drop(stack, false);
 				}
-				return InteractionResult.sidedSuccess(level.isClientSide());
+				return InteractionResult.SUCCESS;
 			} else if (!player.isShiftKeyDown()) {
 				if (!level.isClientSide()) {
 					repeller.cycleRadiusState();
 				}
-				return InteractionResult.sidedSuccess(level.isClientSide());
+				return InteractionResult.SUCCESS;
 			}
 		}
 		return super.useWithoutItem(state, level, pos, player, hitResult);
 	}
 
 	@Override
-	protected BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
+	protected BlockState updateShape(BlockState state, LevelReader reader, ScheduledTickAccess access, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
 		if (state.getValue(WATER_TYPE) != WaterType.NONE) {
-			level.scheduleTick(currentPos, state.getValue(WATER_TYPE).getFluid(), state.getValue(WATER_TYPE).getFluid().getTickDelay(level));
+			access.scheduleTick(pos, state.getValue(WATER_TYPE).getFluid(), state.getValue(WATER_TYPE).getFluid().getTickDelay(reader));
 		}
+
 		DoubleBlockHalf doubleblockhalf = state.getValue(HALF);
-		if (facing.getAxis() != Direction.Axis.Y
-			|| doubleblockhalf == DoubleBlockHalf.LOWER != (facing == Direction.UP)
-			|| facingState.is(this) && facingState.getValue(HALF) != doubleblockhalf) {
-			return doubleblockhalf == DoubleBlockHalf.LOWER && facing == Direction.DOWN && !state.canSurvive(level, currentPos)
+		if (direction.getAxis() != Direction.Axis.Y
+			|| doubleblockhalf == DoubleBlockHalf.LOWER != (direction == Direction.UP)
+			|| neighborState.is(this) && neighborState.getValue(HALF) != doubleblockhalf) {
+			return doubleblockhalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canSurvive(reader, pos)
 				? Blocks.AIR.defaultBlockState()
-				: super.updateShape(state, facing, facingState, level, currentPos, facingPos);
+				: super.updateShape(state, reader, access, pos, direction, neighborPos, neighborState, random);
 		} else {
 			return Blocks.AIR.defaultBlockState();
 		}
@@ -157,7 +154,7 @@ public class RepellerBlock extends HorizontalBaseEntityBlock implements SwampWat
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		BlockPos blockpos = context.getClickedPos();
 		Level level = context.getLevel();
-		return blockpos.getY() < level.getMaxBuildHeight() - 1 && level.getBlockState(blockpos.above()).canBeReplaced(context)
+		return blockpos.getY() < level.getMaxY() - 1 && level.getBlockState(blockpos.above()).canBeReplaced(context)
 			? super.getStateForPlacement(context).setValue(WATER_TYPE, WaterType.getFromFluid(context.getLevel().getFluidState(context.getClickedPos()).getType()))
 			: null;
 	}

@@ -5,14 +5,14 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import thebetweenlands.client.BLModelLayers;
-import thebetweenlands.client.model.entity.DreadfulPeatMummyModel;
 import thebetweenlands.client.model.entity.PeatMummyModel;
+import thebetweenlands.client.state.PeatMummyRenderState;
 import thebetweenlands.common.TheBetweenlands;
-import thebetweenlands.common.entity.boss.DreadfulPeatMummy;
 import thebetweenlands.common.entity.monster.PeatMummy;
 
-public class PeatMummyRenderer extends MobRenderer<PeatMummy, PeatMummyModel> {
+public class PeatMummyRenderer extends MobRenderer<PeatMummy, PeatMummyRenderState, PeatMummyModel> {
 	private static final ResourceLocation TEXTURE = TheBetweenlands.prefix("textures/entity/peat_mummy.png");
 
 	public PeatMummyRenderer(EntityRendererProvider.Context context) {
@@ -20,24 +20,37 @@ public class PeatMummyRenderer extends MobRenderer<PeatMummy, PeatMummyModel> {
 	}
 
 	@Override
-	public void render(PeatMummy entity, float entityYaw, float partialTicks, PoseStack stack, MultiBufferSource buffer, int packedLight) {
-		if(entity.getSpawningProgress() >= 0.1F) {
-			super.render(entity, entityYaw, partialTicks, stack, buffer, packedLight);
+	public void render(PeatMummyRenderState state, PoseStack stack, MultiBufferSource buffer, int packedLight) {
+		if(state.spawningProgress >= 0.1F) {
+			super.render(state, stack, buffer, packedLight);
 		}
 	}
 
 	@Override
-	protected void scale(PeatMummy entity, PoseStack stack, float partialTick) {
-		stack.translate(0.0D, -entity.getInterpolatedSpawningOffset(partialTick), 0.0D);
+	protected void scale(PeatMummyRenderState state, PoseStack stack) {
+		stack.translate(0.0D, -state.yOffset, 0.0D);
 	}
 
 	@Override
-	protected float getShadowRadius(PeatMummy entity) {
-		return entity.getSpawningProgress() >= 0.1F ? super.getShadowRadius(entity) : 0.0F;
+	protected float getShadowRadius(PeatMummyRenderState state) {
+		return state.spawningProgress >= 0.1F ? super.getShadowRadius(state) : 0.0F;
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(PeatMummy entity) {
+	public PeatMummyRenderState createRenderState() {
+		return new PeatMummyRenderState();
+	}
+
+	@Override
+	public void extractRenderState(PeatMummy entity, PeatMummyRenderState state, float partialTick) {
+		super.extractRenderState(entity, state, partialTick);
+		state.spawningProgress = entity.getSpawningProgress();
+		state.yOffset = Mth.lerp(partialTick, entity.prevSpawningOffset, entity.getSpawningOffset());
+		state.screamingProgress = entity.getScreamingProgress();
+	}
+
+	@Override
+	public ResourceLocation getTextureLocation(PeatMummyRenderState state) {
 		return TEXTURE;
 	}
 }

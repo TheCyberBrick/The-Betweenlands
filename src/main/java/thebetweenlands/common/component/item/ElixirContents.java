@@ -30,15 +30,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public record ElixirContents(Optional<Holder<ElixirEffect>> elixir, int duration, int strength, Optional<Integer> customColor) {
-	public static final ElixirContents EMPTY = new ElixirContents(Optional.empty(), 0, 0, Optional.empty());
+public record ElixirContents(Optional<Holder<ElixirEffect>> elixir, int duration, int strength, Optional<Integer> customColor, Optional<String> customName) {
+	public static final ElixirContents EMPTY = new ElixirContents(Optional.empty(), 0, 0, Optional.empty(), Optional.empty());
 	private static final Component NO_EFFECT = Component.translatable("effect.none").withStyle(ChatFormatting.GRAY);
 
 	public static final Codec<ElixirContents> CODEC = RecordCodecBuilder.create(p_348387_ -> p_348387_.group(
 		BLRegistries.ELIXIR_EFFECTS.holderByNameCodec().optionalFieldOf("elixir").forGetter(ElixirContents::elixir),
 		Codec.INT.fieldOf("duration").forGetter(ElixirContents::duration),
 		Codec.INT.fieldOf("strength").forGetter(ElixirContents::strength),
-		Codec.INT.optionalFieldOf("custom_color").forGetter(ElixirContents::customColor)
+		Codec.INT.optionalFieldOf("custom_color").forGetter(ElixirContents::customColor),
+		Codec.STRING.optionalFieldOf("custom_name").forGetter(ElixirContents::customName)
 	).apply(p_348387_, ElixirContents::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, ElixirContents> STREAM_CODEC = StreamCodec.composite(
@@ -46,11 +47,16 @@ public record ElixirContents(Optional<Holder<ElixirEffect>> elixir, int duration
 		ByteBufCodecs.INT, ElixirContents::duration,
 		ByteBufCodecs.INT, ElixirContents::strength,
 		ByteBufCodecs.INT.apply(ByteBufCodecs::optional), ElixirContents::customColor,
+		ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs::optional), ElixirContents::customName,
 		ElixirContents::new
 	);
 
 	public ElixirContents(Holder<ElixirEffect> elixir, int duration, int strength) {
-		this(Optional.of(elixir), duration, strength, Optional.empty());
+		this(Optional.of(elixir), duration, strength, Optional.empty(), Optional.empty());
+	}
+
+	public Component getName(String id) {
+		return this.customName.map(s -> Component.translatable(id + s)).orElseGet(() -> Component.translatable(ElixirEffect.getName(this.elixir(), id)));
 	}
 
 	public static ItemStack createItemStack(Item item, Holder<ElixirEffect> elixir, int duration, int strength) {

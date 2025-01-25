@@ -6,7 +6,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -28,6 +27,15 @@ public class BLItemTagProvider extends ItemTagsProvider {
 	public static final TagKey<Item> REPAIRS_OCTINE_TOOLS = tag("repairs_octine_tools");
 	public static final TagKey<Item> REPAIRS_VALONITE_TOOLS = tag("repairs_valonite_tools");
 
+	public static final TagKey<Item> REPAIRS_LURKER_ARMOR = tag("repairs_lruker_armor");
+	public static final TagKey<Item> REPAIRS_BONE_ARMOR = tag("repairs_bone_armor");
+	public static final TagKey<Item> REPAIRS_SYRMORITE_ARMOR = tag("repairs_syrmorite_armor");
+	public static final TagKey<Item> REPAIRS_VALONITE_ARMOR = tag("repairs_valonite_armor");
+	public static final TagKey<Item> REPAIRS_ANCIENT_ARMOR = tag("repairs_ancient_armor");
+	public static final TagKey<Item> REPAIRS_AMPHIBIOUS_ARMOR = tag("repairs_amphibious_armor");
+	public static final TagKey<Item> REPAIRS_RUBBER_BOOTS = tag("repairs_rubber_boots");
+	public static final TagKey<Item> REPAIRS_SPECIAL_ARMORS = tag("repairs_special_armors");
+
 	public static final TagKey<Item> REPAIRS_GREEN_DENTROTHYST_SHIELD = tag("repairs_green_dentrothyst_shield");
 	public static final TagKey<Item> REPAIRS_ORANGE_DENTROTHYST_SHIELD = tag("repairs_orange_dentrothyst_shield");
 	public static final TagKey<Item> REPAIRS_SYRMORITE_SHIELD = tag("repairs_syrmorite_shield");
@@ -41,6 +49,7 @@ public class BLItemTagProvider extends ItemTagsProvider {
 	public static final TagKey<Item> SAMITE_CANVAS_PANELS = tag("samite_canvas_panels");
 	public static final TagKey<Item> ITEM_FRAMES = tag("item_frames");
 	public static final TagKey<Item> SLINGSHOT_AMMO = tag("slingshot_ammo");
+	public static final TagKey<Item> IGNITES_WEEDWOOD_SHIELDS = tag("ignites_weedwood_shields");
 
 	/**
 	 * Whether an item ignores the weakness on non-betweenlands tools
@@ -78,10 +87,20 @@ public class BLItemTagProvider extends ItemTagsProvider {
 		this.tag(REPAIRS_WEEDWOOD_TOOLS).add(BlockRegistry.WEEDWOOD_PLANKS.asItem());
 		this.tag(REPAIRS_VALONITE_TOOLS).add(ItemRegistry.VALONITE_SHARD.get());
 
+		this.tag(REPAIRS_LURKER_ARMOR).add(ItemRegistry.LURKER_SKIN.get());
+		this.tag(REPAIRS_BONE_ARMOR).add(ItemRegistry.SLIMY_BONE.get());
+		this.tag(REPAIRS_SYRMORITE_ARMOR).add(ItemRegistry.SYRMORITE_INGOT.get());
+		this.tag(REPAIRS_VALONITE_ARMOR).add(ItemRegistry.VALONITE_SHARD.get());
+		this.tag(REPAIRS_ANCIENT_ARMOR).add(ItemRegistry.ANCIENT_REMNANT.get());
+		this.tag(REPAIRS_AMPHIBIOUS_ARMOR).add(ItemRegistry.LURKER_SKIN.get());
+		this.tag(REPAIRS_RUBBER_BOOTS).add(ItemRegistry.RUBBER_BALL.get());
+		this.tag(REPAIRS_SPECIAL_ARMORS);
+
 		this.tag(REPAIRS_GREEN_DENTROTHYST_SHIELD).add(ItemRegistry.GREEN_DENTROTHYST_SHARD.get());
 		this.tag(REPAIRS_ORANGE_DENTROTHYST_SHIELD).add(ItemRegistry.ORANGE_DENTROTHYST_SHARD.get());
 		this.tag(REPAIRS_SYRMORITE_SHIELD).add(ItemRegistry.SYRMORITE_INGOT.get());
 		this.tag(REPAIRS_LURKER_SKIN_SHIELD).add(ItemRegistry.LURKER_SKIN.get());
+		this.tag(IGNITES_WEEDWOOD_SHIELDS).add(ItemRegistry.OCTINE_SWORD.get(), ItemRegistry.OCTINE_PICKAXE.get(), ItemRegistry.OCTINE_AXE.get(), ItemRegistry.OCTINE_SHOVEL.get());
 
 		this.copy(BLBlockTagProvider.FILTERED_SILT_GLASS, FILTERED_SILT_GLASS);
 		this.copy(BLBlockTagProvider.MUD_BRICK_SHINGLES, MUD_BRICK_SHINGLES);

@@ -59,7 +59,6 @@ public class EntityAIFlyRandomly<T extends Mob> extends Goal {
 	/**
 	 * Returns the flight speed
 	 *
-	 * @return
 	 */
 	protected double getFlightSpeed() {
 		return 1.0D;
@@ -70,7 +69,6 @@ public class EntityAIFlyRandomly<T extends Mob> extends Goal {
 	 *
 	 * @param rand               Random
 	 * @param distanceMultiplier Decreases if path is blocked or can't find a valid path. Ranges from 0.1 to 1.0
-	 * @return
 	 */
 	protected double getTargetX(RandomSource rand, double distanceMultiplier) {
 		return this.entity.xo + (rand.nextFloat() * 2.0F - 1.0F) * 16.0F * distanceMultiplier;
@@ -81,7 +79,6 @@ public class EntityAIFlyRandomly<T extends Mob> extends Goal {
 	 *
 	 * @param rand               Random
 	 * @param distanceMultiplier Decreases if path is blocked or can't find a valid path. Ranges from 0.1 to 1.0
-	 * @return
 	 */
 	protected double getTargetY(RandomSource rand, double distanceMultiplier) {
 		return this.entity.yo + (rand.nextFloat() * 2.0F - 1.0F) * 16.0F * distanceMultiplier;
@@ -92,7 +89,6 @@ public class EntityAIFlyRandomly<T extends Mob> extends Goal {
 	 *
 	 * @param rand               Random
 	 * @param distanceMultiplier Decreases if path is blocked or can't find a valid path. Ranges from 0.1 to 1.0
-	 * @return
 	 */
 	protected double getTargetZ(RandomSource rand, double distanceMultiplier) {
 		return this.entity.zo + (rand.nextFloat() * 2.0F - 1.0F) * 16.0F * distanceMultiplier;

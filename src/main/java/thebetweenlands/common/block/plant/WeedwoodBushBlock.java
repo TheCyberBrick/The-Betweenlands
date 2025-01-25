@@ -2,8 +2,6 @@ package thebetweenlands.common.block.plant;
 
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
@@ -12,21 +10,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -65,12 +59,12 @@ public class WeedwoodBushBlock extends Block implements FarmablePlant {
 	public static boolean isPassable(BlockGetter level, BlockPos pos, Entity entity) {
 		return entity != null && entity.getType().is(BLEntityTagProvider.WEEDWOOD_BUSH_PASSABLE) || entity instanceof WeedwoodBushPassableEntity passable && passable.canPassThroughBush(level, pos);
 	}
-	
+
 //	@Override
 //	public @Nullable PathType getBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob) {
 //		return isPassable(level, pos, mob) ? PathType.OPEN : super.getBlockPathType(state, level, pos, mob);
 //	}
-	
+
 	@Override
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		return this.getStateWithConnections(context.getLevel(), context.getClickedPos(), this.defaultBlockState());
@@ -99,8 +93,8 @@ public class WeedwoodBushBlock extends Block implements FarmablePlant {
 	}
 
 	@Override
-	protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
-		return state.setValue(PROPERTY_BY_DIRECTION.get(direction), this.canConnectTo(level, pos, direction));
+	protected BlockState updateShape(BlockState state, LevelReader reader, ScheduledTickAccess access, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
+		return state.setValue(PROPERTY_BY_DIRECTION.get(direction), this.canConnectTo(reader, pos, direction));
 	}
 
 	@Override
@@ -113,11 +107,11 @@ public class WeedwoodBushBlock extends Block implements FarmablePlant {
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (stack.is(ItemRegistry.PHEROMONE_THORAX)) {
 			level.setBlockAndUpdate(pos, BlockRegistry.PHEROMONE_INFUSED_WEEDWOOD_BUSH.get().defaultBlockState());
 			stack.consume(1, player);
-			return ItemInteractionResult.sidedSuccess(level.isClientSide());
+			return InteractionResult.SUCCESS;
 		}
 
 		return super.useItemOn(stack, state, level, pos, player, hand, hitResult);

@@ -116,7 +116,6 @@ public class LocationSludgeWormDungeon extends LocationGuarded {
 
 	/**
 	 * Sets the structure entrance
-	 * @param pos
 	 */
 	public void setStructurePos(BlockPos pos) {
 		this.structurePos = pos;
@@ -125,7 +124,6 @@ public class LocationSludgeWormDungeon extends LocationGuarded {
 
 	/**
 	 * Returns the structure entrance
-	 * @return
 	 */
 	public BlockPos getStructurePos() {
 		return this.structurePos;
@@ -198,20 +196,19 @@ public class LocationSludgeWormDungeon extends LocationGuarded {
 
 		//TODO Only spawn when player is nearby? (maybe even per floor, for performance reasons)
 
-		if(!this.defeated && level instanceof ServerLevel server && level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && level.getGameTime() % 4 == 0) {
+		if(!this.defeated && level instanceof ServerLevel server && server.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && level.getGameTime() % 4 == 0) {
 			boolean spawnHostiles = level.getServer().isSpawningMonsters();
-			boolean spawnAnimals = level.getServer().isSpawningAnimals();
 
 			BlockPos pos = this.getStructurePos();
 
 			this.mazeMobSpawner.clearAreas();
 			this.mazeMobSpawner.addArea(new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 29, pos.getY() - 8 * 5 - 3, pos.getZ() + 29));
-			this.mazeMobSpawner.populate(server, spawnHostiles, spawnAnimals);
+			this.mazeMobSpawner.populate(server, spawnHostiles, true);
 
 			this.walkwaysMobSpawner.clearAreas();
 			this.walkwaysMobSpawner.addArea(new AABB(pos.getX() - 3, pos.getY() - 43, pos.getZ() - 3, pos.getX(), pos.getY() - 24, pos.getZ() + 29));
 			this.walkwaysMobSpawner.addArea(new AABB(pos.getX(), pos.getY() - 43, pos.getZ() - 3, pos.getX() + 29 , pos.getY() - 24, pos.getZ()));
-			this.walkwaysMobSpawner.populate(server, spawnHostiles, spawnAnimals);
+			this.walkwaysMobSpawner.populate(server, spawnHostiles, true);
 		}
 	}
 

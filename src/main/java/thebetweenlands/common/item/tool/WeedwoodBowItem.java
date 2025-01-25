@@ -11,9 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.event.EventHooks;
 import thebetweenlands.api.item.CorrosionHelper;
-import thebetweenlands.common.item.misc.OctineIngotItem;
 import thebetweenlands.common.item.tool.arrow.*;
-import thebetweenlands.common.registries.ItemRegistry;
 
 import java.util.List;
 
@@ -24,13 +22,13 @@ public class WeedwoodBowItem extends BowItem {
 	}
 
 	@Override
-	public void releaseUsing(ItemStack stack, Level level, LivingEntity entityLiving, int timeLeft) {
+	public boolean releaseUsing(ItemStack stack, Level level, LivingEntity entityLiving, int timeLeft) {
 		if (entityLiving instanceof Player player) {
 			ItemStack itemstack = player.getProjectile(stack);
 			if (!itemstack.isEmpty()) {
 				int i = this.getUseDuration(stack, entityLiving) - timeLeft;
 				i = EventHooks.onArrowLoose(stack, level, player, i, !itemstack.isEmpty());
-				if (i < 0) return;
+				if (i < 0) return false;
 				float f = getPowerForTime(i);
 				f *= CorrosionHelper.getModifier(stack);
 				if (!((double) f < 0.1)) {
@@ -41,9 +39,11 @@ public class WeedwoodBowItem extends BowItem {
 
 					level.playSound(null, player.blockPosition(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F);
 					player.awardStat(Stats.ITEM_USED.get(this));
+					return true;
 				}
 			}
 		}
+		return false;
 	}
 
 	public static float	getArrowType(Player player, ItemStack stack) {

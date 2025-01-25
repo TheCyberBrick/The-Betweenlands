@@ -5,7 +5,7 @@ import java.util.List;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.StackedContents;
+import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -110,7 +110,7 @@ public class WeedwoodCraftingContainer implements CraftingContainer {
 	}
 
 	@Override
-	public void fillStackedContents(StackedContents contents) {
+	public void fillStackedContents(StackedItemContents contents) {
         for (ItemStack itemstack : this.getItemsMutable()) {
             contents.accountSimpleStack(itemstack);
         }

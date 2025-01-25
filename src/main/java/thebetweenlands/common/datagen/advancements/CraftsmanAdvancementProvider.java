@@ -5,6 +5,7 @@ import net.minecraft.advancements.critereon.*;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentPredicate;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -37,7 +38,7 @@ public class CraftsmanAdvancementProvider implements AdvancementGenerator {
 				Component.translatable("advancement.thebetweenlands.craftsman.getting_harder_wood"),
 				Component.translatable("advancement.thebetweenlands.craftsman.getting_harder_wood.desc"),
 				null, AdvancementType.TASK, true, true, false)
-			.addCriterion("has_bl_log", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(BLItemTagProvider.BL_LOGS)))
+			.addCriterion("has_bl_log", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(registries.lookupOrThrow(Registries.ITEM), BLItemTagProvider.BL_LOGS)))
 			.save(consumer, "thebetweenlands:craftsman/getting_harder_wood");
 
 		var table = Advancement.Builder.advancement().parent(wood).display(BlockRegistry.WEEDWOOD_CRAFTING_TABLE,
@@ -73,7 +74,7 @@ public class CraftsmanAdvancementProvider implements AdvancementGenerator {
 				Component.translatable("advancement.thebetweenlands.craftsman.percolation_station.desc"),
 				null, AdvancementType.TASK, true, true, false)
 			.addCriterion("filter", InventoryChangeTrigger.TriggerInstance.hasItems(BlockRegistry.WATER_FILTER))
-			.addCriterion("clean_water", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(ItemRegistry.WEEDWOOD_BUCKET, ItemRegistry.SYRMORITE_BUCKET).hasComponents(DataComponentPredicate.builder().expect(DataComponentRegistry.STORED_FLUID.get(), SimpleFluidContent.copyOf(new FluidStack(FluidRegistry.CLEAN_WATER_STILL, FluidType.BUCKET_VOLUME))).build())))
+			.addCriterion("clean_water", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.WEEDWOOD_BUCKET, ItemRegistry.SYRMORITE_BUCKET).hasComponents(DataComponentPredicate.builder().expect(DataComponentRegistry.STORED_FLUID.get(), SimpleFluidContent.copyOf(new FluidStack(FluidRegistry.CLEAN_WATER_STILL, FluidType.BUCKET_VOLUME))).build())))
 			.requirements(AdvancementRequirements.Strategy.AND)
 			.save(consumer, "thebetweenlands:craftsman/percolation_station");
 
@@ -81,7 +82,7 @@ public class CraftsmanAdvancementProvider implements AdvancementGenerator {
 				Component.translatable("advancement.thebetweenlands.craftsman.omega_3s"),
 				Component.translatable("advancement.thebetweenlands.craftsman.omega_3s.desc"),
 				null, AdvancementType.TASK, true, true, false)
-			.addCriterion("fish_oil", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(ItemRegistry.WEEDWOOD_BUCKET, ItemRegistry.SYRMORITE_BUCKET).hasComponents(DataComponentPredicate.builder().expect(DataComponentRegistry.STORED_FLUID.get(), SimpleFluidContent.copyOf(new FluidStack(FluidRegistry.FISH_OIL_STILL, FluidType.BUCKET_VOLUME))).build())))
+			.addCriterion("fish_oil", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.WEEDWOOD_BUCKET, ItemRegistry.SYRMORITE_BUCKET).hasComponents(DataComponentPredicate.builder().expect(DataComponentRegistry.STORED_FLUID.get(), SimpleFluidContent.copyOf(new FluidStack(FluidRegistry.FISH_OIL_STILL, FluidType.BUCKET_VOLUME))).build())))
 			.save(consumer, "thebetweenlands:craftsman/omega_3s");
 
 		Advancement.Builder.advancement().parent(oil).display(BlockRegistry.TREATED_WEEDWOOD_PLANKS,
@@ -101,11 +102,11 @@ public class CraftsmanAdvancementProvider implements AdvancementGenerator {
 				Component.translatable("advancement.thebetweenlands.craftsman.paint_job"),
 				Component.translatable("advancement.thebetweenlands.craftsman.paint_job.desc"),
 				null, AdvancementType.TASK, true, true, false)
-			.addCriterion("glass", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(BLItemTagProvider.FILTERED_SILT_GLASS)))
-			.addCriterion("shingles", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(BLItemTagProvider.MUD_BRICK_SHINGLES)))
-			.addCriterion("mat", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(BLItemTagProvider.REED_MATS)))
-			.addCriterion("samite", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(BLItemTagProvider.SAMITE)))
-			.addCriterion("frame", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(BLItemTagProvider.ITEM_FRAMES)))
+			.addCriterion("glass", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(registries.lookupOrThrow(Registries.ITEM), BLItemTagProvider.FILTERED_SILT_GLASS)))
+			.addCriterion("shingles", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(registries.lookupOrThrow(Registries.ITEM), BLItemTagProvider.MUD_BRICK_SHINGLES)))
+			.addCriterion("mat", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(registries.lookupOrThrow(Registries.ITEM), BLItemTagProvider.REED_MATS)))
+			.addCriterion("samite", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(registries.lookupOrThrow(Registries.ITEM), BLItemTagProvider.SAMITE)))
+			.addCriterion("frame", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(registries.lookupOrThrow(Registries.ITEM), BLItemTagProvider.ITEM_FRAMES)))
 			.requirements(AdvancementRequirements.Strategy.OR)
 			.save(consumer, "thebetweenlands:craftsman/paint_job");
 

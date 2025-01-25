@@ -45,10 +45,10 @@ public class ChiromawShockBarb extends AbstractArrow {
 
 	private void spawnLightningArcs() {
 		Entity view = Minecraft.getInstance().getCameraEntity();
-		if(view != null && view.distanceTo(this) < 16 && this.level().getRandom().nextInt(!this.inGround ? 2 : 20) == 0) {
-			float ox = this.level().getRandom().nextFloat() - 0.5f + (!this.inGround ? (float)this.getDeltaMovement().x() : 0);
-			float oy = this.level().getRandom().nextFloat() - 0.5f + (!this.inGround ? (float)this.getDeltaMovement().y() : 0);
-			float oz = this.level().getRandom().nextFloat() - 0.5f + (!this.inGround ? (float)this.getDeltaMovement().z() : 0);
+		if(view != null && view.distanceTo(this) < 16 && this.level().getRandom().nextInt(!this.isInGround() ? 2 : 20) == 0) {
+			float ox = this.level().getRandom().nextFloat() - 0.5f + (!this.isInGround() ? (float)this.getDeltaMovement().x() : 0);
+			float oy = this.level().getRandom().nextFloat() - 0.5f + (!this.isInGround() ? (float)this.getDeltaMovement().y() : 0);
+			float oz = this.level().getRandom().nextFloat() - 0.5f + (!this.isInGround() ? (float)this.getDeltaMovement().z() : 0);
 
 //			Particle particle = TheBetweenlands.createParticle(ParticleRegistry.LIGHTNING_ARCS.get(), this.level(), this.getX(), this.getY(), this.getZ(),
 //				ParticleFactory.ParticleArgs.get()

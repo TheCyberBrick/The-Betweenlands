@@ -1,20 +1,16 @@
 package thebetweenlands.common.registries;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
-import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import thebetweenlands.api.recipes.*;
 import thebetweenlands.common.TheBetweenlands;
-import thebetweenlands.common.item.recipe.*;
-import thebetweenlands.common.item.recipe.special.*;
+import thebetweenlands.common.recipe.*;
+import thebetweenlands.common.recipe.special.*;
 import thebetweenlands.util.AspectIngredient;
-
-import javax.annotation.Nullable;
 
 public class RecipeRegistry {
 
@@ -47,29 +43,16 @@ public class RecipeRegistry {
 	public static final DeferredHolder<RecipeType<?>, RecipeType<SteepingPotRecipe>> STEEPING_POT_RECIPE = RECIPE_TYPES.register("steeping_pot", () -> RecipeType.simple(TheBetweenlands.prefix("steeping_pot")));
 	public static final DeferredHolder<RecipeType<?>, RecipeType<TrimmingTableRecipe>> TRIMMING_TABLE_RECIPE = RECIPE_TYPES.register("trimming_table", () -> RecipeType.simple(TheBetweenlands.prefix("trimming_table")));
 
-	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<AddWormToRodRecipe>> FISHING_ROD_WORM = RECIPE_SERIALIZERS.register("add_worm_to_fishing_rod", () -> new SimpleCraftingRecipeSerializer<>(AddWormToRodRecipe::new));
-	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<CircleGemRecipe>> CIRCLE_GEM = RECIPE_SERIALIZERS.register("add_circle_gem", () -> new SimpleCraftingRecipeSerializer<>(CircleGemRecipe::new));
-	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<CoatToolRecipe>> COAT_TOOL = RECIPE_SERIALIZERS.register("coat_tool", () -> new SimpleCraftingRecipeSerializer<>(CoatToolRecipe::new));
-	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<CleanToolRecipe>> CLEAN_TOOL = RECIPE_SERIALIZERS.register("clean_tool", () -> new SimpleCraftingRecipeSerializer<>(CleanToolRecipe::new));
-	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<DyeLurkerPouchRecipe>> DYE_LURKER_POUCH = RECIPE_SERIALIZERS.register("dye_lurker_pouch", () -> new SimpleCraftingRecipeSerializer<>(DyeLurkerPouchRecipe::new));
-	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<EmptyAspectVialRecipe>> EMPTY_ASPECT_VIAL = RECIPE_SERIALIZERS.register("empty_aspect_vial", () -> new SimpleCraftingRecipeSerializer<>(EmptyAspectVialRecipe::new));
-	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<HearthgroveTarringRecipe>> HEARTHGROVE_TARRING = RECIPE_SERIALIZERS.register("hearthgrove_tarring", () -> new SimpleCraftingRecipeSerializer<>(HearthgroveTarringRecipe::new));
-	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<HerbloreBookCopyRecipe>> HERBLORE_BOOK_COPY = RECIPE_SERIALIZERS.register("copy_herblore_book", () -> new SimpleCraftingRecipeSerializer<>(HerbloreBookCopyRecipe::new));
-	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<LifeCrystalRechargeRecipe>> LIFE_CRYSTAL_RECHARGE = RECIPE_SERIALIZERS.register("recharge_life_crystal", () -> new SimpleCraftingRecipeSerializer<>(LifeCrystalRechargeRecipe::new));
-	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<UpgradeFishBaitRecipe>> UPGRADE_FISH_BAIT = RECIPE_SERIALIZERS.register("upgrade_fish_bait", () -> new SimpleCraftingRecipeSerializer<>(UpgradeFishBaitRecipe::new));
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<AddWormToRodRecipe>> FISHING_ROD_WORM = RECIPE_SERIALIZERS.register("add_worm_to_fishing_rod", () -> new CustomRecipe.Serializer<>(AddWormToRodRecipe::new));
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<CircleGemRecipe>> CIRCLE_GEM = RECIPE_SERIALIZERS.register("add_circle_gem", () -> new CustomRecipe.Serializer<>(CircleGemRecipe::new));
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<CoatToolRecipe>> COAT_TOOL = RECIPE_SERIALIZERS.register("coat_tool", () -> new CustomRecipe.Serializer<>(CoatToolRecipe::new));
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<CleanToolRecipe>> CLEAN_TOOL = RECIPE_SERIALIZERS.register("clean_tool", () -> new CustomRecipe.Serializer<>(CleanToolRecipe::new));
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<DyeLurkerPouchRecipe>> DYE_LURKER_POUCH = RECIPE_SERIALIZERS.register("dye_lurker_pouch", () -> new CustomRecipe.Serializer<>(DyeLurkerPouchRecipe::new));
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<EmptyAspectVialRecipe>> EMPTY_ASPECT_VIAL = RECIPE_SERIALIZERS.register("empty_aspect_vial", () -> new CustomRecipe.Serializer<>(EmptyAspectVialRecipe::new));
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<HearthgroveTarringRecipe>> HEARTHGROVE_TARRING = RECIPE_SERIALIZERS.register("hearthgrove_tarring", () -> new CustomRecipe.Serializer<>(HearthgroveTarringRecipe::new));
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<HerbloreBookCopyRecipe>> HERBLORE_BOOK_COPY = RECIPE_SERIALIZERS.register("copy_herblore_book", () -> new CustomRecipe.Serializer<>(HerbloreBookCopyRecipe::new));
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<LifeCrystalRechargeRecipe>> LIFE_CRYSTAL_RECHARGE = RECIPE_SERIALIZERS.register("recharge_life_crystal", () -> new CustomRecipe.Serializer<>(LifeCrystalRechargeRecipe::new));
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<UpgradeFishBaitRecipe>> UPGRADE_FISH_BAIT = RECIPE_SERIALIZERS.register("upgrade_fish_bait", () -> new CustomRecipe.Serializer<>(UpgradeFishBaitRecipe::new));
 
 	public static final DeferredHolder<IngredientType<?>, IngredientType<AspectIngredient>> ASPECT_INGREDIENT_TYPE = INGREDIENT_TYPES.register("aspect", () -> new IngredientType<>(AspectIngredient.CODEC));
-
-	public static boolean doesSteepingPotUseItem(@Nullable Level level, ItemStack stack) {
-		if (level != null) {
-			for (RecipeHolder<SteepingPotRecipe> recipe : level.getRecipeManager().getAllRecipesFor(STEEPING_POT_RECIPE.get())) {
-				for (Ingredient ingredient : recipe.value().getIngredients()) {
-					if (ingredient.test(stack)) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
 }

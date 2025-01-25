@@ -3,9 +3,9 @@ package thebetweenlands.common.item.misc;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -53,53 +53,29 @@ public class AmateMapItem extends MapItem {
 	}
 
 	@Nullable
-	public static AmateMapData getData(ItemStack stack, Level level) {
-		MapId mapid = stack.get(DataComponents.MAP_ID);
-		return mapid == null ? null : AmateMapData.getMapData(level, getMapName(mapid.id()));
-	}
-
-	@Nullable
-	public static AmateMapData getData(ItemStack stack, TooltipContext context) {
-		MapId mapid = stack.get(DataComponents.MAP_ID);
-		return mapid != null && context.mapData(mapid) instanceof AmateMapData mapData ? mapData : null;
-	}
-
-	@Nullable
 	@Override
 	protected AmateMapData getCustomMapData(ItemStack stack, Level level) {
-		AmateMapData mapdata = getData(stack, level);
-		if (mapdata == null && !level.isClientSide()) {
-			BlockPos sharedSpawnPos = level.getSharedSpawnPos();
-			mapdata = AmateMapItem.createMapData(stack, level, sharedSpawnPos.getX(), sharedSpawnPos.getZ(), false, false);
+		var id = stack.get(DataComponents.MAP_ID);
+		if (id != null) {
+			MapItemSavedData mapData = level.getMapData(id);
+			if (!(mapData instanceof AmateMapData data)) {
+				BlockPos sharedSpawnPos = level.getSharedSpawnPos();
+				return AmateMapItem.createMapData(stack, level, sharedSpawnPos.getX(), sharedSpawnPos.getZ(), false, false);
+			}
+			return data;
 		}
 
-		return mapdata;
+		return null;
 	}
 
 	private static AmateMapData createMapData(ItemStack stack, Level level, int x, int z, boolean trackingPosition, boolean unlimitedTracking) {
+		AmateMapData mapdata = AmateMapData.createFresh(x, z, trackingPosition, unlimitedTracking, false);
 		MapId freeMapId = level.getFreeMapId();
-
-		AmateMapData mapdata = new AmateMapData(x, z, trackingPosition, unlimitedTracking, false);
-		AmateMapData.registerMapData(level, mapdata, getMapName(freeMapId.id())); // call our own register method
+		if (level instanceof ServerLevel serverLevel) {
+			serverLevel.getServer().overworld().getDataStorage().get(AmateMapData.factory(), STR_ID + "_" + freeMapId.id());
+		}
 		stack.set(DataComponents.MAP_ID, freeMapId);
 		return mapdata;
-	}
-
-	public static String getMapName(int id) {
-		return STR_ID + "_" + id;
-	}
-
-	@Override
-	public void onCraftedBy(ItemStack stack, Level level, Player player) {
-		//disable zooming
-	}
-
-	@Override
-	@Nullable
-	public Packet<?> getUpdatePacket(ItemStack stack, Level world, Player player) {
-		MapId mapId = stack.get(DataComponents.MAP_ID);
-		AmateMapData mapdata = getCustomMapData(stack, world);
-		return mapId == null || mapdata == null ? null : mapdata.getUpdatePacket(mapId, player);
 	}
 
 	private static final Map<ChunkPos, ResourceLocation[]> CACHE = new HashMap<>();

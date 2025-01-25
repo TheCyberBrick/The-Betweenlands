@@ -71,6 +71,10 @@ public class AnimatorMenu extends AbstractContainerMenu {
 		return (this.data.get(3) + (this.getFuelProgress() / 42.0D)) / (double) this.data.get(4);
 	}
 
+	public boolean isValidFocalItem() {
+		return this.data.get(6) == 1;
+	}
+
 	@Override
 	public ItemStack quickMoveStack(Player player, int index) {
 		ItemStack stack = ItemStack.EMPTY;

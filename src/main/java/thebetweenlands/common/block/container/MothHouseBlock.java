@@ -4,20 +4,16 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -94,16 +90,17 @@ public class MothHouseBlock extends HorizontalBaseEntityBlock implements SwampWa
 	}
 
 	@Override
-	protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+	protected BlockState updateShape(BlockState state, LevelReader reader, ScheduledTickAccess access, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
 		if (state.getValue(WATER_TYPE) != WaterType.NONE) {
-			level.scheduleTick(pos, state.getValue(WATER_TYPE).getFluid(), state.getValue(WATER_TYPE).getFluid().getTickDelay(level));
+			access.scheduleTick(pos, state.getValue(WATER_TYPE).getFluid(), state.getValue(WATER_TYPE).getFluid().getTickDelay(reader));
 		}
-		return state.canSurvive(level, pos) ? super.updateShape(state, direction, neighborState, level, pos, neighborPos) : Blocks.AIR.defaultBlockState();
+
+		return super.updateShape(state, reader, access, pos, direction, neighborPos, neighborState, random);
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-		if (state.getValue(WATER_TYPE) != SwampWaterLoggable.WaterType.NONE) return ItemInteractionResult.CONSUME;
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+		if (state.getValue(WATER_TYPE) != SwampWaterLoggable.WaterType.NONE) return InteractionResult.CONSUME;
 		if (level.getBlockEntity(pos) instanceof MothHouseBlockEntity house) {
 			var cap = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, state, house, null);
 			if (stack.is(ItemRegistry.SILK_GRUB) && cap != null) {
@@ -111,7 +108,7 @@ public class MothHouseBlock extends HorizontalBaseEntityBlock implements SwampWa
 				stack.consume(grubCount, player);
 				house.setChanged();
 				level.sendBlockUpdated(pos, state, state, 2);
-				return ItemInteractionResult.sidedSuccess(level.isClientSide());
+				return InteractionResult.SUCCESS;
 			}
 		}
 		return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
@@ -125,7 +122,7 @@ public class MothHouseBlock extends HorizontalBaseEntityBlock implements SwampWa
 			if (player.isShiftKeyDown()) {
 				flag |= this.extractItems(player, house, true);
 			}
-			return flag ? InteractionResult.sidedSuccess(level.isClientSide()) : InteractionResult.PASS;
+			return flag ? InteractionResult.SUCCESS : InteractionResult.PASS;
 		}
 		return super.useWithoutItem(state, level, pos, player, hitResult);
 	}

@@ -108,7 +108,7 @@ public class AnimatorRenderer implements BlockEntityRenderer<AnimatorBlockEntity
 							dispatcher.setRenderHitBoxes(false);
 
 							try {
-								dispatcher.render(renderEntity, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks, stack, source, light);
+								dispatcher.render(renderEntity, 0.0D, 0.0D, 0.0D, partialTicks, stack, source, light);
 							} catch (Exception e) {
 								TheBetweenlands.LOGGER.error("Failed to render entity {} on the animator", renderEntity.getType().getDescriptionId(), e);
 								EntityCache.addEntityToBlacklist(renderEntity.getType());

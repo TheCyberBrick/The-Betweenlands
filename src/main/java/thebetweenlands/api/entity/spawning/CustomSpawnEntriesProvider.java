@@ -8,7 +8,6 @@ import java.util.List;
 public interface CustomSpawnEntriesProvider {
 	/**
 	 * Returns an unmodifiable list of all custom entity spawn entries
-	 * @return
 	 */
 	List<CustomSpawnEntry> getCustomSpawnEntries();
 }

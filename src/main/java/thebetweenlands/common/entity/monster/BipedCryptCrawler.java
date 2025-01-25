@@ -3,6 +3,7 @@ package thebetweenlands.common.entity.monster;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
@@ -92,9 +93,9 @@ public class BipedCryptCrawler extends Monster implements BLEntity {
 	}
 
 	@Override
-	public boolean doHurtTarget(Entity entity) {
+	public boolean doHurtTarget(ServerLevel level, Entity entity) {
 		if(!this.isBlocking() && this.hasLineOfSight(entity)) {
-			boolean hasHitTarget = entity.hurt(this.damageSources().mobAttack(this), (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE));
+			boolean hasHitTarget = entity.hurtServer(level, this.damageSources().mobAttack(this), (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE));
 
 			if (hasHitTarget) {
 				if (!this.level().isClientSide()) {
@@ -107,12 +108,12 @@ public class BipedCryptCrawler extends Monster implements BLEntity {
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		if (this.tickCount < 40 && source.is(DamageTypes.IN_WALL)) {
 			return false;
 		}
 
-		boolean wasAttackBlocked = super.hurt(source, amount);
+		boolean wasAttackBlocked = super.hurtServer(level, source, amount);
 
 		if(this.isBlocking() && !wasAttackBlocked) {
 			this.recentlyBlockedAttack = true;
@@ -125,7 +126,7 @@ public class BipedCryptCrawler extends Monster implements BLEntity {
 	}
 
 	@Override
-	public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+	public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnGroupData) {
 		spawnGroupData = super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
 		RandomSource randomsource = level.getRandom();
 		this.populateDefaultEquipmentSlots(randomsource, difficulty);

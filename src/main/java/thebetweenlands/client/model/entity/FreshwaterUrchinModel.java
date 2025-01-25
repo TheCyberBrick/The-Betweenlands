@@ -1,8 +1,5 @@
 package thebetweenlands.client.model.entity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -11,31 +8,26 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.creature.FreshwaterUrchin;
+import thebetweenlands.client.state.FreshwaterUrchinRenderState;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 
-public class FreshwaterUrchinModel extends MowzieModelBase<FreshwaterUrchin> {
+public class FreshwaterUrchinModel extends MowzieModelBase<FreshwaterUrchinRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart analSac;
-	private final ModelPart spikePoint;
 	private final ModelPart[] spikes;
-	@Nullable
-	private FreshwaterUrchin urchin;
 
 	public FreshwaterUrchinModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		var base = root.getChild("base");
 		this.analSac = base.getChild("anal_sac");
-		this.spikePoint = base.getChild("spike_rotationpoint");
+		ModelPart spikePoint = base.getChild("spike_rotationpoint");
 
 		this.spikes = new ModelPart[]{
-			this.spikePoint.getChild("spike_f1"), base.getChild("spike_f2"), this.spikePoint.getChild("spike_f3"), base.getChild("spike_f4"), this.spikePoint.getChild("spike_f5"),
-			this.spikePoint.getChild("spike_b1"), base.getChild("spike_b2"), this.spikePoint.getChild("spike_b3"), base.getChild("spike_b4"), this.spikePoint.getChild("spike_b5"),
-			this.spikePoint.getChild("spike_l1"), base.getChild("spike_l2"), this.spikePoint.getChild("spike_l3"), base.getChild("spike_l4"), this.spikePoint.getChild("spike_l5"),
-			this.spikePoint.getChild("spike_r1"), base.getChild("spike_r2"), this.spikePoint.getChild("spike_r3"), base.getChild("spike_r4"), this.spikePoint.getChild("spike_r5")
+			spikePoint.getChild("spike_f1"), base.getChild("spike_f2"), spikePoint.getChild("spike_f3"), base.getChild("spike_f4"), spikePoint.getChild("spike_f5"),
+			spikePoint.getChild("spike_b1"), base.getChild("spike_b2"), spikePoint.getChild("spike_b3"), base.getChild("spike_b4"), spikePoint.getChild("spike_b5"),
+			spikePoint.getChild("spike_l1"), base.getChild("spike_l2"), spikePoint.getChild("spike_l3"), base.getChild("spike_l4"), spikePoint.getChild("spike_l5"),
+			spikePoint.getChild("spike_r1"), base.getChild("spike_r2"), spikePoint.getChild("spike_r3"), base.getChild("spike_r4"), spikePoint.getChild("spike_r5")
 		};
 	}
 
@@ -121,51 +113,20 @@ public class FreshwaterUrchinModel extends MowzieModelBase<FreshwaterUrchin> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void renderToBuffer(PoseStack stack, VertexConsumer consumer, int light, int overlay, int color) {
-		if (this.urchin != null) {
-			float scaleSpikes = 1.0F / 80.0F * this.urchin.getSpikeGrowTimer();
-			float pulse = Mth.sin((this.urchin.tickCount * Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true)) * 0.0625F) * 0.125F;
-			stack.pushPose();
-			Arrays.stream(this.spikes).toList().forEach(modelPart -> modelPart.visible = false);
-			this.root.render(stack, consumer, light, overlay, color);
-			this.analSac.visible = false;
-			this.spikePoint.visible = false;
-			this.root.render(stack, consumer, light, overlay, color);
-			stack.pushPose();
-			stack.translate(0.0F, 1.5F, 0.0F);
-			stack.scale(0.75F + pulse, 1F + pulse * 0.25F, 0.75F + pulse);
-			this.analSac.visible = true;
-			this.analSac.render(stack, consumer, light, overlay, color);
-			stack.popPose();
-
-			stack.pushPose();
-			stack.translate(0.0F, 1.5F, 0.0F);
-			stack.scale(scaleSpikes, scaleSpikes, scaleSpikes);
-			Arrays.stream(this.spikes).toList().forEach(modelPart -> modelPart.visible = true);
-			this.spikePoint.visible = true;
-			this.spikePoint.render(stack, consumer, light, overlay, color);
-			stack.popPose();
-
-			stack.popPose();
-		} else {
-			super.renderToBuffer(stack, consumer, light, overlay, color);
-		}
-		this.urchin = null;
-	}
-
-	@Override
-	public void setupAnim(FreshwaterUrchin entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		this.setInitPose();
-		this.urchin = entity;
-		float pulse = Mth.sin(ageInTicks * 0.125F) * 0.03125F;
+	public void setupAnim(FreshwaterUrchinRenderState state) {
+		super.setupAnim(state);
+		float scaleSpikes = 1.0F / 80.0F * state.spikeGrowTimer;
+		float pulse = Mth.sin(state.ageInTicks * 0.125F) * 0.03125F;
 		Arrays.stream(this.spikes).toList().forEach(modelPart -> {
 			modelPart.yRot += pulse;
 			modelPart.xRot += pulse;
+			modelPart.xScale = scaleSpikes;
+			modelPart.yScale = scaleSpikes;
+			modelPart.zScale = scaleSpikes;
 		});
+		float analPulse = Mth.sin(state.ageInTicks * 0.0625F) * 0.125F;
+		this.analSac.xScale = 0.75F + analPulse;
+		this.analSac.yScale = 1.0F + pulse * 0.25F;
+		this.analSac.zScale = 0.75F + analPulse;
 	}
 }

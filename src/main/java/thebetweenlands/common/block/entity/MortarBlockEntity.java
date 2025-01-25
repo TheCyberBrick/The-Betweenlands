@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Unit;
@@ -76,94 +77,92 @@ public class MortarBlockEntity extends BaseContainerBlockEntity {
 			if (entity.progress > 0 && entity.progress < 84) {
 				entity.progress++;
 			}
+		} else {
+			boolean validRecipe = false;
+			boolean outputFull = entity.outputIsFull();
 
-			return;
-		}
+			if (entity.isPestleInstalled()) {
+				SingleRecipeInput input = new SingleRecipeInput(entity.getItem(0));
+				Optional<RecipeHolder<MortarRecipe>> holder = entity.quickCheck.getRecipeFor(input, (ServerLevel) level);
 
-		boolean validRecipe = false;
-		boolean outputFull = entity.outputIsFull();
+				if (holder.isPresent()) {
+					MortarRecipe recipe = holder.get().value();
+					ItemStack output = recipe.getOutput(input, entity.getItem(2).copy(), level.registryAccess());
+					boolean replacesOutput = recipe.replacesOutput();
 
-		if (entity.isPestleInstalled()) {
-			SingleRecipeInput input = new SingleRecipeInput(entity.getItem(0));
-			Optional<RecipeHolder<MortarRecipe>> holder = entity.quickCheck.getRecipeFor(input, level);
+					outputFull &= !replacesOutput;
 
-			if (holder.isPresent()) {
-				MortarRecipe recipe = holder.get().value();
-				ItemStack output = recipe.getOutput(input, entity.getItem(2).copy(), level.registryAccess());
-				boolean replacesOutput = recipe.replacesOutput();
+					if ((entity.isCrystalInstalled() || entity.manualGrinding)) {
+						if (!output.isEmpty() && (replacesOutput || entity.getItem(2).isEmpty() || (ItemStack.isSameItemSameComponents(entity.getItem(2), output) && entity.getItem(2).getCount() + output.getCount() <= output.getMaxStackSize()))) {
+							validRecipe = true;
 
-				outputFull &= !replacesOutput;
+							entity.progress++;
 
-				if ((entity.isCrystalInstalled() || entity.manualGrinding)) {
-					if (!output.isEmpty() && (replacesOutput || entity.getItem(2).isEmpty() || (ItemStack.isSameItemSameComponents(entity.getItem(2), output) && entity.getItem(2).getCount() + output.getCount() <= output.getMaxStackSize()))) {
-						validRecipe = true;
-
-						entity.progress++;
-
-						if (entity.progress == 1) {
-							level.playSound(null, pos, SoundRegistry.GRIND.get(), SoundSource.BLOCKS, 1F, 1F);
-						}
-
-						if (entity.progress == 64 || entity.progress == 84) {
-							level.playSound(null, pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F, SoundEvents.GRASS_BREAK, SoundSource.BLOCKS, 0.3F, 1.0F);
-							level.playSound(null, pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F, SoundEvents.STONE_BREAK, SoundSource.BLOCKS, 0.3F, 1.0F);
-						}
-
-						if (entity.isPestleInstalled())
-							entity.getItem(1).set(DataComponentRegistry.PESTLE_ACTIVE, Unit.INSTANCE);
-
-						if (entity.progress > 84) {
-							if (!entity.getItem(0).isEmpty())
-								if (entity.getItem(0).getCount() - 1 <= 0)
-									entity.setItem(0, ItemStack.EMPTY);
-								else
-									entity.getItem(0).shrink(1);
-
-							if (replacesOutput || entity.getItem(2).isEmpty())
-								entity.setItem(2, output.copy());
-							else if (ItemStack.isSameItemSameComponents(entity.getItem(2), output))
-								entity.getItem(2).grow(output.getCount());
-
-							entity.getItem(1).setDamageValue(entity.getItem(1).getDamageValue() + 1);
-
-							if (!entity.manualGrinding)
-								entity.getItem(3).setDamageValue(entity.getItem(1).getDamageValue() + 1);
-
-							entity.progress = 0;
-							entity.manualGrinding = false;
-
-							if (entity.getItem(1).getDamageValue() >= entity.getItem(1).getMaxDamage()) {
-								entity.setItem(1, ItemStack.EMPTY);
+							if (entity.progress == 1) {
+								level.playSound(null, pos, SoundRegistry.GRIND.get(), SoundSource.BLOCKS, 1F, 1F);
 							}
 
-							if (!entity.getItem(1).isEmpty())
-								entity.getItem(1).remove(DataComponentRegistry.PESTLE_ACTIVE);
+							if (entity.progress == 64 || entity.progress == 84) {
+								level.playSound(null, pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F, SoundEvents.GRASS_BREAK, SoundSource.BLOCKS, 0.3F, 1.0F);
+								level.playSound(null, pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F, SoundEvents.STONE_BREAK, SoundSource.BLOCKS, 0.3F, 1.0F);
+							}
 
-							entity.setChanged();
+							if (entity.isPestleInstalled())
+								entity.getItem(1).set(DataComponentRegistry.PESTLE_ACTIVE, Unit.INSTANCE);
+
+							if (entity.progress > 84) {
+								if (!entity.getItem(0).isEmpty())
+									if (entity.getItem(0).getCount() - 1 <= 0)
+										entity.setItem(0, ItemStack.EMPTY);
+									else
+										entity.getItem(0).shrink(1);
+
+								if (replacesOutput || entity.getItem(2).isEmpty())
+									entity.setItem(2, output.copy());
+								else if (ItemStack.isSameItemSameComponents(entity.getItem(2), output))
+									entity.getItem(2).grow(output.getCount());
+
+								entity.getItem(1).setDamageValue(entity.getItem(1).getDamageValue() + 1);
+
+								if (!entity.manualGrinding)
+									entity.getItem(3).setDamageValue(entity.getItem(1).getDamageValue() + 1);
+
+								entity.progress = 0;
+								entity.manualGrinding = false;
+
+								if (entity.getItem(1).getDamageValue() >= entity.getItem(1).getMaxDamage()) {
+									entity.setItem(1, ItemStack.EMPTY);
+								}
+
+								if (!entity.getItem(1).isEmpty())
+									entity.getItem(1).remove(DataComponentRegistry.PESTLE_ACTIVE);
+
+								entity.setChanged();
+							}
 						}
 					}
 				}
 			}
-		}
-
-		if (entity.progress > 0) {
-			entity.setChanged();
-		}
-
-		if (!validRecipe || entity.getItem(0).isEmpty() || entity.getItem(1).isEmpty() || outputFull) {
-			if (!entity.getItem(1).isEmpty())
-				entity.getItem(1).remove(DataComponentRegistry.PESTLE_ACTIVE);
 
 			if (entity.progress > 0) {
+				entity.setChanged();
+			}
+
+			if (!validRecipe || entity.getItem(0).isEmpty() || entity.getItem(1).isEmpty() || outputFull) {
+				if (!entity.getItem(1).isEmpty())
+					entity.getItem(1).remove(DataComponentRegistry.PESTLE_ACTIVE);
+
+				if (entity.progress > 0) {
+					entity.progress = 0;
+					entity.setChanged();
+				}
+			}
+			if (entity.getItem(3).isEmpty() && entity.progress > 0 && !entity.manualGrinding) {
+				if (!entity.getItem(1).isEmpty())
+					entity.getItem(1).remove(DataComponentRegistry.PESTLE_ACTIVE);
 				entity.progress = 0;
 				entity.setChanged();
 			}
-		}
-		if (entity.getItem(3).isEmpty() && entity.progress > 0 && !entity.manualGrinding) {
-			if (!entity.getItem(1).isEmpty())
-				entity.getItem(1).remove(DataComponentRegistry.PESTLE_ACTIVE);
-			entity.progress = 0;
-			entity.setChanged();
 		}
 	}
 

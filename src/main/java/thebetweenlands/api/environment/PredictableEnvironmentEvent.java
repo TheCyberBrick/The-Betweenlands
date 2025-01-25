@@ -25,7 +25,6 @@ public interface PredictableEnvironmentEvent extends EnvironmentEvent {
 
 	/**
 	 * Returns a collection of all states of this event that could potentially be estimated.
-	 * @return
 	 */
 	default Collection<State> getStates() {
 		return State.DEFAULT_STATES;
@@ -35,14 +34,12 @@ public interface PredictableEnvironmentEvent extends EnvironmentEvent {
 	 * Estimates the time in ticks until the specified state. If the the event is already in the specified state returns 0.
 	 * If the time cannot be estimated returns -1.
 	 * @param state State to estimate time for
-	 * @return
 	 */
 	int estimateTimeUntil(Level level, State state);
 
 	/**
 	 * Estimates the time in ticks remaining for the specified state. If the event is not in the specified state returns -1.
 	 * @param state State to estimate time for
-	 * @return
 	 */
 	default int estimateTimeRemaining(Level level, State state) {
 		int remaining = -1;

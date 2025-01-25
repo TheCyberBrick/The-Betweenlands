@@ -2,7 +2,7 @@ package thebetweenlands.common.fluid;
 
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.material.FluidState;
 import thebetweenlands.common.TheBetweenlands;
@@ -30,9 +30,9 @@ public class SwampWaterFluidType extends BasicFluidType {
 		for (int dx = -1; dx <= 1; dx++) {
 			for (int dz = -1; dz <= 1; dz++) {
 				int colorMultiplier = BiomeColors.getAverageWaterColor(getter, pos);
-				r += FastColor.ARGB32.red(colorMultiplier);
-				g += FastColor.ARGB32.green(colorMultiplier);
-				b += FastColor.ARGB32.blue(colorMultiplier);
+				r += ARGB.red(colorMultiplier);
+				g += ARGB.green(colorMultiplier);
+				b += ARGB.blue(colorMultiplier);
 			}
 		}
 		r /= 9;
@@ -51,6 +51,6 @@ public class SwampWaterFluidType extends BasicFluidType {
 		r = (int) (r * depth + DEEP_COLOR_R * (1 - depth) + 0.5F);
 		g = (int) (g * depth + DEEP_COLOR_G * (1 - depth) + 0.5F);
 		b = (int) (b * depth + DEEP_COLOR_B * (1 - depth) + 0.5F);
-		return FastColor.ARGB32.color(FastColor.as8BitChannel(1.0F), r, g, b);
+		return ARGB.color(255, r, g, b);
 	}
 }

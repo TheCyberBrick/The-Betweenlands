@@ -13,7 +13,6 @@ public interface EnvironmentEvent {
 
 	/**
 	 * Returns whether this event is currently active
-	 * @return
 	 */
 	boolean isActive();
 
@@ -23,10 +22,6 @@ public interface EnvironmentEvent {
 	 * biomes, height etc.
 	 * <br>
 	 * Returns {@link #isActive()} by default
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
 	 */
 	boolean isActiveAt(double x, double y, double z);
 
@@ -49,19 +44,16 @@ public interface EnvironmentEvent {
 
 	/**
 	 * Called every world tick.
-	 * @param level
 	 */
 	void tick(Level level);
 
 	/**
 	 * Saves the event data.
-	 * @param tag
 	 */
 	void writeToNBT(CompoundTag tag, HolderLookup.Provider registries);
 
 	/**
 	 * Loads the event data.
-	 * @param tag
 	 */
 	void readFromNBT(CompoundTag tag, HolderLookup.Provider registries);
 
@@ -82,7 +74,6 @@ public interface EnvironmentEvent {
 
 	/**
 	 * Returns whether the data of this event has already been loaded.
-	 * @return
 	 */
 	boolean isLoaded();
 
@@ -92,7 +83,6 @@ public interface EnvironmentEvent {
 
 	/**
 	 * Returns the data manager used to sync data
-	 * @return
 	 */
 	@Nullable
 	GenericDataAccessorAccess getDataManager();

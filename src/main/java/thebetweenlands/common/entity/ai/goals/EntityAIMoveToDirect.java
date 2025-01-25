@@ -40,7 +40,6 @@ public abstract class EntityAIMoveToDirect<T extends Mob> extends Goal {
 	/**
 	 * Returns the target. Returns null if there is no target
 	 *
-	 * @return
 	 */
 	@Nullable
 	protected abstract Vector3d getTarget();

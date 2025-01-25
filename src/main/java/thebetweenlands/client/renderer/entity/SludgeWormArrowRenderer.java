@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ArrowRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.ArrowRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -15,8 +16,9 @@ import thebetweenlands.client.model.entity.SludgeWormArrowModel;
 import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.entity.projectile.arrow.SludgeWormArrow;
 
-public class SludgeWormArrowRenderer extends ArrowRenderer<SludgeWormArrow> {
+public class SludgeWormArrowRenderer extends ArrowRenderer<SludgeWormArrow, ArrowRenderState> {
 
+	public static final ResourceLocation TEXTURE = TheBetweenlands.prefix("textures/entity/sludge_worm_tiny.png");
 	private final SludgeWormArrowModel model;
 
 	public SludgeWormArrowRenderer(EntityRendererProvider.Context context) {
@@ -25,24 +27,28 @@ public class SludgeWormArrowRenderer extends ArrowRenderer<SludgeWormArrow> {
 	}
 
 	@Override
-	public void render(SludgeWormArrow entity, float entityYaw, float partialTicks, PoseStack stack, MultiBufferSource buffer, int packedLight) {
+	public void render(ArrowRenderState state, PoseStack stack, MultiBufferSource buffer, int packedLight) {
 		stack.pushPose();
-		stack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()) - 90.0F));
-		stack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.getXRot()) + 90.0F));
-		float f9 = (float)entity.shakeTime - partialTicks;
-		if (f9 > 0.0F) {
-			float f10 = -Mth.sin(f9 * 3.0F) * f9;
+		stack.mulPose(Axis.YP.rotationDegrees(state.yRot - 90.0F));
+		stack.mulPose(Axis.ZP.rotationDegrees(state.xRot + 90.0F));
+		if (state.shake > 0.0F) {
+			float f10 = -Mth.sin(state.shake * 3.0F) * state.shake;
 			stack.mulPose(Axis.ZP.rotationDegrees(f10));
 		}
 		stack.mulPose(Axis.XN.rotationDegrees(90.0F));
 		stack.mulPose(Axis.ZN.rotationDegrees(90.0F));
 		stack.scale(-1.0F, -1.0F, 1.0F);
-		this.model.renderToBuffer(stack, buffer.getBuffer(RenderType.entityCutoutNoCull(this.getTextureLocation(entity))), packedLight, OverlayTexture.NO_OVERLAY);
+		this.model.renderToBuffer(stack, buffer.getBuffer(RenderType.entityCutoutNoCull(this.getTextureLocation(state))), packedLight, OverlayTexture.NO_OVERLAY);
 		stack.popPose();
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(SludgeWormArrow entity) {
-		return TheBetweenlands.prefix("textures/entity/sludge_worm_tiny.png");
+	protected ResourceLocation getTextureLocation(ArrowRenderState state) {
+		return TEXTURE;
+	}
+
+	@Override
+	public ArrowRenderState createRenderState() {
+		return new ArrowRenderState();
 	}
 }

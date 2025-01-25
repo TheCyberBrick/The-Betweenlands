@@ -2,8 +2,8 @@ package thebetweenlands.client.model.baked.connectedtextures;
 
 import java.util.function.Function;
 
+import net.minecraft.client.renderer.block.model.BakedOverrides;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBaker;
@@ -28,18 +28,18 @@ public class BakedConnectedTexturesQuad {
 		this.quads = quads;
 		this.indexProperties = indexProperties;
 		this.cullfaceProperty = cullfaceProperty;
-		
+
 		this.cullface = unbaked.cullface;
 		this.indices = unbaked.indices.clone();
 	}
-	
+
 	public BakedQuad[][] getBakedQuads() {
 		return this.quads;
 	}
 
-	public static BakedConnectedTexturesQuad bakeFrom(UnbakedConnectedTexturesQuad quad, IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
+	public static BakedConnectedTexturesQuad bakeFrom(UnbakedConnectedTexturesQuad quad, IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, BakedOverrides overrides) {
 		if(!quad.getHasBaked()) quad.bake(context, baker, spriteGetter, modelState, overrides);
-		
+
 		ModelProperty<?>[] indexProperties = new ModelProperty<?>[4];
 		ModelProperty<Boolean> cullfaceProperty = null;
 		if(quad.cullfaceName != null) {
@@ -53,15 +53,15 @@ public class BakedConnectedTexturesQuad {
 				indexProperties[i] = ConnectedTextureHelper.getIndexPropertyNullable(ResourceLocation.tryParse(name));
 			}
 		}
-		
+
 		return new BakedConnectedTexturesQuad(quad.getBakedQuads(), indexProperties, cullfaceProperty, quad);
 	}
-	
+
 //	// Returns whether it's resolved all index properties
 //	protected boolean resolveIndexProperties(ModelData data) {
 //		if(this.indexProperties == null) {
 //			this.indexProperties = new ModelProperty<?>[4];
-//			
+//
 //			for(int i = 0; i < 4; i++) {
 //				String indexName = this.indexNames[i];
 //				if(indexName != null) {
@@ -76,16 +76,16 @@ public class BakedConnectedTexturesQuad {
 //		}
 //		return false;
 //	}
-//	
+//
 //	// Returns whether it's resolved the cullface property
 //	protected boolean resolveCullfaceProperty(ModelData data) {
-//		
+//
 //		return false;
 //	}
-//	
+//
 //	public void resolveProperties(ModelData data) {
 //		if(this.hasFullyResolvedProperties) return;
-//		
+//
 //		this.hasFullyResolvedProperties = true;
 //		this.hasFullyResolvedProperties &= this.resolveIndexProperties(data);
 //		this.hasFullyResolvedProperties &= this.resolveCullfaceProperty(data);

@@ -9,8 +9,8 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Transformation;
 
+import net.minecraft.client.renderer.block.model.BakedOverrides;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
@@ -63,14 +63,14 @@ public class UnbakedConnectedTexturesQuad {
 		return this.quads;
 	}
 
-	public void bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
+	public void bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, BakedOverrides overrides) {
 		Optional<Transformation> rootTransform = context.getRootTransform().isIdentity() ? Optional.empty() : Optional.of(context.getRootTransform());
 		this.bake(location -> spriteGetter.apply(new Material(InventoryMenu.BLOCK_ATLAS, location)), rootTransform, context.getTransforms(), DefaultVertexFormat.BLOCK);
 	}
 
     /**
      * @deprecated Use {@link #bake(IGeometryBakingContext, ModelBaker,
-     *             java.util.function.Function, ModelState, ItemOverrides)} instead.
+     *             java.util.function.Function, ModelState, BakedOverrides)} instead.
      */
 	@Deprecated
 	public void bake(Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter,

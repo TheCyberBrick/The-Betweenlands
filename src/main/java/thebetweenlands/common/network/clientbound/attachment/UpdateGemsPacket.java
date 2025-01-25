@@ -6,7 +6,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import thebetweenlands.common.TheBetweenlands;
-import thebetweenlands.common.component.entity.CircleGemData;
+import thebetweenlands.common.component.entity.EntityCircleGemData;
 import thebetweenlands.common.component.entity.circlegem.CircleGem;
 import thebetweenlands.common.registries.AttachmentRegistry;
 
@@ -23,6 +23,6 @@ public record UpdateGemsPacket(List<CircleGem> gems) implements CustomPacketPayl
 	}
 
 	public static void handle(UpdateGemsPacket message, IPayloadContext context) {
-		context.enqueueWork(() -> context.player().setData(AttachmentRegistry.CIRCLE_GEM, new CircleGemData(message.gems())));
+		context.enqueueWork(() -> context.player().setData(AttachmentRegistry.CIRCLE_GEM, new EntityCircleGemData(message.gems())));
 	}
 }

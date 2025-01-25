@@ -23,7 +23,7 @@ public class ObstructionAwareClimberNavigation<T extends ClimbingMob> extends Ob
 
 	protected Direction verticalFacing = Direction.DOWN;
 
-	protected boolean findDirectPathPoints = false;
+	protected final boolean findDirectPathPoints = false;
 
 	public ObstructionAwareClimberNavigation(T entity, Level level, boolean checkObstructions, boolean canPathWalls, boolean canPathCeiling) {
 		super(entity, level, checkObstructions);
@@ -143,7 +143,7 @@ public class ObstructionAwareClimberNavigation<T extends ClimbingMob> extends Ob
 		Orientation orientation = this.climber.getOrientation();
 		Vec3 upVector = orientation.getGlobal(this.mob.getYRot(), -90);
 
-		this.verticalFacing = Direction.getNearest((float) upVector.x, (float) upVector.y, (float) upVector.z);
+		this.verticalFacing = Direction.getNearest((int) upVector.x, (int) upVector.y, (int) upVector.z, Direction.UP);
 
 		//Look up to 4 nodes ahead so it doesn't backtrack on positions with multiple path sides when changing/updating path
 		for (int i = 4; i >= 0; i--) {
@@ -286,15 +286,11 @@ public class ObstructionAwareClimberNavigation<T extends ClimbingMob> extends Ob
 	}
 
 	protected static int swizzle(int x, int y, int z, Direction.Axis axis) {
-		switch (axis) {
-			case X:
-				return x;
-			case Y:
-				return y;
-			case Z:
-				return z;
-		}
-		return 0;
+		return switch (axis) {
+			case X -> x;
+			case Y -> y;
+			case Z -> z;
+		};
 	}
 
 	protected static int unswizzle(int x, int y, int z, Direction.Axis ax, Direction.Axis ay, Direction.Axis az, Direction.Axis axis) {

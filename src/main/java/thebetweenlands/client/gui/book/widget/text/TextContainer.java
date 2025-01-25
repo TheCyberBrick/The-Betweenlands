@@ -263,7 +263,6 @@ public class TextContainer {
 				graphics.pose().translate(segment.x + x, segment.y + y, 0.0D);
 				graphics.pose().scale(segment.scale, segment.scale, 1.0F);
 				graphics.drawString(Minecraft.getInstance().font, FormattedCharSequence.forward(segment.text, segment.defaultStyle.applyFormats(segment.formats.toArray(ChatFormatting[]::new)).withFont(segment.font)), 0, 0, segment.color, false);
-				graphics.setColor(1, 1, 1, 1);
 				graphics.pose().popPose();
 			}
 		}
@@ -281,7 +280,6 @@ public class TextContainer {
 				graphics.pose().scale((float) (segment.width / 10.0F), (float) (segment.height / 10.0F), 1.0F);
 				graphics.fill(0, 0, 10, 10, 0x250000FF);
 				graphics.pose().popPose();
-				graphics.setColor(1, 1, 1, 1);
 				graphics.pose().popPose();
 			}
 			for (TextArea ta : this.getTextAreas()) {

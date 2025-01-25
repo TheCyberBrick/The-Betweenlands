@@ -2,11 +2,11 @@ package thebetweenlands.common.item.armor.amphibious.upgrades;
 
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import thebetweenlands.api.item.amphibious.AmphibiousArmorAttributeUpgrade;
@@ -36,11 +36,11 @@ public class AdditiveAttributeUpgrade implements AmphibiousArmorAttributeUpgrade
 	}
 
 	@Override
-	public void applyAttributeModifiers(ArmorItem.Type armorType, ItemStack stack, int count, List<ItemAttributeModifiers.Entry> modifiers) {
+	public void applyAttributeModifiers(EquipmentSlot slot, ItemStack stack, int count, List<ItemAttributeModifiers.Entry> modifiers) {
 		if(this.maxUpgradeCount != -1) {
 			count = Math.min(count, this.maxUpgradeCount);
 		}
 
-		modifiers.add(new ItemAttributeModifiers.Entry(this.attribute, new AttributeModifier(this.id, this.amount * count, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.bySlot(armorType.getSlot())));
+		modifiers.add(new ItemAttributeModifiers.Entry(this.attribute, new AttributeModifier(this.id, this.amount * count, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.bySlot(slot)));
 	}
 }

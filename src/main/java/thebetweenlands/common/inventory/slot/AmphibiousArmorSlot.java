@@ -26,8 +26,8 @@ public class AmphibiousArmorSlot extends Slot {
 
 	@Override
 	public boolean mayPlace(ItemStack stack) {
-		if (this.container.getContainerStack().getItem() instanceof AmphibiousArmorItem armor) {
-			return ArmorEffectHelper.getUpgrade(armor.getType().getSlot(), stack) != AmphibiousArmorUpgradeRegistry.NONE;
+		if (this.container.getContainerStack().getItem() instanceof AmphibiousArmorItem) {
+			return ArmorEffectHelper.getUpgrade(stack) != AmphibiousArmorUpgradeRegistry.NONE;
 		}
 		return super.mayPlace(stack);
 	}
@@ -38,7 +38,7 @@ public class AmphibiousArmorSlot extends Slot {
 		ItemStack invItem = this.container.getContainerStack();
 
 		if (invItem.getItem() instanceof AmphibiousArmorItem armor) {
-			Holder<AmphibiousArmorUpgrade> upgrade = ArmorEffectHelper.getUpgrade(armor.getType().getSlot(), stack);
+			Holder<AmphibiousArmorUpgrade> upgrade = ArmorEffectHelper.getUpgrade(stack);
 
 			if (upgrade != AmphibiousArmorUpgradeRegistry.NONE) {
 				var damage = stack.remove(DataComponentRegistry.UPGRADE_DAMAGE);
@@ -64,18 +64,18 @@ public class AmphibiousArmorSlot extends Slot {
 
 	@Override
 	public void setChanged() {
-		if (this.container.getContainerStack().getItem() instanceof AmphibiousArmorItem armor) {
-			EquipmentSlot slot = armor.getType().getSlot();
+		if (this.container.getContainerStack().getItem() instanceof AmphibiousArmorItem) {
+			EquipmentSlot slot = ArmorEffectHelper.EQUIPPABLE.apply(this.container.getContainerStack());
 
 			ItemStack currentStack = this.container.getItem(this.getSlotIndex());
 
 			if (!ItemStack.isSameItemSameComponents(this.prevStack, currentStack)) {
-				Holder<AmphibiousArmorUpgrade> prevUpgrade = ArmorEffectHelper.getUpgrade(slot, this.prevStack);
+				Holder<AmphibiousArmorUpgrade> prevUpgrade = ArmorEffectHelper.getUpgrade(this.prevStack);
 				if (prevUpgrade != AmphibiousArmorUpgradeRegistry.NONE) {
 					prevUpgrade.value().onChanged(slot, this.container.getContainerStack(), this.prevStack);
 				}
 
-				Holder<AmphibiousArmorUpgrade> newUpgrade = ArmorEffectHelper.getUpgrade(slot, currentStack);
+				Holder<AmphibiousArmorUpgrade> newUpgrade = ArmorEffectHelper.getUpgrade(currentStack);
 				if (newUpgrade != AmphibiousArmorUpgradeRegistry.NONE) {
 					newUpgrade.value().onChanged(slot, this.container.getContainerStack(), currentStack);
 				}

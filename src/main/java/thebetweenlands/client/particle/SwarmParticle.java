@@ -19,12 +19,12 @@ import java.util.function.Supplier;
 
 public class SwarmParticle extends TextureSheetParticle {
 
-	protected Direction face;
+	protected final Direction face;
 
 	protected float rotateBias;
 
-	protected Vec3 start;
-	protected Supplier<Vec3> end;
+	protected final Vec3 start;
+	protected final Supplier<Vec3> end;
 
 	protected int lightmapX, lightmapY;
 
@@ -67,7 +67,7 @@ public class SwarmParticle extends TextureSheetParticle {
 		} else {
 			dir = Vec3.ZERO;
 		}
-		Vec3 normal = Vec3.atCenterOf(this.face.getNormal());
+		Vec3 normal = Vec3.atCenterOf(this.face.getUnitVec3i());
 		Vec3 motion = new Vec3(this.xd, this.yd, this.zd);
 		Vec3 side = motion.normalize().cross(normal);
 
@@ -119,7 +119,7 @@ public class SwarmParticle extends TextureSheetParticle {
 		float rpy = (float)(Mth.lerp(partialTicks, this.yo, this.y) - camera.getPosition().y());
 		float rpz = (float)(Mth.lerp(partialTicks, this.zo, this.z) - camera.getPosition().z());
 
-		Vec3i normal = this.face.getNormal();
+		Vec3i normal = this.face.getUnitVec3i();
 
 		float pp1x = 0, pp1y = 0, pp1z = 0;
 		switch(this.face) {

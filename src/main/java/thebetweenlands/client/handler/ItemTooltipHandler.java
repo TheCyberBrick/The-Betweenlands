@@ -12,9 +12,11 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import thebetweenlands.api.item.CorrosionHelper;
+import thebetweenlands.client.BetweenlandsClient;
 import thebetweenlands.common.component.entity.FoodSicknessData;
 import thebetweenlands.common.component.entity.circlegem.CircleGemType;
 import thebetweenlands.common.component.item.AspectContents;
+import thebetweenlands.common.component.item.CircleGemData;
 import thebetweenlands.common.component.item.UpgradeDamage;
 import thebetweenlands.common.config.BetweenlandsConfig;
 import thebetweenlands.common.datagen.tags.BLItemTagProvider;
@@ -56,9 +58,9 @@ public class ItemTooltipHandler {
 			toolTip.add(Component.translatable("item.thebetweenlands.amphibious_upgrade.damaged", Math.max(0, damage.maxDamage() - damage.damage()), damage.maxDamage()));
 		}
 
-		CircleGemType circleGem = stack.getOrDefault(DataComponentRegistry.CIRCLE_GEM, CircleGemType.NONE);
-		if (circleGem != CircleGemType.NONE) {
-			toolTip.add(1, Component.translatable("item.thebetweenlands.circle_gem." + circleGem.name).withStyle(circleGem.color));
+		var circleGem = stack.getOrDefault(DataComponentRegistry.CIRCLE_GEM, CircleGemData.EMPTY);
+		if (circleGem.type() != CircleGemType.NONE) {
+			toolTip.add(1, Component.translatable("item.thebetweenlands.circle_gem." + circleGem.type().name).withStyle(circleGem.type().color));
 		}
 
 		if (stack.getItem().builtInRegistryHolder().getData(DataMapRegistry.DECAY_FOOD) != null) {
@@ -158,7 +160,7 @@ public class ItemTooltipHandler {
 				usedInMachines.add(Component.translatable("item.thebetweenlands.steeping_pot_recipe").withStyle(ChatFormatting.GRAY));
 			}
 
-			if (RecipeRegistry.doesSteepingPotUseItem(event.getContext().level(), stack)) {
+			if (BetweenlandsClient.ClientRecipes.doesSteepingPotUseItem(stack)) {
 				usedInMachines.add(Component.translatable("item.thebetweenlands.silk_bundle_recipe"));
 				usedInMachines.add(Component.translatable("item.thebetweenlands.steeping_pot_recipe"));
 			}

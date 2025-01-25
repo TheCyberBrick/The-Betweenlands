@@ -11,8 +11,6 @@ import net.minecraft.world.level.block.state.BlockState;
 public interface ConnectionRules {
 	/**
 	 * Can be used to create a block access cache to speed up lookups
-	 * @param world
-	 * @param pos The position of the connected texture block
 	 * @return same as input world or some kind of cached block access
 	 */
 	default BlockAndTintGetter getBlockAccessCache(BlockAndTintGetter world, BlockPos pos) {
@@ -21,11 +19,8 @@ public interface ConnectionRules {
 
 	/**
 	 * Returns whether the face can connect to the specified block pos
-	 * @param world
-	 * @param pos The position of this connected texture block
 	 * @param face The face of this connected texture block
 	 * @param to The position that it tries to connect to
-	 * @return
 	 */
 	boolean canTextureConnectTo(BlockAndTintGetter world, BlockPos pos, Direction face, BlockPos to);
 
@@ -33,11 +28,8 @@ public interface ConnectionRules {
 	 * Returns whether the face can connect through the specified block pos.
 	 * The default implementation lets the texture connect through any non solid
 	 * sides
-	 * @param world
-	 * @param pos The position of this connected texture block
 	 * @param face The face of this connected texture block
 	 * @param to The position that it tries to connect through
-	 * @return
 	 */
 	default boolean canConnectThrough(BlockAndTintGetter world, BlockPos pos, Direction face, BlockPos to) {
 		//The block tries to connect to one of its own other sides
@@ -82,7 +74,7 @@ public interface ConnectionRules {
 			return true;
 		} else {
 			//Direct neighbour
-			Direction offsetDir = Direction.getNearest(planeOffset.getX(), planeOffset.getY(), planeOffset.getZ());
+			Direction offsetDir = Direction.getNearest(planeOffset.getX(), planeOffset.getY(), planeOffset.getZ(), Direction.UP);
 			final boolean cached = !isSideSolid(world, to, offsetDir.getOpposite());
 			if(onSamePlane) {
 				return cached && !isSideSolid(world, to, face);
@@ -101,6 +93,6 @@ public interface ConnectionRules {
 	}
 
 	static boolean isSideSolid(BlockAndTintGetter world, BlockState state, BlockPos pos, Direction face) {
-		return state.canOcclude() && Block.isFaceFull(state.getFaceOcclusionShape(world, pos, face), face);
+		return state.canOcclude() && Block.isFaceFull(state.getFaceOcclusionShape(face), face);
 	}
 }

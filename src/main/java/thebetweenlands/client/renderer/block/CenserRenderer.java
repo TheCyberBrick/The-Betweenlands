@@ -142,7 +142,7 @@ public class CenserRenderer implements BlockEntityRenderer<CenserBlockEntity> {
 	}
 
 	private void renderFogFlow(float animationTicks, PoseStack stack, MultiBufferSource source, int color, float alpha, boolean flatSlope) {
-//		color = FastColor.ARGB32.colorFromFloat(alpha, FastColor.ARGB32.red(color), FastColor.ARGB32.green(color), FastColor.ARGB32.blue(color));
+//		color = ARGB.colorFromFloat(alpha, ARGB.red(color), ARGB.green(color), ARGB.blue(color));
 		float minU = FOG.getU0();
 		float minV = FOG.getV0();
 		float maxU = FOG.getU1();

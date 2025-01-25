@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -68,7 +67,7 @@ public class SmokingRackRenderer implements BlockEntityRenderer<SmokingRackBlock
 			for (int i = 1; i < entity.getContainerSize(); i++) {
 				if (!entity.getItem(i).isEmpty() && (i > 3 || entity.getItem(i + 3).isEmpty())) {
 					if (this.shouldRenderAsEntity(entity, i) && entity.getRenderEntity(entity.getLevel(), 1) != null) {
-						this.renderAnadiaInSlot(stack, source, entity.getItem(i), entity.getRenderEntity(entity.getLevel(), i), ANADIA_OFFSETS[((i - 1) % 3)], light);
+						this.renderAnadiaInSlot(stack, source, entity.getItem(i), entity.getRenderEntity(entity.getLevel(), i), ANADIA_OFFSETS[((i - 1) % 3)], partialTicks, light);
 					} else {
 						this.renderItemInSlot(stack, source, entity.getItem(i), ITEM_OFFSETS[((i - 1) % 3)], 0.5F, light, overlay);
 					}
@@ -82,7 +81,7 @@ public class SmokingRackRenderer implements BlockEntityRenderer<SmokingRackBlock
 		return entity.getItem(slot).is(ItemRegistry.ANADIA) && !((MobItem<?>) entity.getItem(slot).getItem()).getEntityData(entity.getItem(slot)).isEmpty();
 	}
 
-	public void renderAnadiaInSlot(PoseStack stack, MultiBufferSource source, ItemStack item, @Nullable Entity renderEntity, Vec3 offset, int light) {
+	public void renderAnadiaInSlot(PoseStack stack, MultiBufferSource source, ItemStack item, @Nullable Entity renderEntity, Vec3 offset, float partialTick, int light) {
 		if (renderEntity != null) {
 			if (item.getItem() instanceof AnadiaMobItem anadia && anadia.isRotten(renderEntity.level(), item)) {
 				((Anadia) renderEntity).setFishColor(AnadiaParts.AnadiaColor.ROTTEN);
@@ -97,8 +96,7 @@ public class SmokingRackRenderer implements BlockEntityRenderer<SmokingRackBlock
 			stack.translate(0.0F, -0.2F, 0.75F);
 			stack.translate(offset.z(), offset.x(), offset.y()); //dont ask
 			stack.scale(scale2, scale2, scale2);
-			EntityRenderer<? super Entity> renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(renderEntity);
-			renderer.render(renderEntity, 0, 0, stack, source, light);
+			Minecraft.getInstance().getEntityRenderDispatcher().render(renderEntity, 0, 0, 0, partialTick, stack, source, light);
 			stack.popPose();
 		}
 	}

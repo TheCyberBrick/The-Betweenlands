@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -82,10 +82,10 @@ public class GeckoCageBlock extends HorizontalBaseEntityBlock {
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (level.getBlockEntity(pos) instanceof GeckoCageBlockEntity cage) {
 			if (player.isShiftKeyDown())
-				return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				return InteractionResult.PASS;
 
 			if (!stack.isEmpty()) {
 				if (stack.getItem() instanceof MobItem<?> mob) {
@@ -95,10 +95,10 @@ public class GeckoCageBlock extends HorizontalBaseEntityBlock {
 							if (!player.isCreative())
 								stack.shrink(1);
 						}
-						return ItemInteractionResult.SUCCESS;
+						return InteractionResult.SUCCESS;
 					}
 
-					return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+					return InteractionResult.PASS;
 				}
 				if (stack.is(ItemRegistry.SAP_SPIT) && cage.hasGecko() && cage.getGeckoUsages() < 12) {
 					if (!level.isClientSide()) {
@@ -107,7 +107,7 @@ public class GeckoCageBlock extends HorizontalBaseEntityBlock {
 					} else {
 						this.spawnHeartParticles(level, pos);
 					}
-					return ItemInteractionResult.sidedSuccess(level.isClientSide());
+					return InteractionResult.SUCCESS;
 				} else if (cage.getAspectType() == null) {
 					if (cage.hasGecko()) {
 						if (DiscoveryContainerData.hasDiscoveryProvider(player)) {
@@ -139,42 +139,42 @@ public class GeckoCageBlock extends HorizontalBaseEntityBlock {
 													player.displayClientMessage(Component.translatable("block.thebetweenlands.gecko_cage.more_aspects"), false);
 												}
 												stack.consume(1, player);
-												return ItemInteractionResult.sidedSuccess(level.isClientSide());
+												return InteractionResult.SUCCESS;
 											case END:
 												//already all discovered
 												player.displayClientMessage(Component.translatable("block.thebetweenlands.gecko_cage.all_discovered"), true);
-												return ItemInteractionResult.CONSUME;
+												return InteractionResult.CONSUME;
 											default:
 												//no aspects
 												player.displayClientMessage(Component.translatable("block.thebetweenlands.gecko_cage.no_aspects"), true);
-												return ItemInteractionResult.CONSUME;
+												return InteractionResult.CONSUME;
 										}
 									} else {
 										player.displayClientMessage(Component.translatable("block.thebetweenlands.gecko_cage.no_aspects"), true);
-										return ItemInteractionResult.sidedSuccess(level.isClientSide());
+										return InteractionResult.SUCCESS;
 									}
 								} else {
 									//no aspects
-									return ItemInteractionResult.CONSUME;
+									return InteractionResult.CONSUME;
 								}
 							}
 						} else {
 							//no herblore book
 							if (!level.isClientSide())
 								player.displayClientMessage(Component.translatable("block.thebetweenlands.gecko_cage.no_book"), true);
-							return ItemInteractionResult.SUCCESS;
+							return InteractionResult.SUCCESS;
 						}
 					} else {
 						//no gecko
 						if (!level.isClientSide())
 							player.displayClientMessage(Component.translatable("block.thebetweenlands.gecko_cage.no_gecko"), true);
-						return ItemInteractionResult.SUCCESS;
+						return InteractionResult.SUCCESS;
 					}
 				} else {
 					//recovering
 					if (!level.isClientSide())
 						player.displayClientMessage(Component.translatable("block.thebetweenlands.gecko_cage.gecko_recovering"), true);
-					return ItemInteractionResult.SUCCESS;
+					return InteractionResult.SUCCESS;
 				}
 			}
 		}

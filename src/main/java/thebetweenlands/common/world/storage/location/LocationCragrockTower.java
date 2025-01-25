@@ -68,7 +68,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Sets the structure entrance
-	 * @param pos
 	 */
 	public void setStructurePos(BlockPos pos) {
 		this.structurePos = pos;
@@ -77,7 +76,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Returns the structure entrance
-	 * @return
 	 */
 	public BlockPos getStructurePos() {
 		return this.structurePos;
@@ -85,7 +83,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Returns the inner AABB
-	 * @return
 	 */
 	public AABB getInnerBoundingBox() {
 		return this.getBounds().size() > 1 ? this.getBounds().get(1) : new AABB(0, 0, 0, 0, 0, 0);
@@ -93,7 +90,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Returns whether the top was reached and all mobs and spawners are destroyed
-	 * @return
 	 */
 	public boolean isTopConquered() {
 		return this.isTopConquered;
@@ -101,7 +97,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Sets whether the top was reached and changes all glowing cragrock blocks accordingly
-	 * @param reached
 	 */
 	public void setTopConquered(Level level, boolean reached) {
 		this.isTopConquered = reached;
@@ -119,7 +114,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Adds an inactive glowing cragrock block that is activated once the top is reached
-	 * @param pos
 	 */
 	public void addGlowingCragrock(BlockPos pos) {
 		this.glowingCragrockBlocks.add(pos);
@@ -128,7 +122,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Adds an inactive wisp that is activated once a player gets close to the tower
-	 * @param pos
 	 */
 	public void addInactiveWisp(BlockPos pos) {
 		this.wisps.add(pos);
@@ -138,8 +131,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Sets whether the tower was entered. Wisps are changed accordingly in the next tick
-	 * @param entered
-	 * @return
 	 */
 	public void setEntered(boolean entered) {
 		this.wasEntered = entered;
@@ -148,7 +139,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Returns whether the tower was entered
-	 * @return
 	 */
 	public boolean wasEntered() {
 		return this.wasEntered;
@@ -156,8 +146,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Sets the level blockade blocks
-	 * @param level
-	 * @param blocks
 	 */
 	public void setLevelBlockadeBlocks(int level, BlockPos[] blocks) {
 		this.levelBlockadeBlocks[level] = blocks;
@@ -166,8 +154,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Returns the level blockades
-	 * @param level
-	 * @return
 	 */
 	public BlockPos[] getLevelBlockadeBlocks(int level) {
 		return this.levelBlockadeBlocks[level];
@@ -175,7 +161,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Destroys the blockade blocks for the specified level
-	 * @param level
 	 */
 	public void destroyBlockade(Level world, int level) {
 		BlockPos[] blocks = this.levelBlockadeBlocks[level];
@@ -197,7 +182,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Restores the blockade blocks for the specified level
-	 * @param level
 	 */
 	public void restoreBlockade(Level world, int level) {
 		BlockPos[] blocks = this.levelBlockadeBlocks[level];
@@ -215,8 +199,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Returns whether the spawner is still active
-	 * @param level
-	 * @return
 	 */
 	public boolean getSpawnerState(int level) {
 		return this.spawners[level];
@@ -224,9 +206,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Sets whether the spawner is still active
-	 * @param level
-	 * @param active
-	 * @return
 	 */
 	public void setSpawnerState(int level, boolean active) {
 		this.spawners[level] = active;
@@ -235,8 +214,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Returns whether the blockade is still active
-	 * @param level
-	 * @return
 	 */
 	public boolean getBlockadeState(int level) {
 		return this.blockades[level];
@@ -244,8 +221,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Returns the bounding box for the specified level
-	 * @param level
-	 * @return
 	 */
 	public AABB getLevelBounds(int level) {
 		double minY = this.levelYBounds[level][0] + this.structurePos.getY();
@@ -259,8 +234,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Returns the level for the specified Y position
-	 * @param y
-	 * @return
 	 */
 	public int getLevel(int y) {
 		y -= this.structurePos.getY(); //Relative position to structure
@@ -274,7 +247,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Returns whether the tower is crumbling
-	 * @return
 	 */
 	public boolean isCrumbling() {
 		return this.dataManager.get(CRUMBLING);
@@ -282,7 +254,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Sets whether the tower is crumbling
-	 * @param crumbling
 	 */
 	public void setCrumbling(boolean crumbling) {
 		this.dataManager.set(CRUMBLING, crumbling);
@@ -291,7 +262,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Returns the crumbling ticks
-	 * @return
 	 */
 	public int getCrumblingTicks() {
 		return this.dataManager.get(CRUMBLING_TICKS);
@@ -299,7 +269,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Sets the crumbling ticks
-	 * @param ticks
 	 */
 	public void setCrumblingTicks(int ticks) {
 		this.dataManager.set(CRUMBLING_TICKS, ticks);
@@ -552,7 +521,6 @@ public class LocationCragrockTower extends LocationGuarded {
 
 	/**
 	 * Returns a random block pos inside the tower
-	 * @return
 	 */
 	protected BlockPos getRandomPosInTower(Level level) {
 		AABB innerBB = this.getInnerBoundingBox().inflate(-1, -1, -1);

@@ -68,7 +68,7 @@ public class LootTableFetcher {
 
 				pool.entries.stream()
 					.filter(entry -> entry instanceof NestedLootTable).map(NestedLootTable.class::cast)
-					.map(entry -> getDropsForTable(entry.contents.left().orElse(BuiltInLootTables.EMPTY))).forEach(drops::addAll);
+					.map(entry -> getDropsForTable(entry.contents.left().orElse(null))).forEach(drops::addAll);
 
 				pool.entries.stream()
 					.filter(entry -> entry instanceof DynamicLoot).map(DynamicLoot.class::cast)

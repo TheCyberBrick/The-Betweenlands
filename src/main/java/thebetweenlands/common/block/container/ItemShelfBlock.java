@@ -8,15 +8,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -69,7 +68,7 @@ public class ItemShelfBlock extends HorizontalBaseEntityBlock implements SwampWa
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (hand == InteractionHand.MAIN_HAND) {
 			if (!level.isClientSide()) {
 				BlockEntity te = level.getBlockEntity(pos);
@@ -92,7 +91,7 @@ public class ItemShelfBlock extends HorizontalBaseEntityBlock implements SwampWa
 					}
 				}
 			}
-			return ItemInteractionResult.SUCCESS;
+			return InteractionResult.SUCCESS;
 		}
 		return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
 	}
@@ -100,7 +99,7 @@ public class ItemShelfBlock extends HorizontalBaseEntityBlock implements SwampWa
 	protected int getSlot(Direction blockDir, Vec3 hitVec) {
 
 		Vec3i up = new Vec3i(0, 1, 0);
-		Vec3i dir = up.cross(blockDir.getNormal());
+		Vec3i dir = up.cross(blockDir.getUnitVec3i());
 
 		double cx = dir.getX() * hitVec.x() + dir.getZ() * hitVec.z();
 		double cy = hitVec.y();
@@ -123,12 +122,12 @@ public class ItemShelfBlock extends HorizontalBaseEntityBlock implements SwampWa
 	}
 
 	@Override
-	protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
-		if (state.getValue(WATER_TYPE) != SwampWaterLoggable.WaterType.NONE) {
-			level.scheduleTick(pos, state.getValue(WATER_TYPE).getFluid(), state.getValue(WATER_TYPE).getFluid().getTickDelay(level));
+	protected BlockState updateShape(BlockState state, LevelReader reader, ScheduledTickAccess access, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
+		if (state.getValue(WATER_TYPE) != WaterType.NONE) {
+			access.scheduleTick(pos, state.getValue(WATER_TYPE).getFluid(), state.getValue(WATER_TYPE).getFluid().getTickDelay(reader));
 		}
 
-		return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+		return super.updateShape(state, reader, access, pos, direction, neighborPos, neighborState, random);
 	}
 
 	@Override

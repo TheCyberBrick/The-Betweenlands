@@ -238,7 +238,7 @@ public class StalkerBreakLightGoal extends Goal {
 
 	@Override
 	public boolean canUse() {
-		if (this.entity.isStalking && this.entity.tickCount % 10 == 0 && EventHooks.canEntityGrief(this.entity.level(), this.entity)) {
+		if (this.entity.isStalking && this.entity.tickCount % 10 == 0 && EventHooks.canEntityGrief(getServerLevel(this.entity), this.entity)) {
 			float checkRange = 32.0f;
 
 			Vec3 start = this.entity.getEyePosition();
@@ -264,7 +264,7 @@ public class StalkerBreakLightGoal extends Goal {
 
 	@Override
 	public boolean canContinueToUse() {
-		return this.entity.isStalking && this.lightSourcePos != null && this.isTargetLightSource(this.lightSourcePos) && EventHooks.canEntityGrief(this.entity.level(), this.entity) && this.failCount <= 5;
+		return this.entity.isStalking && this.lightSourcePos != null && this.isTargetLightSource(this.lightSourcePos) && EventHooks.canEntityGrief(getServerLevel(this.entity), this.entity) && this.failCount <= 5;
 	}
 
 	@Override
@@ -288,7 +288,7 @@ public class StalkerBreakLightGoal extends Goal {
 			if (this.entity.distanceToSqr(this.lightSourcePos.getX() + 0.5f, this.lightSourcePos.getY() + 0.5f - this.entity.getBbHeight() / 2.0f, this.lightSourcePos.getZ() + 0.5f) < 2.0f) {
 				BlockState state = this.entity.level().getBlockState(this.lightSourcePos);
 
-				if (EventHooks.canEntityGrief(this.entity.level(), this.entity) && this.isTargetLightSource(this.lightSourcePos) && EventHooks.onEntityDestroyBlock(this.entity, this.lightSourcePos, state)) {
+				if (EventHooks.canEntityGrief(getServerLevel(this.entity), this.entity) && this.isTargetLightSource(this.lightSourcePos) && EventHooks.onEntityDestroyBlock(this.entity, this.lightSourcePos, state)) {
 					this.entity.level().destroyBlock(this.lightSourcePos, true, this.entity);
 				} else {
 					this.lightSourcePos = null;

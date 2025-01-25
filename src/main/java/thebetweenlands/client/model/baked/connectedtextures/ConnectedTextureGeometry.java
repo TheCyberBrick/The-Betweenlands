@@ -16,9 +16,10 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.BakedOverrides;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemOverride;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
@@ -33,7 +34,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.ChunkRenderTypeSet;
-import net.neoforged.neoforge.client.model.ElementsModel;
 import net.neoforged.neoforge.client.model.IDynamicBakedModel;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.data.ModelProperty;
@@ -55,24 +55,24 @@ public class ConnectedTextureGeometry implements IUnbakedGeometry<ConnectedTextu
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
-		BakedModel bakedBase = new ElementsModel(this.baseModel.getElements()).bake(context, baker, spriteGetter, modelState, overrides);
+	public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, List<ItemOverride> overrides) {
+		BakedModel bakedBase = this.baseModel.bake(baker, spriteGetter, modelState);
 		if(this.connectedTextureQuads.isEmpty())
 			return bakedBase;
 
 		BakedConnectedTexturesQuad[] bakedQuads = new BakedConnectedTexturesQuad[connectedTextureQuads.size()];
 		for(int i = 0; i < connectedTextureQuads.size(); ++i) {
 			final UnbakedConnectedTexturesQuad unbakedQuad = connectedTextureQuads.get(i);
-			bakedQuads[i] = BakedConnectedTexturesQuad.bakeFrom(unbakedQuad, context, baker, spriteGetter, modelState, overrides);
+			bakedQuads[i] = BakedConnectedTexturesQuad.bakeFrom(unbakedQuad, context, baker, spriteGetter, modelState, new BakedOverrides(baker, overrides, spriteGetter));
 		}
 
 		return new ConnectedTexturesDynamicModel(bakedBase, bakedQuads);
 	}
 
 	@Override
-	public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
-		IUnbakedGeometry.super.resolveParents(modelGetter, context);
-		this.baseModel.resolveParents(modelGetter);
+	public void resolveDependencies(UnbakedModel.Resolver modelGetter, IGeometryBakingContext context) {
+		IUnbakedGeometry.super.resolveDependencies(modelGetter, context);
+		this.baseModel.resolveDependencies(modelGetter);
 	}
 
 	public static class ConnectedTexturesDynamicModel implements IDynamicBakedModel {
@@ -101,7 +101,6 @@ public class ConnectedTextureGeometry implements IUnbakedGeometry<ConnectedTextu
 			}
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand, ModelData extraData, @Nullable RenderType renderType) {
 			final List<BakedQuad> quads = new ArrayList<>(this.bakedBase.getQuads(state, side, rand, extraData, renderType));
@@ -144,17 +143,17 @@ public class ConnectedTextureGeometry implements IUnbakedGeometry<ConnectedTextu
 
 		@Override
 		public boolean useAmbientOcclusion() {
-			return bakedBase.useAmbientOcclusion();
+			return this.bakedBase.useAmbientOcclusion();
 		}
 
 		@Override
 		public boolean isGui3d() {
-			return bakedBase.isGui3d();
+			return this.bakedBase.isGui3d();
 		}
 
 		@Override
 		public boolean usesBlockLight() {
-			return bakedBase.usesBlockLight();
+			return this.bakedBase.usesBlockLight();
 		}
 
 		@Override
@@ -165,12 +164,12 @@ public class ConnectedTextureGeometry implements IUnbakedGeometry<ConnectedTextu
 		@SuppressWarnings("deprecation")
 		@Override
 		public TextureAtlasSprite getParticleIcon() {
-			return bakedBase.getParticleIcon();
+			return this.bakedBase.getParticleIcon();
 		}
 
 		@Override
-		public ItemOverrides getOverrides() {
-			return bakedBase.getOverrides();
+		public BakedOverrides overrides() {
+			return this.bakedBase.overrides();
 		}
 
 	}

@@ -6,10 +6,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -164,9 +164,9 @@ public class SwampHag extends Monster {
 
 
 	@Override
-	protected void customServerAiStep() {
-		super.customServerAiStep();
-		if (!this.level().isClientSide() && this.isRidingMummy()) {
+	protected void customServerAiStep(ServerLevel level) {
+		super.customServerAiStep(level);
+		if (this.isRidingMummy()) {
 			if (this.getTarget() != null) {
 				if (this.getThrowTimer() < 90 && !this.getIsThrowing()) {
 					this.setThrowTimer(Math.min(90, this.getThrowTimer() + 1));
@@ -196,7 +196,7 @@ public class SwampHag extends Monster {
 	}
 
 	@Nullable
-	public Entity getMummyMount() {
+	public PeatMummy getMummyMount() {
 		return this.isRidingMummy() ? (PeatMummy) this.getVehicle() : null;
 	}
 
@@ -247,9 +247,9 @@ public class SwampHag extends Monster {
 	}
 
 	@Override
-	public boolean isInvulnerableTo(DamageSource source) {
+	public boolean isInvulnerableTo(ServerLevel level, DamageSource source) {
 		if (source.is(DamageTypes.IN_WALL) && this.isRidingMummy()) return false;
-		return super.isInvulnerableTo(source);
+		return super.isInvulnerableTo(level, source);
 	}
 
 	@Override

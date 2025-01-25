@@ -1,30 +1,25 @@
 package thebetweenlands.client.model.entity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.creature.Jellyfish;
+import thebetweenlands.client.state.JellyfishRenderState;
 
-public class JellyfishModel extends MowzieModelBase<Jellyfish> {
+public class JellyfishModel extends MowzieModelBase<JellyfishRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart frontTentacles;
 	private final ModelPart leftTentacles;
 	private final ModelPart rightTentacles;
 	private final ModelPart backTentacles;
 
 	public JellyfishModel(ModelPart root) {
-		super(RenderType::entityTranslucent);
-		this.root = root;
+		super(root, RenderType::entityTranslucent);
 		this.frontTentacles = root.getChild("mesogloea_base").getChild("front_tentacles_1");
 		this.backTentacles = root.getChild("mesogloea_base").getChild("back_tentacles_1");
 		this.leftTentacles = root.getChild("mesogloea_base").getChild("left_tentacles_1");
@@ -99,27 +94,12 @@ public class JellyfishModel extends MowzieModelBase<Jellyfish> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
+	public void setupAnim(JellyfishRenderState state) {
+		float adjustedLimbSwingAmount = Math.min(state.walkAnimationSpeed, 0.2F);
 
-	@Override
-	public void renderToBuffer(PoseStack stack, VertexConsumer consumer, int light, int overlay, int color) {
-		super.renderToBuffer(stack, consumer, LightTexture.FULL_BRIGHT, overlay, color);
-	}
-
-	@Override
-	public void setupAnim(Jellyfish entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
-	}
-
-	@Override
-	public void prepareMobModel(Jellyfish entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		float adjustedLimbSwingAmount = Math.min(limbSwingAmount, 0.2F);
-
-		this.leftTentacles.zRot = -0.136659280431156F + Mth.sin(limbSwing) * adjustedLimbSwingAmount;
-		this.rightTentacles.zRot = 0.136659280431156F - Mth.sin(limbSwing) * adjustedLimbSwingAmount;
-		this.frontTentacles.xRot = -0.136659280431156F + Mth.sin(limbSwing) * adjustedLimbSwingAmount;
-		this.backTentacles.xRot = 0.136659280431156F - Mth.sin(limbSwing) * adjustedLimbSwingAmount;
+		this.leftTentacles.zRot = -0.136659280431156F + Mth.sin(state.walkAnimationPos) * adjustedLimbSwingAmount;
+		this.rightTentacles.zRot = 0.136659280431156F - Mth.sin(state.walkAnimationPos) * adjustedLimbSwingAmount;
+		this.frontTentacles.xRot = -0.136659280431156F + Mth.sin(state.walkAnimationPos) * adjustedLimbSwingAmount;
+		this.backTentacles.xRot = 0.136659280431156F - Mth.sin(state.walkAnimationPos) * adjustedLimbSwingAmount;
 	}
 }

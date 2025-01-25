@@ -6,8 +6,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.RandomSource;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
@@ -106,17 +107,16 @@ public class BLTitleScreenBackground {
 	public void render(GuiGraphics graphics, float partialTicks, float alpha) {
 		graphics.fill(0, 0, this.width, this.height, 0xFF001000);
 
-		graphics.setColor(1.0F, 1.0F, 1.0F, alpha);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
-		this.drawStarfield(partialTicks);
+		this.drawStarfield(partialTicks, alpha);
 
 		for (int i = 0; i < this.layerTextures.length; i++) {
 			if (i >= 1 && this.fireFlies != null) {
 				List<Firefly> layer = this.fireFlies.get(i - 1);
 				for (Firefly firefly : layer) {
-					firefly.render(graphics, partialTicks);
+					firefly.render(graphics, partialTicks, alpha);
 				}
 			}
 
@@ -125,21 +125,20 @@ public class BLTitleScreenBackground {
 			float u = (((this.layerTick + partialTicks) / (float) (this.layerTextures.length - i)) / (float) (i + 1) + 1024.0F * i / 4.0F) / 4000.0F;
 			float visibleU = ((float) this.width / this.height) * (256.0F / (1024.0F * i));
 			RenderSystem.setShaderTexture(0, layerTexture);
-			RenderSystem.setShader(GameRenderer::getPositionTexShader);
+			RenderSystem.setShader(CoreShaders.POSITION_TEX_COLOR);
 			Matrix4f matrix4f = graphics.pose().last().pose();
 			BufferBuilder builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-			builder.addVertex(matrix4f, 0.0F, this.height, 0.0F).setUv(u, 1.0F);
-			builder.addVertex(matrix4f, this.width, this.height, 0.0F).setUv(u + visibleU, 1.0F);
-			builder.addVertex(matrix4f, this.width, 0.0F, 0.0F).setUv(u + visibleU, 0.0F);
-			builder.addVertex(matrix4f, 0.0F, 0.0F, 0.0F).setUv(u, 0.0F);
+			builder.addVertex(matrix4f, 0.0F, this.height, 0.0F).setUv(u, 1.0F).setColor(ARGB.white(alpha));
+			builder.addVertex(matrix4f, this.width, this.height, 0.0F).setUv(u + visibleU, 1.0F).setColor(ARGB.white(alpha));
+			builder.addVertex(matrix4f, this.width, 0.0F, 0.0F).setUv(u + visibleU, 0.0F).setColor(ARGB.white(alpha));
+			builder.addVertex(matrix4f, 0.0F, 0.0F, 0.0F).setUv(u, 0.0F).setColor(ARGB.white(alpha));
 			BufferUploader.drawWithShader(builder.buildOrThrow());
 		}
 
 		graphics.fill(0, this.height - 30, this.width, this.height, 0x60000000);
-		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	protected void drawStarfield(float partialTicks) {
+	protected void drawStarfield(float partialTicks, float alpha) {
 		if (ShaderHelper.INSTANCE.canUseShaders() && this.starfieldEffect != null && this.starfieldTextureFBO != null) {
 			this.starfieldEffect.setOffset((this.layerTick + partialTicks) / 8000.0F, 0, 0);
 			int renderDimension = Math.max(this.width, this.height);

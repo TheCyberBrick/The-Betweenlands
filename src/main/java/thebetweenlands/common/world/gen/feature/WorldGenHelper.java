@@ -23,19 +23,6 @@ public abstract class WorldGenHelper<T extends FeatureConfiguration> extends Fea
 
 	/**
 	 * @see #rotatedCubeVolume(WorldGenLevel, Predicate, int, int, int, int, int, int, BlockState, int, int, int, Direction, Consumer...)
-	 * @param level
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param offsetX
-	 * @param offsetY
-	 * @param offsetZ
-	 * @param state
-	 * @param sizeWidth
-	 * @param sizeHeight
-	 * @param sizeDepth
-	 * @param direction
-	 * @param callbacks
 	 */
 	@SafeVarargs
 	public final void rotatedCubeVolume(WorldGenLevel level, int x, int y, int z, int offsetX, int offsetY, int offsetZ, BlockState state, int sizeWidth, int sizeHeight, int sizeDepth, Direction direction, Consumer<BlockPos>... callbacks) {

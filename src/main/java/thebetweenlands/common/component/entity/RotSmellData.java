@@ -82,7 +82,7 @@ public class RotSmellData implements ISynchedAttachment<RotSmellData> {
 	}
 
 	private void setChanged(LivingEntity player) {
-		PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new UpdateSynchedAttachmentPacket<RotSmellData>(AttachmentHolderIdentifier.of(player), AttachmentRegistry.ROT_SMELL.get(), this));
+		PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new UpdateSynchedAttachmentPacket<>(AttachmentHolderIdentifier.of(player), AttachmentRegistry.ROT_SMELL.get(), this));
 	}
 
 	public static void onPlayerTick(PlayerTickEvent.Post event) {

@@ -3,6 +3,8 @@ package thebetweenlands.common.entity;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -61,14 +63,14 @@ public class FlameJet extends Entity implements OwnableEntity {
 
 	@Override
 	public void push(Entity entity) {
-		if (!this.level().isClientSide()) {
+		if (this.level() instanceof ServerLevel level) {
 			if (entity.getBoundingBox().intersects(this.getBoundingBox())) {
 				if (entity instanceof LivingEntity) {
 					if (!entity.fireImmune()) {
-						boolean fire = entity.hurt(this.damageSources().source(DamageTypeRegistry.FLAME_JET, this, this.getOwner()), 5.0F);
+						boolean fire = entity.hurtServer(level, this.damageSources().source(DamageTypeRegistry.FLAME_JET, this, this.getOwner()), 5.0F);
 						if (fire) entity.igniteForSeconds(5);
 					} else {
-						if (entity != this.getOwner()) entity.hurt(this.damageSources().mobProjectile(this, this.getOwner()), 2.0F);
+						if (entity != this.getOwner()) entity.hurtServer(level, this.damageSources().mobProjectile(this, this.getOwner()), 2.0F);
 					}
 				}
 			}
@@ -94,6 +96,11 @@ public class FlameJet extends Entity implements OwnableEntity {
 	@Override
 	protected void addAdditionalSaveData(CompoundTag compound) {
 
+	}
+
+	@Override
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+		return false;
 	}
 
 	@Override

@@ -161,7 +161,7 @@ public class CenserBlockEntity extends BaseContainerBlockEntity implements World
 					ItemStack fuelStack = entity.getItem(CenserBlockEntity.FUEL_SLOT);
 
 					if (!fuelStack.isEmpty() && fuelStack.is(ItemRegistry.SULFUR)) {
-						entity.maxFuelTicks = entity.fuelTicks = fuelStack.getBurnTime(RecipeType.SMELTING) * 4;
+						entity.maxFuelTicks = entity.fuelTicks = fuelStack.getBurnTime(RecipeType.SMELTING, level.fuelValues()) * 4;
 
 						fuelStack.shrink(1);
 						if (fuelStack.getCount() <= 0) {

@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -20,7 +20,6 @@ import thebetweenlands.client.BLModelLayers;
 import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.block.container.SteepingPotBlock;
 import thebetweenlands.common.block.entity.SteepingPotBlockEntity;
-import thebetweenlands.common.registries.FluidTypeRegistry;
 import thebetweenlands.util.RenderUtils;
 
 public class SteepingPotRenderer implements BlockEntityRenderer<SteepingPotBlockEntity> {
@@ -70,12 +69,12 @@ public class SteepingPotRenderer implements BlockEntityRenderer<SteepingPotBlock
 
 				stack.pushPose();
 				stack.translate(0.0F, 0.25F, 0.0F);
-				RenderUtils.renderTopQuad(stack.last(), source.getBuffer(RenderType.entityTranslucent(sprite.atlasLocation())), light, FastColor.ARGB32.color(FastColor.as8BitChannel(1.0F - fade), fluidColor), 0.25F, 0.75F, height, 0.25F, 0.75F, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
+				RenderUtils.renderTopQuad(stack.last(), source.getBuffer(RenderType.entityTranslucent(sprite.atlasLocation())), light, ARGB.color(ARGB.as8BitChannel(1.0F - fade), fluidColor), 0.25F, 0.75F, height, 0.25F, 0.75F, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
 				stack.popPose();
 
 				stack.pushPose();
 				stack.translate(0.0F, 0.25F, 0.0F);
-				RenderUtils.renderTopQuad(stack.last(), source.getBuffer(RenderType.entityTranslucent(sprite.atlasLocation())), light, FastColor.ARGB32.color(FastColor.as8BitChannel(0.0F + fade), fluidColorTemp), 0.25F, 0.75F, height, 0.25F, 0.75F, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
+				RenderUtils.renderTopQuad(stack.last(), source.getBuffer(RenderType.entityTranslucent(sprite.atlasLocation())), light, ARGB.color(ARGB.as8BitChannel(0.0F + fade), fluidColorTemp), 0.25F, 0.75F, height, 0.25F, 0.75F, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
 				stack.popPose();
 			}
 

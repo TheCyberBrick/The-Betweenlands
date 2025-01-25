@@ -6,7 +6,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import thebetweenlands.common.TheBetweenlands;
-import thebetweenlands.common.component.entity.InfestationIgnoreData;
 import thebetweenlands.common.component.entity.SwarmedData;
 import thebetweenlands.common.registries.AttachmentRegistry;
 

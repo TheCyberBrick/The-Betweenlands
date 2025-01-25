@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-	id 'net.neoforged.moddev' version '1.0.1'
+	id 'net.neoforged.moddev' version '1.0.21'
 }
 
 def secrets = new Properties()
@@ -98,12 +98,12 @@ repositories {
 }
 
 dependencies {
-	implementation "mezz.jei:jei-${project.minecraft_version}-neoforge:${project.jei_version}"
-	compileOnly "dev.emi:emi-neoforge:${project.emi_version}+${project.minecraft_version}"
-
-	implementation "curse.maven:jade-324717:5706149"
-	runtimeOnly "curse.maven:atlasviewer-633577:5490697"
-	runtimeOnly "curse.maven:debug-utils-forge-783008:5607923"
+//	implementation "mezz.jei:jei-${project.minecraft_version}-neoforge:${project.jei_version}"
+//	compileOnly "dev.emi:emi-neoforge:${project.emi_version}+${project.minecraft_version}"
+//
+//	implementation "curse.maven:jade-324717:5706149"
+//	runtimeOnly "curse.maven:atlasviewer-633577:5490697"
+//	runtimeOnly "curse.maven:debug-utils-forge-783008:5607923"
 	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 

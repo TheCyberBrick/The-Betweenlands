@@ -9,16 +9,14 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.monster.Splodeshroom;
+import thebetweenlands.client.state.SplodeshroomRenderState;
 
-public class SplodeshroomModel extends MowzieModelBase<Splodeshroom> {
+public class SplodeshroomModel extends MowzieModelBase<SplodeshroomRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart hat;
 
 	public SplodeshroomModel(ModelPart root) {
-		super(RenderType::entityTranslucent);
-		this.root = root;
+		super(root, RenderType::entityTranslucent);
 		this.hat = root.getChild("hat_main");
 	}
 
@@ -53,19 +51,14 @@ public class SplodeshroomModel extends MowzieModelBase<Splodeshroom> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void setupAnim(Splodeshroom entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		this.setInitPose();
-		this.root.visible = !entity.getHasExploded();
-		float swell = entity.getSwellCount() * 0.02F;
-		float shake = (entity.getRandom().nextFloat() - entity.getRandom().nextFloat() * 0.5F) * swell;
+	public void setupAnim(SplodeshroomRenderState state) {
+		super.setupAnim(state);
+		this.root.visible = !state.exploded;
+		float swell = state.swellCount * 0.02F;
+		float shake = (state.random.nextFloat() - state.random.nextFloat() * 0.5F) * swell;
 
 		this.hat.setRotation(shake * 10F * Mth.DEG_TO_RAD, shake * 10F * Mth.DEG_TO_RAD, shake * 10F * Mth.DEG_TO_RAD);
-		this.hat.y += 0F - swell * 0.25F;
+		this.hat.y += -swell * 0.25F;
 		this.hat.xScale = 1.0F + swell;
 		this.hat.yScale = 1.0F + swell * 0.25F;
 		this.hat.zScale = 1.0F + swell;

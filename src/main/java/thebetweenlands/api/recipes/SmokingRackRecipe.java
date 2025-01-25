@@ -1,26 +1,47 @@
 package thebetweenlands.api.recipes;
 
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
+import thebetweenlands.common.recipe.display.SingleDurationDisplay;
+import thebetweenlands.common.registries.BlockRegistry;
+import thebetweenlands.common.registries.RecipeCategoryRegistry;
 import thebetweenlands.common.registries.RecipeRegistry;
 
-public interface SmokingRackRecipe extends Recipe<SingleRecipeInput> {
+import java.util.List;
 
-	int smokingTime();
+public abstract class SmokingRackRecipe extends SingleItemRecipe {
 
-	@Override
-	default boolean canCraftInDimensions(int width, int height) {
-		return true;
+	public final int smokingTime;
+
+	public SmokingRackRecipe(Ingredient input, ItemStack result, int smokingTime) {
+		super("", input, result);
+		this.smokingTime = smokingTime;
+	}
+
+	public int smokingTime() {
+		return this.smokingTime;
 	}
 
 	@Override
-	default RecipeType<?> getType() {
+	public List<RecipeDisplay> display() {
+		return List.of(new SingleDurationDisplay(
+			this.input().display(),
+			new SlotDisplay.ItemSlotDisplay(BlockRegistry.FALLEN_LEAVES.asItem()),
+			new SlotDisplay.ItemStackSlotDisplay(this.result()),
+			new SlotDisplay.ItemSlotDisplay(BlockRegistry.SMOKING_RACK.asItem()),
+			this.smokingTime()
+		));
+	}
+
+	@Override
+	public RecipeType<SmokingRackRecipe> getType() {
 		return RecipeRegistry.SMOKING_RECIPE.get();
 	}
 
 	@Override
-	default boolean isIncomplete() {
-		return true;
+	public RecipeBookCategory recipeBookCategory() {
+		return RecipeCategoryRegistry.SMOKING_RACK.get();
 	}
 }

@@ -4,12 +4,12 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import thebetweenlands.common.entity.projectile.AngryPebble;
@@ -30,15 +30,15 @@ public class AngryPebbleItem extends Item {
 	}
 
 	@Override
-	public UseAnim getUseAnimation(ItemStack stack) {
-		return UseAnim.BOW;
+	public ItemUseAnimation getUseAnimation(ItemStack stack) {
+		return ItemUseAnimation.BOW;
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		player.startUsingItem(hand);
 		level.playSound(null, player.blockPosition(), SoundRegistry.PEBBLE_HISS.get(), SoundSource.PLAYERS, 1.0F, 0.5F);
-		return InteractionResultHolder.consume(player.getItemInHand(hand));
+		return InteractionResult.CONSUME;
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class AngryPebbleItem extends Item {
 			Vec3 right = forward.cross(up).normalize();
 			Vec3 source = player.position().add(0, player.getEyeHeight() - 0.2F, 0).add(forward.scale(0.4F)).add(right.scale(0.3F));
 
-			for(int i = 0; i < 5; i++) {
+			for (int i = 0; i < 5; i++) {
 				level.addParticle(ParticleTypes.SMOKE, source.x + level.getRandom().nextFloat() * 0.5F - 0.25F, source.y + level.getRandom().nextFloat() * 0.5F - 0.25F, source.z + level.getRandom().nextFloat() * 0.5F - 0.25F, 0, 0, 0);
 			}
 		}
@@ -64,17 +64,19 @@ public class AngryPebbleItem extends Item {
 	}
 
 	@Override
-	public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeCharged) {
+	public boolean releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeCharged) {
 		if (!level.isClientSide() && entity instanceof Player player) {
 			int useTime = this.getUseDuration(stack, entity) - timeCharged;
 
-			if(useTime > 20) {
+			if (useTime > 20) {
 				level.playSound(null, player.blockPosition(), SoundRegistry.SORRY.get(), SoundSource.PLAYERS, 0.7F, 0.8F);
 				AngryPebble pebble = new AngryPebble(player, level, stack, this.explosionPower);
 				pebble.shootFromRotation(player, player.getXRot(), player.getYRot(), -10, 1.2F, 3.5F);
 				level.addFreshEntity(pebble);
 				stack.consume(1, player);
+				return true;
 			}
 		}
+		return false;
 	}
 }

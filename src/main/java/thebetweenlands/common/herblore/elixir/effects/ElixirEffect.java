@@ -8,6 +8,7 @@ import java.util.function.BiConsumer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -193,7 +194,7 @@ public class ElixirEffect {
 		}
 
 		@Override
-		public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+		public boolean applyEffectTick(ServerLevel level, LivingEntity entity, int amplifier) {
 			this.effect.performEffect(entity, amplifier);
 			return true;
 		}

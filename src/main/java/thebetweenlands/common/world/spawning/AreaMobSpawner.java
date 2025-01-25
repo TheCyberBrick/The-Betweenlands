@@ -36,7 +36,6 @@ public abstract class AreaMobSpawner {
 	/**
 	 * Sets whether the dynamic limit is strict, i.e. enforced and not
 	 * just approximated by randomness and weight.
-	 * @param strict
 	 */
 	public void setStrictDynamicLimit(boolean strict) {
 		this.strictDynamicLimit = strict;
@@ -45,7 +44,6 @@ public abstract class AreaMobSpawner {
 	/**
 	 * Sets the entity count filter. The entity count filter determines which
 	 * entities are supposed to be counted towards the entity count.
-	 * @param filter
 	 */
 	public void setEntityCountFilter(@Nullable Predicate<LivingEntity> filter) {
 		this.entityCountFilter = filter;
@@ -53,10 +51,6 @@ public abstract class AreaMobSpawner {
 
 	/**
 	 * Returns whether the specified position is within this area mob spawner's area
-	 * @param level
-	 * @param pos
-	 * @param entityCount
-	 * @return
 	 */
 	public boolean isInsideSpawningArea(Level level, BlockPos pos, boolean entityCount) {
 		return entityCount || level.getNearestPlayer(pos.getX(), pos.getY(), pos.getZ(), 24D, false) == null;
@@ -64,7 +58,6 @@ public abstract class AreaMobSpawner {
 
 	/**
 	 * How many attempts to reach the desired mob group size
-	 * @return
 	 */
 	public int getSpawningAttemptsPerGroup() {
 		return 24;
@@ -72,7 +65,6 @@ public abstract class AreaMobSpawner {
 
 	/**
 	 * How many attempts per spawning run
-	 * @return
 	 */
 	public int getSpawningAttempsPerChunk() {
 		return 8;
@@ -80,7 +72,6 @@ public abstract class AreaMobSpawner {
 
 	/**
 	 * Maximum spawns per spawning run
-	 * @return
 	 */
 	public int getMaxSpawnsPerChunk() {
 		return 6;
@@ -95,13 +86,11 @@ public abstract class AreaMobSpawner {
 
 	/**
 	 * Maximum entities per chunk as a fraction
-	 * @return
 	 */
 	public abstract float getMaxEntitiesPerSpawnChunkFraction(int spawnerChunks);
 
 	/**
 	 * Returns the approximate number of loaded (player) areas
-	 * @return
 	 */
 	public float getLoadedAreasCount(int spawnerChunks) {
 		return 1.0f;
@@ -109,10 +98,6 @@ public abstract class AreaMobSpawner {
 
 	/**
 	 * Returns a list of all spawn entries at the specified position
-	 * @param level
-	 * @param pos
-	 * @param provider
-	 * @return
 	 */
 	public List<CustomSpawnEntry> getSpawnEntries(Level level, BlockPos pos, @Nullable CustomSpawnEntriesProvider provider) {
 		return provider != null ? provider.getCustomSpawnEntries() : Collections.emptyList();
@@ -120,10 +105,6 @@ public abstract class AreaMobSpawner {
 
 	/**
 	 * Returns the spawn entry data, such as spawning cooldowns etc.
-	 * @param level
-	 * @param pos
-	 * @param provider
-	 * @return
 	 */
 	@Nullable
 	public BiomeSpawnEntriesData getSpawnEntriesData(Level level, BlockPos pos, @Nullable CustomSpawnEntriesProvider provider) {
@@ -574,7 +555,7 @@ public abstract class AreaMobSpawner {
 								//TODO: this would be easy to reimplement, but events no longer have Results and there's no longer no collision checks
 								/*Result canSpawn = EventHooks.finalizeMobSpawnSpawner(spawningEntity, level, (float)sx, (float)sy, (float)sz, null);
 								if (canSpawn == Result.ALLOW || (canSpawn == Result.DEFAULT && spawningEntity.check() && spawningEntity.isNotColliding())) {
-									groupData = EventHooks.finalizeMobSpawn(spawningEntity, level, level.getCurrentDifficultyAt(BlockPos.containing(sx, sy, sz)), MobSpawnType.NATURAL, groupData);
+									groupData = EventHooks.finalizeMobSpawn(spawningEntity, level, level.getCurrentDifficultyAt(BlockPos.containing(sx, sy, sz)), EntitySpawnReason.NATURAL, groupData);
 
 									if(spawningEntity.isNotColliding()) {
 										groupSpawnedEntities++;
@@ -618,24 +599,17 @@ public abstract class AreaMobSpawner {
 
 	/**
 	 * Generates a random position to potentially spawn a mob at
-	 * @param level
-	 * @param chunkPos
-	 * @return
 	 */
 	protected BlockPos getRandomSpawnPosition(Level level, ChunkPos chunkPos) {
 		ChunkAccess chunk = level.getChunkSource().getChunkNow(chunkPos.x, chunkPos.z);
 		int x = chunkPos.x * 16 + level.getRandom().nextInt(16);
 		int z = chunkPos.z * 16 + level.getRandom().nextInt(16);
-		int y = Math.min(level.getRandom().nextInt(chunk == null ? level.getMaxBuildHeight() : chunk.getHighestFilledSectionIndex() + 16 - 1), 256);
+		int y = Math.min(level.getRandom().nextInt(chunk == null ? level.getMaxY() : chunk.getHighestFilledSectionIndex() + 16 - 1), 256);
 		return new BlockPos(x, y, z);
 	}
 
 	/**
 	 * Generates a random offset position from a group spawn position
-	 * @param level
-	 * @param centerPos
-	 * @param radius
-	 * @return
 	 */
 	protected BlockPos getRandomSpawnPosition(Level level, BlockPos centerPos, int radius) {
 		return new BlockPos(
@@ -648,8 +622,6 @@ public abstract class AreaMobSpawner {
 
 	/**
 	 * Finds all chunks that are eligible for mob spawning and updates the specified set accordingly
-	 * @param level
-	 * @param spawnerChunks
 	 */
 	protected abstract void updateSpawnerChunks(ServerLevel level, Set<ChunkPos> spawnerChunks);
 
@@ -658,8 +630,6 @@ public abstract class AreaMobSpawner {
 	/**
 	 * TODO: Reimplement
 	 * Updates the entity counts of the spawner chunks
-	 * @param level
-	 * @param //entityCounts
 	 */
 	/*protected void updateEntityCounts(Level level, Object2IntMap<Class<? extends Entity>> entityCounts) {
 		entityCounts.clear();

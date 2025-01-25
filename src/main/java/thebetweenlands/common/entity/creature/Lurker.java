@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.util.TimeUtil;
@@ -248,7 +249,7 @@ public class Lurker extends PathfinderMob implements BLEntity, NeutralMob, Enemy
 				g = 85;
 				b = 16;
 			}
-			int multiplier = blockState.getMapColor(this.level(), BlockPos.containing(this.getBlockX(), blockY, this.getBlockZ())).calculateRGBColor(MapColor.Brightness.NORMAL);
+			int multiplier = blockState.getMapColor(this.level(), BlockPos.containing(this.getBlockX(), blockY, this.getBlockZ())).calculateARGBColor(MapColor.Brightness.NORMAL);
 			return 0xFF000000 | (r * (multiplier >> 16 & 0xFF) / 255) << 16 | (g * (multiplier >> 8 & 0xFF) / 255) << 8 | (b * (multiplier & 0xFF) / 255);
 		}
 		return 0xFFFFFFFF;
@@ -313,21 +314,7 @@ public class Lurker extends PathfinderMob implements BLEntity, NeutralMob, Enemy
 				this.mouthOpenTicks = 0;
 			}
 		}
-		if (this.ticksUntilBiteDamage > -1) {
-			this.ticksUntilBiteDamage--;
-			if (this.ticksUntilBiteDamage == -1) {
-				this.setShouldMouthBeOpen(false);
-				if (this.entityBeingBit != null) {
-					if (this.entityBeingBit.isAlive()) {
-						this.doHurtTarget(this.entityBeingBit);
-						if (this.getFirstPassenger() == this.entityBeingBit) {
-							this.getFirstPassenger().hurt(this.damageSources().mobAttack(this), ((LivingEntity) this.entityBeingBit).getMaxHealth());
-						}
-					}
-					this.entityBeingBit = null;
-				}
-			}
-		}
+
 		float movementSpeed = Mth.sqrt((float) ((this.xo - this.getX()) * (this.xo - this.getX()) + (this.yo - this.getY()) * (this.yo - this.getY()) + (this.zo - this.getZ()) * (this.zo - this.getZ())));
 		if (movementSpeed > 1) {
 			movementSpeed = 1;
@@ -368,13 +355,29 @@ public class Lurker extends PathfinderMob implements BLEntity, NeutralMob, Enemy
 	}
 
 	@Override
-	protected void customServerAiStep() {
-		super.customServerAiStep();
+	protected void customServerAiStep(ServerLevel level) {
+		super.customServerAiStep(level);
 		this.attackTime--;
+
+		if (this.ticksUntilBiteDamage > -1) {
+			this.ticksUntilBiteDamage--;
+			if (this.ticksUntilBiteDamage == -1) {
+				this.setShouldMouthBeOpen(false);
+				if (this.entityBeingBit != null) {
+					if (this.entityBeingBit.isAlive()) {
+						this.doHurtTarget(level, this.entityBeingBit);
+						if (this.getFirstPassenger() == this.entityBeingBit) {
+							this.getFirstPassenger().hurtServer(level, this.damageSources().mobAttack(this), ((LivingEntity) this.entityBeingBit).getMaxHealth());
+						}
+					}
+					this.entityBeingBit = null;
+				}
+			}
+		}
 	}
 
 	@Override
-	public boolean doHurtTarget(Entity entity) {
+	public boolean doHurtTarget(ServerLevel level, Entity entity) {
 		double distance = entity.distanceToSqr(this);
 		if (this.entityBeingBit != null || this.getVehicle() != null || entity.getVehicle() != null) {
 			return false;
@@ -415,12 +418,12 @@ public class Lurker extends PathfinderMob implements BLEntity, NeutralMob, Enemy
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float damage) {
-		if (this.isInvulnerableTo(source) || source.is(DamageTypes.IN_WALL)) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+		if (this.isInvulnerableTo(level, source) || source.is(DamageTypes.IN_WALL)) {
 			return false;
 		}
 
-		return super.hurt(source, damage);
+		return super.hurtServer(level, source, damage);
 	}
 
 	public boolean isLeaping() {

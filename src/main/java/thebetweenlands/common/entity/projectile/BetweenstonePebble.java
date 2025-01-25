@@ -166,7 +166,7 @@ public class BetweenstonePebble extends Projectile implements ItemSupplier {
 		}
 
 		this.setPos(d7, d2, d3);
-		this.checkInsideBlocks();
+		this.applyEffectsFromBlocks();
 	}
 
 	@Override
@@ -213,16 +213,14 @@ public class BetweenstonePebble extends Projectile implements ItemSupplier {
 			entity.igniteForSeconds(5.0F);
 		}
 
-		if (entity.hurt(damagesource, (float)j)) {
+		if (this.level() instanceof ServerLevel serverlevel && entity.hurtServer(serverlevel, damagesource, (float)j)) {
 			if (flag) {
 				return;
 			}
 
 			if (entity instanceof LivingEntity livingentity) {
 				this.doKnockback(livingentity, damagesource);
-				if (this.level() instanceof ServerLevel serverlevel1) {
-					EnchantmentHelper.doPostAttackEffectsWithItemSource(serverlevel1, livingentity, damagesource, this.getWeaponItem());
-				}
+				EnchantmentHelper.doPostAttackEffectsWithItemSource(serverlevel, livingentity, damagesource, this.getWeaponItem());
 			}
 
 			this.playSound(SoundRegistry.SLINGSHOT_HIT.get(), 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));

@@ -12,9 +12,6 @@ public class ResizableFramebuffer {
 
 	/**
 	 * Resizes the framebuffer to the specified dimensions and returns the framebuffer
-	 * @param width
-	 * @param height
-	 * @return
 	 */
 	public RenderTarget getFramebuffer(int width, int height) {
 		if(this.framebuffer == null || width != this.framebuffer.viewWidth || height != this.framebuffer.viewHeight) {
@@ -28,7 +25,6 @@ public class ResizableFramebuffer {
 
 	/**
 	 * Returns whether the underlying frambuffer has a depth buffer
-	 * @return
 	 */
 	public boolean hasDepth() {
 		return this.depth;

@@ -3,18 +3,17 @@ package thebetweenlands.client.model.entity;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.creature.MireSnail;
 
-public class MireSnailModel extends MowzieModelBase<MireSnail> {
+public class MireSnailModel extends MowzieModelBase<LivingEntityRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart sensor1;
 	private final ModelPart sensor2;
 
 	public MireSnailModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.sensor1 = root.getChild("sensor_1");
 		this.sensor2 = root.getChild("sensor_2");
 	}
@@ -121,15 +120,10 @@ public class MireSnailModel extends MowzieModelBase<MireSnail> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void setupAnim(MireSnail entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		this.sensor1.xRot = Mth.cos(limbSwing + Mth.PI) * 1.5F * limbSwingAmount + 0.5F;
-		this.sensor2.xRot = Mth.cos(limbSwing) * 1.5F * limbSwingAmount + 0.5F;
-		this.sensor1.yRot = Mth.cos(limbSwing + Mth.PI) * 1.5F * limbSwingAmount - 0.2F;
-		this.sensor2.yRot = Mth.cos(limbSwing) * 1.5F * limbSwingAmount + 0.2F;
+	public void setupAnim(LivingEntityRenderState state) {
+		this.sensor1.xRot = Mth.cos(state.walkAnimationPos + Mth.PI) * 1.5F * state.walkAnimationSpeed + 0.5F;
+		this.sensor2.xRot = Mth.cos(state.walkAnimationPos) * 1.5F * state.walkAnimationSpeed + 0.5F;
+		this.sensor1.yRot = Mth.cos(state.walkAnimationPos + Mth.PI) * 1.5F * state.walkAnimationSpeed - 0.2F;
+		this.sensor2.yRot = Mth.cos(state.walkAnimationPos) * 1.5F * state.walkAnimationSpeed + 0.2F;
 	}
 }

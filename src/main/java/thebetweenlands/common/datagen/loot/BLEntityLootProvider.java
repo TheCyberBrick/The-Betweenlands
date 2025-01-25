@@ -1,7 +1,6 @@
 package thebetweenlands.common.datagen.loot;
 
 import net.minecraft.advancements.critereon.EntityPredicate;
-import net.minecraft.advancements.critereon.EntitySubPredicates;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.EntityLootSubProvider;
@@ -426,7 +425,7 @@ public class BLEntityLootProvider extends EntityLootSubProvider {
 		return LootTable.lootTable()
 			.withPool(LootPool.lootPool()
 				.setRolls(ConstantValue.exactly(1))
-				.add(NestedLootTable.lootTableReference(parent.getDefaultLootTable())));
+				.add(NestedLootTable.lootTableReference(parent.getDefaultLootTable().orElseThrow())));
 	}
 
 	@Override

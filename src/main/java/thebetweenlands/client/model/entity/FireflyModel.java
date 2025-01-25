@@ -6,19 +6,17 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.creature.Firefly;
+import thebetweenlands.client.state.FireflyRenderState;
 
-public class FireflyModel extends MowzieModelBase<Firefly> {
+public class FireflyModel extends MowzieModelBase<FireflyRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart thorax;
 	private final ModelPart head;
 	private final ModelPart leftWing;
 	private final ModelPart rightWing;
 
 	public FireflyModel(ModelPart root) {
-		super(RenderType::entityTranslucent);
-		this.root = root;
+		super(root, RenderType::entityTranslucent);
 		this.thorax = root.getChild("thorax");
 		this.head = this.thorax.getChild("dekschild").getChild("head");
 		this.leftWing = this.thorax.getChild("dekschild").getChild("left_wing");
@@ -93,17 +91,12 @@ public class FireflyModel extends MowzieModelBase<Firefly> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void setupAnim(Firefly entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		float flap = Mth.sin(ageInTicks * 2.0F) * 0.6F;
+	public void setupAnim(FireflyRenderState state) {
+		float flap = Mth.sin(state.ageInTicks * 2.0F) * 0.6F;
 		this.leftWing.zRot = -0.5F - flap;
 		this.rightWing.zRot = 0.5F + flap;
 
-		float swing = Mth.cos(ageInTicks * 0.1F) * 0.15F + 0.1F;
+		float swing = Mth.cos(state.ageInTicks * 0.1F) * 0.15F + 0.1F;
 		this.thorax.xRot = 0.40980330836826856F + swing;
 		this.head.xRot = 0.6373942428283291F - swing;
 	}

@@ -3,7 +3,6 @@ package thebetweenlands.common.component.item;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -23,7 +22,7 @@ import java.util.Map;
 
 public record InfusionBucketData(List<ItemStack> ingredients, int infusionTime) {
 
-	public static InfusionBucketData EMPTY = new InfusionBucketData(List.of(), 0);
+	public static final InfusionBucketData EMPTY = new InfusionBucketData(List.of(), 0);
 
 	public static final Codec<InfusionBucketData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		ItemStack.OPTIONAL_CODEC.listOf().fieldOf("ingredients").forGetter(InfusionBucketData::ingredients),

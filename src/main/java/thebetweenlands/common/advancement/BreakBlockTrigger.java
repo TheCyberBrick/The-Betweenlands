@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.*;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Block;
@@ -38,8 +39,8 @@ public class BreakBlockTrigger extends SimpleCriterionTrigger<BreakBlockTrigger.
 			return AdvancementCriteriaRegistry.BREAK_BLOCK.get().createCriterion(new BreakBlockTrigger.TriggerInstance(Optional.empty(), Optional.of(predicate)));
 		}
 
-		public static Criterion<BreakBlockTrigger.TriggerInstance> breakBlock(Block block) {
-			return breakBlock(BlockPredicate.Builder.block().of(block).build());
+		public static Criterion<BreakBlockTrigger.TriggerInstance> breakBlock(HolderGetter<Block> getter, Block block) {
+			return breakBlock(BlockPredicate.Builder.block().of(getter, block).build());
 		}
 	}
 }

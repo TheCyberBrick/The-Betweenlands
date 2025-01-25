@@ -8,11 +8,10 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.monster.EmberlingShaman;
+import thebetweenlands.client.state.EmberlingShamanRenderState;
 
-public class EmberlingShamanModel extends MowzieModelBase<EmberlingShaman> {
+public class EmberlingShamanModel extends MowzieModelBase<EmberlingShamanRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart bodyBase;
 	private final ModelPart body3;
 	private final ModelPart leftLeg1;
@@ -34,7 +33,7 @@ public class EmberlingShamanModel extends MowzieModelBase<EmberlingShaman> {
 	private final ModelPart jaw;
 
 	public EmberlingShamanModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.bodyBase = root.getChild("body_base");
 		this.body3 = this.bodyBase.getChild("body_2").getChild("body_3");
 		this.leftLeg1 = this.body3.getChild("left_leg_1");
@@ -190,24 +189,10 @@ public class EmberlingShamanModel extends MowzieModelBase<EmberlingShaman> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
+	public void setupAnim(EmberlingShamanRenderState state) {
+		float animation = Mth.sin(state.walkAnimationPos * 0.6F) * state.walkAnimationSpeed * 0.5F;
 
-	@Override
-	public void setupAnim(EmberlingShaman entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		float heady = Mth.sin((netHeadYaw / Mth.RAD_TO_DEG) * 0.5F);
-		float headx = Mth.sin((headPitch / Mth.RAD_TO_DEG) * 0.5F);
-
-		this.head.yRot = heady;
-		this.head.xRot = 0.18203784098300857F + headx + entity.animationTicks;
-	}
-
-	@Override
-	public void prepareMobModel(EmberlingShaman entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		float animation = Mth.sin(limbSwing * 0.6F) * limbSwingAmount * 0.5F;
-
-		float flap = Mth.sin((entity.tickCount + partialTick) * 0.2F) * 0.8F;
+		float flap = Mth.sin(state.ageInTicks * 0.2F) * 0.8F;
 
 		this.leftLeg1.xRot = 0.5009094953223726F + animation * 2F;
 		this.rightLeg1.xRot = 0.5009094953223726F - animation * 2F;
@@ -217,16 +202,16 @@ public class EmberlingShamanModel extends MowzieModelBase<EmberlingShaman> {
 
 		this.rightArm.xRot = -0.4553564018453205F - animation;
 		this.rightArm.yRot = -0.136659280431156F - animation * 2F;
-		this.rightArm.zRot = 1.3658946726107624F + entity.smoothedAngle(partialTick);
+		this.rightArm.zRot = 1.3658946726107624F + state.animationTicks;
 
 		this.leftArm1.xRot = 0.36425021489121656F - animation * 2F;
 		this.leftArm2.xRot = -1.1383037381507017F + animation;
 		this.leftArm1.yRot = -0.27314402793711257F + animation;
-		this.leftArm1.zRot = -0.22759093446006054F - entity.smoothedAngle(partialTick);
+		this.leftArm1.zRot = -0.22759093446006054F - state.animationTicks;
 
-		this.bodyBase.xRot = -0.18203784098300857F - animation * 0.5F + flap * 0.025F - entity.smoothedAngle(partialTick) * 0.125F;
+		this.bodyBase.xRot = -0.18203784098300857F - animation * 0.5F + flap * 0.025F - state.animationTicks * 0.125F;
 
-		this.body3.xRot = -0.22759093446006054F + animation * 0.5F - flap * 0.05F + entity.smoothedAngle(partialTick) * 0.125F;
+		this.body3.xRot = -0.22759093446006054F + animation * 0.5F - flap * 0.05F + state.animationTicks * 0.125F;
 
 		this.jaw.xRot = 0.40980330836826856F + flap * 0.5F;
 
@@ -241,5 +226,11 @@ public class EmberlingShamanModel extends MowzieModelBase<EmberlingShaman> {
 
 		this.rightLowerGills1.yRot = -0.8651597102135892F + flap * 0.125F;
 		this.rightLowerGills2.yRot = -0.31869712141416456F + flap * 0.25F;
+
+		float heady = Mth.sin((state.yRot / Mth.RAD_TO_DEG) * 0.5F);
+		float headx = Mth.sin((state.xRot / Mth.RAD_TO_DEG) * 0.5F);
+
+		this.head.yRot = heady;
+		this.head.xRot = 0.18203784098300857F + headx + state.animationTicks;
 	}
 }

@@ -4,7 +4,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import thebetweenlands.api.item.amphibious.AmphibiousArmorUpgrade;
@@ -16,8 +15,6 @@ import thebetweenlands.common.registries.AmphibiousArmorUpgradeRegistry;
 import thebetweenlands.common.registries.DataComponentRegistry;
 
 public class AmphibiousArmorContainer implements Container {
-
-	private final ArmorItem.Type armorType;
 
 	private boolean pauseUpgradeDamageUpdates = false;
 	private boolean useUpgradeFilter = false;
@@ -39,8 +36,6 @@ public class AmphibiousArmorContainer implements Container {
 				this.contents.set(i, AmphibiousUpgrades.UpgradeEntry.EMPTY);
 			}
 		}
-		AmphibiousArmorItem item = (AmphibiousArmorItem) stack.getItem();
-		this.armorType = item.getType();
 	}
 
 	public ItemStack getContainerStack() {
@@ -116,7 +111,7 @@ public class AmphibiousArmorContainer implements Container {
 
 	@Override
 	public boolean canPlaceItem(int slot, ItemStack stack) {
-		Holder<AmphibiousArmorUpgrade> upgrade = ArmorEffectHelper.getUpgrade(this.armorType.getSlot(), stack);
+		Holder<AmphibiousArmorUpgrade> upgrade = ArmorEffectHelper.getUpgrade(stack);
 
 		if (!(stack.getItem() instanceof AmphibiousArmorItem) && upgrade != AmphibiousArmorUpgradeRegistry.NONE &&
 			(this.getItem(slot).isEmpty() || (ItemStack.isSameItem(this.getItem(slot).copy().split(1), stack.copy().split(1)) && stack.getOrDefault(DataComponentRegistry.UPGRADE_DAMAGE, UpgradeDamage.EMPTY).damage() == 0)) /*needed to preserve upgrade damage*/) {
@@ -138,7 +133,7 @@ public class AmphibiousArmorContainer implements Container {
 				ItemStack otherStack = this.getItem(i);
 
 				if (otherStack != null) {
-					Holder<AmphibiousArmorUpgrade> otherUpgrade = ArmorEffectHelper.getUpgrade(this.armorType.getSlot(), otherStack);
+					Holder<AmphibiousArmorUpgrade> otherUpgrade = ArmorEffectHelper.getUpgrade(otherStack);
 
 					if (otherUpgrade != AmphibiousArmorUpgradeRegistry.NONE && (otherUpgrade.value().isBlacklisted(upgrade) || upgrade.value().isBlacklisted(otherUpgrade))) {
 						return false;
@@ -154,7 +149,7 @@ public class AmphibiousArmorContainer implements Container {
 
 	@Override
 	public void setItem(int slot, ItemStack stack) {
-		Holder<AmphibiousArmorUpgrade> upgrade = ArmorEffectHelper.getUpgrade(this.armorType.getSlot(), stack);
+		Holder<AmphibiousArmorUpgrade> upgrade = ArmorEffectHelper.getUpgrade(stack);
 		UpgradeDamage damage = UpgradeDamage.EMPTY;
 		if (!this.pauseUpgradeDamageUpdates && !this.getItem(slot).isEmpty()) {
 			damage = this.getItem(slot).remove(DataComponentRegistry.UPGRADE_DAMAGE);

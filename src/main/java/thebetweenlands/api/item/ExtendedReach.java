@@ -14,15 +14,13 @@ public interface ExtendedReach {
 	/**
      * Returns the entity reach modifier in blocks<br/>
      * Note: Negative modifiers won't reduce a player's reach distance
-     * @return
-     */
+	 */
 	double getReachModifier(@Nullable Player player, ItemStack stack);
 
     /**
      * Returns the reach in blocks that the player will be able to hit entities from.<br/>
      * Note: Ranges less than {@code player.entityInteractionRange()} will have no effect
-     * @return
-     */
+	 */
     default double getReach(@Nullable Player player, ItemStack stack) {
     	if(player != null) {
     		// blockInteractionRange() may be the better option in terms of comparing to the original code

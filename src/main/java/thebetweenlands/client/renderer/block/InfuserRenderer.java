@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Holder;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -130,7 +130,7 @@ public class InfuserRenderer implements BlockEntityRenderer<InfuserBlockEntity> 
 			stack.pushPose();
 			stack.translate(0.0F, 0.35F + size * 0.5F, 0.0F);
 			RenderSystem.enableBlend();
-			RenderUtils.renderTopQuad(stack.last(), source.getBuffer(RenderType.entityTranslucent(sprite.atlasLocation())), light, FastColor.ARGB32.colorFromFloat(targetColor[3], targetColor[0], targetColor[1], targetColor[2]), 0.1875F, 0.8125F, 0.0F, 0.1875F, 0.8125F, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
+			RenderUtils.renderTopQuad(stack.last(), source.getBuffer(RenderType.entityTranslucent(sprite.atlasLocation())), light, ARGB.colorFromFloat(targetColor[3], targetColor[0], targetColor[1], targetColor[2]), 0.1875F, 0.8125F, 0.0F, 0.1875F, 0.8125F, sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1());
 			stack.popPose();
 		}
 	}

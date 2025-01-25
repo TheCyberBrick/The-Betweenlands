@@ -8,9 +8,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Portal;
@@ -23,7 +21,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -67,11 +65,11 @@ public class TreePortalBlock extends Block implements Portal {
 	}
 
 	@Override
-	public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor accessor, BlockPos pos, BlockPos neighborPos) {
+	public BlockState updateShape(BlockState state, LevelReader reader, ScheduledTickAccess access, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
 		Direction.Axis axis = direction.getAxis();
 		Direction.Axis portalAxis = state.getValue(AXIS);
 		boolean flag = portalAxis != axis && axis.isHorizontal();
-		return !flag && !neighborState.is(this) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, direction, neighborState, accessor, pos, neighborPos);
+		return !flag && !neighborState.is(this) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, reader, access, pos, direction, neighborPos, neighborState, random);
 	}
 
 	@Override
@@ -135,7 +133,7 @@ public class TreePortalBlock extends Block implements Portal {
 
 	@Nullable
 	@Override
-	public DimensionTransition getPortalDestination(ServerLevel level, Entity entity, BlockPos pos) {
+	public TeleportTransition getPortalDestination(ServerLevel level, Entity entity, BlockPos pos) {
 		ResourceKey<Level> newDimension = level.dimension() != DimensionRegistries.DIMENSION_KEY ? DimensionRegistries.DIMENSION_KEY : Level.OVERWORLD;
 		ServerLevel serverlevel = level.getServer().getLevel(newDimension);
 		if (serverlevel == null) {
@@ -150,14 +148,14 @@ public class TreePortalBlock extends Block implements Portal {
 
 	//TODO move to nearest existing portal
 	//otherwise, place down a new tree, mark it in storage, and safely place us in the middle of it
-	public DimensionTransition createTransition(ServerLevel level, Entity entity, BlockPos pos) {
-		return new DimensionTransition(
+	public TeleportTransition createTransition(ServerLevel level, Entity entity, BlockPos pos) {
+		return new TeleportTransition(
 			level,
 			Vec3.atCenterOf(pos),
 			Vec3.ZERO,
 			entity.getYRot(),
 			entity.getXRot(),
-			DimensionTransition.PLACE_PORTAL_TICKET
+			TeleportTransition.PLACE_PORTAL_TICKET
 		);
 	}
 

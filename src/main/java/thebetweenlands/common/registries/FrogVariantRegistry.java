@@ -30,9 +30,9 @@ public class FrogVariantRegistry {
 	}
 
 	public static Holder<FrogVariant> getSpawnVariant(RegistryAccess registryAccess, RandomSource random, Holder<Biome> biome) {
-		Registry<FrogVariant> registry = registryAccess.registryOrThrow(BLRegistries.Keys.FROG_VARIANT);
-		List<Holder.Reference<FrogVariant>> validVariants = registry.holders().filter(variant -> variant.value().biomes().isEmpty() || variant.value().biomes().get().contains(biome)).toList();
-		return validVariants.isEmpty() ? registry.getHolderOrThrow(GREEN) : validVariants.get(random.nextInt(validVariants.size()));
+		Registry<FrogVariant> registry = registryAccess.lookupOrThrow(BLRegistries.Keys.FROG_VARIANT);
+		List<Holder.Reference<FrogVariant>> validVariants = registry.listElements().filter(variant -> variant.value().biomes().isEmpty() || variant.value().biomes().get().contains(biome)).toList();
+		return validVariants.isEmpty() ? registry.getOrThrow(GREEN) : validVariants.get(random.nextInt(validVariants.size()));
 	}
 
 	public static void bootstrap(BootstrapContext<FrogVariant> context) {

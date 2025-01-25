@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import thebetweenlands.client.BLModelLayers;
@@ -109,14 +109,14 @@ public class MobSpawnerRenderer implements BlockEntityRenderer<MobSpawnerBlockEn
 			boolean hitboxes = dispatcher.shouldRenderHitBoxes();
 			dispatcher.setRenderShadow(false);
 			dispatcher.setRenderHitBoxes(false);
-			dispatcher.render(entity, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F, stack, source, LightTexture.FULL_BRIGHT);
+			dispatcher.render(entity, 0.0D, 0.0D, 0.0D, partialTicks, stack, source, LightTexture.FULL_BRIGHT);
 			dispatcher.setRenderShadow(true);
 			dispatcher.setRenderHitBoxes(hitboxes);
 		}
 	}
 
 	private int calculateColor(float counter, boolean constantAlpha) {
-		return FastColor.ARGB32.colorFromFloat(
+		return ARGB.colorFromFloat(
 			constantAlpha ? 0.5F : Math.clamp((float) Math.cos(counter) * (float) Math.cos(counter) * 2.0F, 0.0F, 1.0F),
 			1.0F,
 			Math.clamp(4.0F + (float) Math.sin(counter) * 3.0F, 0.0F, 1.0F),

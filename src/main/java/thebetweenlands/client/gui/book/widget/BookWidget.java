@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -21,7 +22,7 @@ import java.util.Optional;
 
 public abstract class BookWidget extends AbstractWidget {
 
-	public ArrayList<PageLink> pageLinks = new ArrayList<>();
+	public final ArrayList<PageLink> pageLinks = new ArrayList<>();
 	public boolean isPageRight = false;
 	private HerbloreManualScreen screen;
 
@@ -87,7 +88,7 @@ public abstract class BookWidget extends AbstractWidget {
 		TextureAtlasSprite sprite = BetweenlandsClient.getAspectIconManager().get(aspect);
 		int width = sprite.contents().width();
 		int height = sprite.contents().height();
-		graphics.blit(x, y, 0, width, height, sprite);
+		graphics.blitSprite(RenderType::guiTextured, sprite, x, y, width, height);
 		boolean shouldShowTooltip = false;
 		if (addPageLink) {
 			int lengthBefore = this.pageLinks.size();

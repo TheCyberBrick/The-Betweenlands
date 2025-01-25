@@ -40,7 +40,7 @@ public class DarkDruid extends Monster {
 	private static final int MIN_ATTACK_DELAY = 40, MAX_ATTACK_DELAY = 120;
 	private static final int MAX_ATTACK_TIME = 20;
 
-	private static final int MAX_ATTACK_ANIMATION_TIME = 8;
+	public static final int MAX_ATTACK_ANIMATION_TIME = 8;
 
 	private MeleeAttackGoal meleeAI;
 	private WaterAvoidingRandomStrollGoal wanderAI;
@@ -51,8 +51,8 @@ public class DarkDruid extends Monster {
 	private int teleportCooldown;
 	private boolean isWatching = true;
 
-	private int prevAttackAnimationTime;
-	private int attackAnimationTime;
+	public int prevAttackAnimationTime;
+	public int attackAnimationTime;
 
 	public DarkDruid(EntityType<? extends Monster> type, Level level) {
 		super(type, level);

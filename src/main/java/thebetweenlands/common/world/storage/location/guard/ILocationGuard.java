@@ -25,14 +25,12 @@ public interface ILocationGuard {
 	 * @param level  World
 	 * @param entity Entity that's checking for the guard
 	 * @param pos    Position
-	 * @return
 	 */
 	boolean isGuarded(Level level, @Nullable Entity entity, BlockPos pos);
 
 	/**
 	 * Clears all guards
 	 *
-	 * @param level
 	 */
 	void clear(Level level);
 
@@ -40,30 +38,24 @@ public interface ILocationGuard {
 	 * Returns if the location is cleared
 	 *
 	 * @param level World
-	 * @return
 	 */
 	boolean isClear(Level level);
 
 	/**
 	 * Handles explosions that affect the location
 	 *
-	 * @param level
-	 * @param explosion
 	 */
 	void handleExplosion(Level level, Explosion explosion);
 
 	/**
 	 * Writes the guard to NBT
 	 *
-	 * @param nbt
-	 * @return
 	 */
 	CompoundTag writeToNBT(CompoundTag nbt);
 
 	/**
 	 * Reads the guard from NBT
 	 *
-	 * @param nbt
 	 */
 	void readFromNBT(CompoundTag nbt);
 }

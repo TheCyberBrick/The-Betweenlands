@@ -53,7 +53,7 @@ public class CaveFish extends WaterAnimal implements BLEntity {
 		this.aiAvoidFollowers = new AvoidEntityGoal<>(this, CaveFish.class, 10.0F, 0.75D, 1.0D);
 		this.wanderAbout = new RandomSwimmingGoal(this, 0.5D, 5);
 		this.followLeader = new FollowTargetGoal<>(this, new FollowTargetGoal.FollowClosest<>(this, CaveFish.class, CaveFish::isLeader, 16), 14D, 1F, 16.0F, false);
-		this.targetRivalLeader = new NearestAttackableTargetGoal<>(this, CaveFish.class, 0, false, true, entity -> ((CaveFish)entity).isLeader());
+		this.targetRivalLeader = new NearestAttackableTargetGoal<>(this, CaveFish.class, 0, false, true, (entity, level) -> ((CaveFish)entity).isLeader());
 		this.attackLeader = new MeleeAttackGoal(this, 0.65D, false);
 
 		this.goalSelector.addGoal(2, this.aiAvoidFollowers);

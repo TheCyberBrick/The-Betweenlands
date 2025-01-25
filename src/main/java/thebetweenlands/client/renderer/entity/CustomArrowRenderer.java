@@ -2,11 +2,11 @@ package thebetweenlands.client.renderer.entity;
 
 import net.minecraft.client.renderer.entity.ArrowRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.ArrowRenderState;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 
-public class CustomArrowRenderer extends ArrowRenderer<AbstractArrow> {
+public class CustomArrowRenderer extends ArrowRenderer<AbstractArrow, ArrowRenderState> {
 
 	private final ResourceLocation texture;
 
@@ -16,7 +16,12 @@ public class CustomArrowRenderer extends ArrowRenderer<AbstractArrow> {
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(AbstractArrow entity) {
+	public ResourceLocation getTextureLocation(ArrowRenderState state) {
 		return this.texture;
+	}
+
+	@Override
+	public ArrowRenderState createRenderState() {
+		return new ArrowRenderState();
 	}
 }

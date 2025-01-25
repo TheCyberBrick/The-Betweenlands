@@ -1,12 +1,12 @@
 package thebetweenlands.api.item;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item.TooltipContext;
@@ -15,6 +15,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 import thebetweenlands.api.attachment.IDecayData;
 import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.component.item.CorrosionData;
@@ -45,8 +46,6 @@ public class CorrosionHelper {
 
 	/**
 	 * Returns the maximum corrosion of the specified item, or -1 if it can't be corroded.
-	 * @param stack
-	 * @return
 	 */
 	public static int getMaximumCorrosion(ItemStack stack) {
 		if(!isCorrodible(stack)) {
@@ -62,8 +61,6 @@ public class CorrosionHelper {
 
 	/**
 	 * Returns the current corrosion of the specified item, or -1 if it can't be corroded.
-	 * @param stack
-	 * @return
 	 */
 	public static int getCorrosion(ItemStack stack) {
 		if(!isCorrodible(stack)) {
@@ -81,8 +78,6 @@ public class CorrosionHelper {
 
 	/**
 	 * Returns the maximum coating of the specified item, or -1 if it can't be corroded.
-	 * @param stack
-	 * @return
 	 */
 	public static int getMaximumCoating(ItemStack stack) {
 		if(!isCorrodible(stack)) {
@@ -98,8 +93,6 @@ public class CorrosionHelper {
 
 	/**
 	 * Returns the current coating of the specified item, or -1 if it can't be corroded.
-	 * @param stack
-	 * @return
 	 */
 	public static int getCoating(ItemStack stack) {
 		if(!isCorrodible(stack)) {
@@ -118,8 +111,6 @@ public class CorrosionHelper {
 
 	/**
 	 * Sets the corrosion on a stack.
-	 * @param stack
-	 * @return
 	 */
 	public static void setCorrosion(ItemStack stack, int corrosion) {
 		if(!isCorrodible(stack)) {
@@ -135,8 +126,6 @@ public class CorrosionHelper {
 
 	/**
 	 * Sets the coating on a stack.
-	 * @param stack
-	 * @return
 	 */
 	public static void setCoating(ItemStack stack, int coating) {
 		if(!isCorrodible(stack)) {
@@ -152,8 +141,6 @@ public class CorrosionHelper {
 
 	/**
 	 * Returns a general modifier at the amount corrosion of the specified item
-	 * @param stack
-	 * @return
 	 */
 	public static float getModifier(ItemStack stack) {
 		if(!isCorrodible(stack)) {
@@ -180,10 +167,6 @@ public class CorrosionHelper {
 
 	/**
 	 * Returns the dig speed of an item at the amount of corrosion of the specified item
-	 * @param normalStrength
-	 * @param itemStack
-	 * @param blockState
-	 * @return
 	 */
 	public static float getDestroySpeed(float normalStrength, ItemStack itemStack, BlockState blockState) {
 		return normalStrength * getModifier(itemStack);
@@ -191,23 +174,20 @@ public class CorrosionHelper {
 
 	/**
 	 * Returns whether corrosion is enabled
-	 * @return
 	 */
-	public static boolean isCorrosionEnabled() {
+	public static boolean isCorrosionEnabled(ServerLevel level) {
 		// TODO check getting level
-		return TheBetweenlands.getLevelWorkaround(Level.OVERWORLD).getGameRules().getBoolean(TheBetweenlands.CORROSION_GAMERULE) && BetweenlandsConfig.useCorrosion;
+		return level.getGameRules().getBoolean(TheBetweenlands.CORROSION_GAMERULE) && BetweenlandsConfig.useCorrosion;
 	}
 
 
 	/**
 	 * Returns whether an entity should have items in its inventory corroded
-	 * @return
 	 */
-	public static boolean shouldEntityCorrode(Entity entity) {
-		if(entity == null) return isCorrosionEnabled();
+	public static boolean shouldEntityCorrode(ServerLevel level, @Nullable Entity entity) {
+		if(entity == null) return isCorrosionEnabled(level);
 
 		// If corrosion is disabled: false
-		Level level = entity.level();
 		if(!(BetweenlandsConfig.useCorrosion && level.getGameRules().getBoolean(TheBetweenlands.CORROSION_GAMERULE)))
 			return false;
 
@@ -233,23 +213,18 @@ public class CorrosionHelper {
 
 	/**
 	 * Updates the corrosion on the specified item
-	 * @param stack
-	 * @param world
-	 * @param holder
-	 * @param slot
-	 * @param isHeldItem
 	 */
-	public static void updateCorrosion(ItemStack stack, Level world, Entity holder, int slot, boolean isHeldItem) {
-		if (world.isClientSide()) {
+	public static void updateCorrosion(ItemStack stack, Level level, Entity holder, int slot, boolean isHeldItem) {
+		if (!(level instanceof ServerLevel serverLevel)) {
 			return;
 		}
-		if(!world.isClientSide() && shouldEntityCorrode(holder)) {
+		if(shouldEntityCorrode(serverLevel, holder)) {
 			if(!isCorrodible(stack)) {
 				return;
 			}
 
 			int corrosion = getCorrosion(stack);
-			if(!isCorrosionEnabled()) {
+			if(!isCorrosionEnabled(serverLevel)) {
 				if(corrosion != 0) {
 					setCorrosion(stack, 0);
 				}
@@ -263,7 +238,7 @@ public class CorrosionHelper {
 						probability *= (float) (1 - Math.pow(playerCorruption, 2) * 0.9F);
 					}
 				}
-				if (world.getRandom().nextFloat() < probability) {
+				if (level.getRandom().nextFloat() < probability) {
 					int coating = getCoating(stack);
 					if(coating > 0) {
 						setCoating(stack, coating - 1);
@@ -277,10 +252,6 @@ public class CorrosionHelper {
 
 	/**
 	 * Adds the corrosion tooltips
-	 * @param stack
-	 * @param lines
-	 * @param tooltipFlags
-	 * @param tooltipContext
 	 */
 	public static void addCorrosionTooltips(ItemStack stack, List<Component> lines, TooltipFlag tooltipFlags, TooltipContext tooltipContext) {
 		if(!isCorrodible(stack)) {
@@ -290,7 +261,7 @@ public class CorrosionHelper {
 		boolean advancedItemTooltips = tooltipFlags.isAdvanced();
 
 		int tooltipIndex = 1;
-		if(isCorrosionEnabled()) {
+		if(stack.has(DataComponentRegistry.CORROSION)) {
 			MutableComponent mutableComponent = MutableComponent.create(Component.translatable("item.thebetweenlands.corrosion." + getCorrosionStage(stack)).getContents());
 			if (advancedItemTooltips) {
 				String corrosionInfo = " (" +
@@ -316,8 +287,6 @@ public class CorrosionHelper {
 
 	/**
 	 * Returns the corrosion stage of the specified item. Ranges from [0, 5]
-	 * @param stack
-	 * @return
 	 */
 	public static int getCorrosionStage(ItemStack stack) {
 		int corrosion = getCorrosion(stack);
@@ -329,8 +298,6 @@ public class CorrosionHelper {
 
 	/**
 	 * Returns the coating stage of the specified item. Ranges from [0, 5]
-	 * @param stack
-	 * @return
 	 */
 	public static int getCoatingStage(ItemStack stack) {
 		int coating = getCoating(stack);

@@ -2,7 +2,6 @@ package thebetweenlands.api.item.amphibious;
 
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 
@@ -17,14 +16,14 @@ public interface AmphibiousArmorUpgrade extends AmphibiousArmorAttributeUpgrade 
 		NONE
 	}
 
-	boolean matches(EquipmentSlot armorType, ItemStack stack);
+	boolean matches(EquipmentSlot slot, ItemStack stack);
 
-	Set<EquipmentSlot> getArmorTypes();
+	Set<EquipmentSlot> getSlots();
 
 	@Override
-	default void applyAttributeModifiers(ArmorItem.Type armorType, ItemStack stack, int count, List<ItemAttributeModifiers.Entry> modifiers) { }
+	default void applyAttributeModifiers(EquipmentSlot slot, ItemStack stack, int count, List<ItemAttributeModifiers.Entry> modifiers) { }
 
-	default void onChanged(EquipmentSlot armorType, ItemStack armor, ItemStack stack) { }
+	default void onChanged(EquipmentSlot slot, ItemStack armor, ItemStack stack) { }
 
 	default boolean isBlacklisted(Holder<AmphibiousArmorUpgrade> other) {
 		return false;

@@ -14,7 +14,7 @@ public class WorldGenUtil {
 	//TODO: Could be MutableBlockPos, but I think this is also handled best in PlacedFeature
 	public static BlockPos loopUntilSolid(WorldGenLevel level, BlockPos origin) {
 		BlockPos.MutableBlockPos mutable = origin.mutable();
-		for (BlockState state = level.getBlockState(mutable); (state.isAir() || state.is(BlockTags.LEAVES)) && mutable.getY() > level.getMinBuildHeight(); state = level.getBlockState(mutable)) {
+		for (BlockState state = level.getBlockState(mutable); (state.isAir() || state.is(BlockTags.LEAVES)) && mutable.getY() > level.getMinY(); state = level.getBlockState(mutable)) {
 			mutable.below();
 		}
 		return mutable;

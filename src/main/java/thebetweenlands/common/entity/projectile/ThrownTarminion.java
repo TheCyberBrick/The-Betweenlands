@@ -28,11 +28,8 @@ public class ThrownTarminion extends ThrowableProjectile {
 	}
 
 	public ThrownTarminion(Level level, LivingEntity entity) {
-		super(EntityRegistry.THROWN_TARMINION.get(), entity, level);
-	}
-
-	public ThrownTarminion(Level level, double x, double y, double z) {
-		super(EntityRegistry.THROWN_TARMINION.get(), x, y, z, level);
+		super(EntityRegistry.THROWN_TARMINION.get(), level);
+		this.setOwner(entity);
 	}
 
 	@Override

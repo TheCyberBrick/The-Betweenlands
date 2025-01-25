@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import thebetweenlands.common.block.entity.BeamRelayBlockEntity;
 import thebetweenlands.common.registries.BlockEntityRegistry;
@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 
 public class BeamRelayBlock extends BaseEntityBlock {
 
-	public static final DirectionProperty FACING = BlockStateProperties.FACING;
+	public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
 	public static final BooleanProperty POWERED = BooleanProperty.create("powered");
 
 	public BeamRelayBlock(Properties properties) {

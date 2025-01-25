@@ -5,6 +5,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
@@ -89,7 +90,7 @@ public class Splodeshroom extends ProximitySpawnerEntity {
 
 	@Override
 	@Nullable
-	protected Entity checkArea() {
+	protected void checkArea() {
 		Entity entity = null;
 		if (!this.level().isClientSide() && this.level().getDifficulty() != Difficulty.PEACEFUL) {
 			List<Player> list = this.level().getEntitiesOfClass(Player.class, this.proximityBox());
@@ -99,9 +100,9 @@ public class Splodeshroom extends ProximitySpawnerEntity {
 				if (player != null) {
 					if (!player.isSpectator() && !player.isCreative()) {
 						if (this.canSneakPast() && player.isShiftKeyDown())
-							return null;
+							return;
 						else if (this.checkSight() && !this.hasLineOfSight(entity))
-							return null;
+							return;
 						else {
 							if (!this.getSwelling())
 								this.setSwelling(true);
@@ -117,7 +118,6 @@ public class Splodeshroom extends ProximitySpawnerEntity {
 					this.setSwelling(false);
 			}
 		}
-		return entity;
 	}
 
 	@Nullable
@@ -251,12 +251,12 @@ public class Splodeshroom extends ProximitySpawnerEntity {
 	}
 
 	@Override
-	public void kill() {
+	public void kill(ServerLevel level) {
 		this.discard();
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float damage) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
 		if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
 			return true;
 		}

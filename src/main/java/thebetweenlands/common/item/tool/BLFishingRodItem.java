@@ -8,7 +8,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
@@ -36,7 +35,7 @@ public class BLFishingRodItem extends Item {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
 
 		if (stack.getDamageValue() == this.getMaxDamage(stack)) {
@@ -44,7 +43,7 @@ public class BLFishingRodItem extends Item {
 				player.fishing.discard();
 				level.playSound(null, player.blockPosition(), SoundEvents.ITEM_BREAK, SoundSource.AMBIENT, 1F, 1F);
 			}
-			return new InteractionResultHolder<>(InteractionResult.FAIL, stack);
+			return InteractionResult.FAIL;
 		}
 
 		if (player.fishing != null) {
@@ -93,10 +92,10 @@ public class BLFishingRodItem extends Item {
 
 		if (!otherStack.isEmpty() && otherStack.is(ItemRegistry.NET)) {
 			// Allow net to be used to catch fish
-			return new InteractionResultHolder<>(InteractionResult.PASS, stack);
+			return InteractionResult.PASS;
 		}
 
-		return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
+		return InteractionResult.SUCCESS;
 	}
 
 	@Override
@@ -142,11 +141,6 @@ public class BLFishingRodItem extends Item {
 			tooltip.add(Component.translatable("item.thebetweenlands.weedwood_fishing_rod.broken", stack.getDisplayName()).withStyle(ChatFormatting.GRAY));
 		}
 		tooltip.add(Component.translatable("item.thebetweenlands.weedwood_fishing_rod.baited", stack.getOrDefault(DataComponentRegistry.FISHING_ROD_BAIT, false)).withStyle(ChatFormatting.GRAY));
-	}
-
-	@Override
-	public int getEnchantmentValue() {
-		return 1;
 	}
 
 	@Override

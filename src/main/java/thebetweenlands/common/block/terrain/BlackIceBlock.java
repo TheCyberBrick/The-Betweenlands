@@ -44,7 +44,7 @@ public class BlackIceBlock extends HalfTransparentBlock {
 
 	@Override
 	protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-		if (!WinterEvent.isFroooosty(level) || level.getBrightness(LightLayer.BLOCK, pos) > 11 - state.getLightBlock(level, pos)) {
+		if (!WinterEvent.isFroooosty(level) || level.getBrightness(LightLayer.BLOCK, pos) > 11 - state.getLightBlock()) {
 			this.melt(state, level, pos);
 		}
 	}
@@ -54,7 +54,7 @@ public class BlackIceBlock extends HalfTransparentBlock {
 			level.removeBlock(pos, false);
 		} else {
 			level.setBlockAndUpdate(pos, meltsInto());
-			level.neighborChanged(pos, meltsInto().getBlock(), pos);
+			level.neighborChanged(pos, meltsInto().getBlock(), null);
 		}
 	}
 

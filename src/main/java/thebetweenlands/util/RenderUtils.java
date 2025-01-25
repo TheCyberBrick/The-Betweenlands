@@ -119,8 +119,6 @@ public class RenderUtils {
 	/**
 	 * Saves the texture of an FBO to the specified PNG file.
 	 *
-	 * @param file
-	 * @param fbo
 	 */
 	public static void saveFboToFile(File file, RenderTarget fbo) {
 		FramebufferStack.State state = null;

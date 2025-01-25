@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
@@ -13,7 +14,6 @@ import thebetweenlands.common.component.item.AspectContents;
 import thebetweenlands.common.registries.DataComponentRegistry;
 import thebetweenlands.common.registries.RecipeRegistry;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 public record AspectIngredient(Ingredient input, Holder<AspectType> aspect, int minAmount) implements ICustomIngredient {
@@ -30,8 +30,8 @@ public record AspectIngredient(Ingredient input, Holder<AspectType> aspect, int 
 	}
 
 	@Override
-	public Stream<ItemStack> getItems() {
-		return Arrays.stream(this.input().getItems()).map(stack -> AspectContents.createItemStack(stack.getItem(), this.aspect(), this.minAmount()));
+	public Stream<Holder<Item>> items() {
+		return this.input().getValues().stream();
 	}
 
 	@Override

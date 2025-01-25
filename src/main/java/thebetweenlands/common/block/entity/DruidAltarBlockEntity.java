@@ -24,14 +24,17 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.network.PacketDistributor;
 import thebetweenlands.api.recipes.DruidAltarRecipe;
 import thebetweenlands.common.block.container.DruidAltarBlock;
+import thebetweenlands.common.block.entity.spawner.MobSpawnerBlockEntity;
 import thebetweenlands.common.block.structure.DruidStoneBlock;
+import thebetweenlands.common.entity.monster.DarkDruid;
 import thebetweenlands.common.inventory.DruidAltarMenu;
-import thebetweenlands.common.item.recipe.MultiStackInput;
+import thebetweenlands.common.recipe.input.MultiStackInput;
 import thebetweenlands.common.network.clientbound.UpdateDruidAltarProgressPacket;
 import thebetweenlands.common.registries.BlockEntityRegistry;
 import thebetweenlands.common.registries.RecipeRegistry;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class DruidAltarBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
 
@@ -59,8 +62,6 @@ public class DruidAltarBlockEntity extends BaseContainerBlockEntity implements W
 			entity.circleShouldRevert = false;
 		}
 
-		MultiStackInput input = new MultiStackInput(entity.getItems().subList(1, 5));
-		RecipeHolder<DruidAltarRecipe> recipe = entity.quickCheck.getRecipeFor(input, level).orElse(null);
 		if (level.isClientSide()) {
 			entity.prevRotation = entity.rotation;
 			entity.rotation += ROTATION_SPEED;
@@ -72,9 +73,12 @@ public class DruidAltarBlockEntity extends BaseContainerBlockEntity implements W
 				entity.craftingProgress++;
 			}
 			entity.prevRenderYOffset = entity.renderYOffset;
-			entity.renderYOffset = (float) ((double) entity.craftingProgress / (double) (recipe != null ? recipe.value().processTime() : DruidAltarBlockEntity.DEFAULT_CRAFTING_TIME) * (FINAL_HEIGHT - 0.2D) + 1.2D);
+			entity.renderYOffset = (float) ((double) entity.craftingProgress / DruidAltarBlockEntity.DEFAULT_CRAFTING_TIME * (FINAL_HEIGHT - 0.2D) + 1.2D);
 		} else {
 			if (entity.craftingProgress != 0) {
+				MultiStackInput input = new MultiStackInput(entity.getItems().subList(1, 5));
+				RecipeHolder<DruidAltarRecipe> recipe = entity.quickCheck.getRecipeFor(input, (ServerLevel) level).orElse(null);
+
 				// Sync clients every second
 				if (entity.craftingProgress % 20 == 0 || entity.craftingProgress == 1) {
 					entity.sendCraftingProgressPacket(level, pos);
@@ -84,7 +88,7 @@ public class DruidAltarBlockEntity extends BaseContainerBlockEntity implements W
 					entity.stopCraftingProcess(level, pos, state);
 				} else {
 					recipe.value().onCrafting(level, pos, input);
-					if (entity.craftingProgress >= recipe.value().processTime()) {
+					if (entity.craftingProgress >= DEFAULT_CRAFTING_TIME) {
 						ItemStack stack = recipe.value().assemble(input, level.registryAccess());
 						entity.getItems().clear();
 						entity.getItems().set(0, stack);
@@ -96,27 +100,27 @@ public class DruidAltarBlockEntity extends BaseContainerBlockEntity implements W
 		}
 	}
 
-	private void startCraftingProcess(Level level, BlockPos pos, BlockState state) {
+	private void startCraftingProcess(ServerLevel level, BlockPos pos, BlockState state) {
 		level.setBlockAndUpdate(pos, state.setValue(DruidAltarBlock.ACTIVE, true));
 		this.craftingProgress = 1;
 		// Packet to start sound
-		PacketDistributor.sendToPlayersNear((ServerLevel) level, null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 64.0D, new UpdateDruidAltarProgressPacket(this, -1));
+		PacketDistributor.sendToPlayersNear(level, null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 64.0D, new UpdateDruidAltarProgressPacket(this, -1));
 		// Sets client crafting progress to 1
-		PacketDistributor.sendToPlayersNear((ServerLevel) level, null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 64.0D, new UpdateDruidAltarProgressPacket(this, 1));
+		PacketDistributor.sendToPlayersNear(level, null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 64.0D, new UpdateDruidAltarProgressPacket(this, 1));
 		// Does the metadata stuff for the circle animated textures
 		this.checkDruidCircleBlocks(level, pos);
 
 		AABB aabb = new AABB(pos).inflate(8, 6, 8);
-//		List<DarkDruid> druids = level.getEntitiesOfClass(DarkDruid.class, aabb);
-//		for(DarkDruid druid : druids) {
-//			druid.kill();
-//		}
-//
-//		MobSpawnerLogicBetweenlands logic = BlockMobSpawnerBetweenlands.getLogic(level, pos.down());
-//		if(logic != null) {
-//			//Don't spawn druids while crafting
-//			logic.setDelay(this.currentRecipe != null ? this.currentRecipe.processTime() : DEFAULT_CRAFTING_TIME + 20);
-//		}
+		List<DarkDruid> druids = level.getEntitiesOfClass(DarkDruid.class, aabb);
+		for (DarkDruid druid : druids) {
+			druid.discard();
+		}
+
+		var entity = level.getBlockEntity(pos.below());
+		if (entity instanceof MobSpawnerBlockEntity spawner) {
+			//Don't spawn druids while crafting
+			spawner.getSpawner().setDelay(DEFAULT_CRAFTING_TIME + 20);
+		}
 	}
 
 	private void stopCraftingProcess(Level level, BlockPos pos, BlockState state) {
@@ -161,11 +165,13 @@ public class DruidAltarBlockEntity extends BaseContainerBlockEntity implements W
 	@Override
 	public void setItem(int slot, ItemStack stack) {
 		super.setItem(slot, stack);
-		MultiStackInput input = new MultiStackInput(this.getItems().subList(1, 5));
-		RecipeHolder<DruidAltarRecipe> recipe = this.quickCheck.getRecipeFor(input, this.getLevel()).orElse(null);
-		if (!this.getLevel().isClientSide() && recipe != null && !stack.isEmpty() && this.getItem(0).isEmpty() && this.craftingProgress == 0) {
-			recipe.value().onStartCrafting(this.getLevel(), this.getBlockPos(), input);
-			this.startCraftingProcess(this.getLevel(), this.getBlockPos(), this.getBlockState());
+		if (this.getLevel() instanceof ServerLevel sl && !stack.isEmpty() && this.getItem(0).isEmpty() && this.craftingProgress == 0) {
+			MultiStackInput input = new MultiStackInput(this.getItems().subList(1, 5));
+			RecipeHolder<DruidAltarRecipe> recipe = this.quickCheck.getRecipeFor(input, sl).orElse(null);
+			if (recipe != null) {
+				recipe.value().onStartCrafting(sl, this.getBlockPos(), input);
+				this.startCraftingProcess(sl, this.getBlockPos(), this.getBlockState());
+			}
 		}
 	}
 

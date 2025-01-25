@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.realmsclient.RealmsMainScreen;
 import com.mojang.realmsclient.gui.screens.RealmsNotificationsScreen;
+import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
@@ -14,9 +15,12 @@ import net.minecraft.client.gui.screens.multiplayer.SafetyScreen;
 import net.minecraft.client.gui.screens.options.AccessibilityOptionsScreen;
 import net.minecraft.client.gui.screens.options.LanguageSelectScreen;
 import net.minecraft.client.gui.screens.options.OptionsScreen;
+import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.gui.ModListScreen;
@@ -44,7 +48,12 @@ public class BLTitleScreen extends TitleScreen {
 		Tooltip tooltip = component != null ? Tooltip.create(component) : null;
 		this.addRenderableWidget(new BLMenuButton(Button.builder(Component.translatable("menu.multiplayer"), button -> this.minecraft.setScreen(this.minecraft.options.skipMultiplayerWarning ? new JoinMultiplayerScreen(this) : new SafetyScreen(this))).bounds(this.width / 2 - 100, l + 24, 200, 20).tooltip(tooltip))).active = flag;
 		this.addRenderableWidget(new BLMenuButton(Button.builder(Component.translatable("menu.online"), button -> this.minecraft.setScreen(new RealmsMainScreen(this))).bounds(this.width / 2 - 100, l + 48, 200, 20).tooltip(tooltip))).active = flag;
-		this.addRenderableWidget(new BLMenuButton(Button.builder(Component.translatable("fml.menu.mods"), button -> this.minecraft.setScreen(new ModListScreen(this))).pos(this.width / 2 - 100, l + 24 * 3).size(200, 20)));
+		int modsOffset = SharedConstants.IS_RUNNING_IN_IDE ? 2 : -100;
+		int modsWidth = SharedConstants.IS_RUNNING_IN_IDE ? 98 : 200;
+		this.addRenderableWidget(new BLMenuButton(Button.builder(Component.translatable("fml.menu.mods"), button -> this.minecraft.setScreen(new ModListScreen(this))).bounds(this.width / 2 - modsOffset, l + 24 * 3, modsWidth, 20)));
+		if (SharedConstants.IS_RUNNING_IN_IDE) {
+			this.addRenderableWidget(new BLMenuButton(Button.builder(Component.literal("Create Test World"), button -> CreateWorldScreen.testWorld(this.minecraft, this)).bounds(this.width / 2 - 100, l + 24, 98, 20)));
+		}
 
 		//TODO consider making the language and accessibility buttons picture buttons like in vanilla
 		this.addRenderableWidget(new BLMenuButton(Button.builder(Component.literal("L"), button -> this.minecraft.setScreen(new LanguageSelectScreen(this, this.minecraft.options, this.minecraft.getLanguageManager()))).bounds(this.width / 2 - 124, l + 94 + 12, 20, 20)));
@@ -109,13 +118,11 @@ public class BLTitleScreen extends TitleScreen {
 		RenderSystem.enableCull();
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		graphics.setColor(1.0F, 1.0F, 1.0F, alpha);
 		graphics.pose().pushPose();
 		graphics.pose().translate(0.0F, Mth.sin(((float) this.ticks + partialTicks) / 16.0F) * 5.0F, 0.0F);
-		graphics.blit(LOGO_TEXTURE, this.width / 2 - 161 / 2, 7, 0, 0, 161, 79);
+		graphics.blit(RenderType::guiTextured, LOGO_TEXTURE, this.width / 2 - 161 / 2, 7, 0.0F, 0.0F, 0, 0, 161, 79, ARGB.white(alpha));
 		graphics.pose().popPose();
-		graphics.blit(LOGO_TEXTURE, 0, 0, 239, 0, 17, 16);
-		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+		graphics.blit(RenderType::guiTextured, LOGO_TEXTURE, 0, 0, 0.0F, 0.0F, 239, 0, 17, 16, ARGB.white(alpha));
 		RenderSystem.disableBlend();
 	}
 }

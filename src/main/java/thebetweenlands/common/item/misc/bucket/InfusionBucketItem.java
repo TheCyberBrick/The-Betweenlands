@@ -3,12 +3,11 @@ package thebetweenlands.common.item.misc.bucket;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -42,22 +41,22 @@ public class InfusionBucketItem extends Item {
 			for (int i = 0; i < 50; i++) {
 				context.getLevel().addParticle(ParticleTypes.SMOKE, pos.getX() + level.getRandom().nextFloat(), pos.getY() + level.getRandom().nextFloat(), pos.getZ() + level.getRandom().nextFloat(), 0, 0, 0);
 			}
-			context.getPlayer().setItemInHand(context.getHand(), context.getItemInHand().getCraftingRemainingItem());
-			return InteractionResult.sidedSuccess(level.isClientSide());
+			context.getPlayer().setItemInHand(context.getHand(), context.getItemInHand().getCraftingRemainder());
+			return InteractionResult.SUCCESS;
 		}
 		return super.useOn(context);
 	}
 
 	@Nullable
-	public static Holder<ElixirRecipe> getInfusionElixirRecipe(ItemStack stack, HolderLookup.Provider registries) {
-		return ElixirRecipe.getFromAspects(getInfusingAspects(stack, registries), registries);
+	public static Holder<ElixirRecipe> getInfusionElixirRecipe(ItemStack stack, Level level) {
+		return ElixirRecipe.getFromAspects(getInfusingAspects(stack, level), level.registryAccess());
 	}
 
-	public static List<Holder<AspectType>> getInfusingAspects(ItemStack stack, HolderLookup.Provider registries) {
+	public static List<Holder<AspectType>> getInfusingAspects(ItemStack stack, Level level) {
 		List<Holder<AspectType>> infusingAspects = new ArrayList<>();
 		List<ItemStack> stacks = stack.getOrDefault(DataComponentRegistry.INFUSION_BUCKET_DATA, InfusionBucketData.EMPTY).ingredients();
 		for (ItemStack currentStack : stacks) {
-			for (Aspect aspect : AspectContents.getAllAspectsForItem(currentStack, registries, AspectManager.get(BetweenlandsClient.getClientLevel()))) {
+			for (Aspect aspect : AspectContents.getAllAspectsForItem(currentStack, level.registryAccess(), AspectManager.get(level))) {
 				infusingAspects.add(aspect.type());
 			}
 			//infusingAspects.addAll(AspectManager.get(TheBetweenlands.proxy.getClientWorld()).getDiscoveredAspectTypes(AspectManager.getAspectItem(ingredient), null));
@@ -70,7 +69,7 @@ public class InfusionBucketItem extends Item {
 	}
 
 	public static int getColor(ItemStack stack) {
-		Holder<ElixirRecipe> holder = getInfusionElixirRecipe(stack, BetweenlandsClient.getClientLevel().registryAccess());
+		Holder<ElixirRecipe> holder = getInfusionElixirRecipe(stack, BetweenlandsClient.getClientLevel());
 		int infusionTime = getInfusionTime(stack);
 		//Infusion liquid
 		if (holder != null) {
@@ -92,10 +91,10 @@ public class InfusionBucketItem extends Item {
 				float interpG = startG + (targetColor[1] - startG) * infusingPercentage;
 				float interpB = startB + (targetColor[2] - startB) * infusingPercentage;
 				float interpA = startA + (targetColor[3] - startA) * infusingPercentage;
-				return FastColor.ARGB32.colorFromFloat(interpA, interpR, interpG, interpB);
+				return ARGB.colorFromFloat(interpA, interpR, interpG, interpB);
 			}
 		} else {
-			return FastColor.ARGB32.colorFromFloat(1.0F, 0.8F, 0.0F, 0.8F);
+			return ARGB.colorFromFloat(1.0F, 0.8F, 0.0F, 0.8F);
 		}
 	}
 

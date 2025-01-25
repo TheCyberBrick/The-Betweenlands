@@ -75,8 +75,6 @@ public class CompostBinBlockEntity extends NoMenuContainerBlockEntity {
 	/**
 	 * Removes the specified amount of compost and returns true if successful
 	 *
-	 * @param amount
-	 * @return
 	 */
 	public boolean removeCompost(Level level, BlockPos pos, BlockState state, int amount) {
 		if (this.compostedAmount != 0) {
@@ -97,11 +95,6 @@ public class CompostBinBlockEntity extends NoMenuContainerBlockEntity {
 	/**
 	 * Adds an item to the compost bin
 	 *
-	 * @param stack
-	 * @param compostAmount
-	 * @param compostTime
-	 * @param doSimulate
-	 * @return
 	 */
 	public CompostResult addItemToBin(Level level, BlockPos pos, BlockState state, ItemStack stack, int compostAmount, int compostTime, boolean doSimulate) {
 		int clampedAmount = this.getTotalCompostAmount() + compostAmount <= MAX_COMPOST_AMOUNT ? compostAmount : MAX_COMPOST_AMOUNT - this.getTotalCompostAmount();
@@ -176,8 +169,6 @@ public class CompostBinBlockEntity extends NoMenuContainerBlockEntity {
 	/**
 	 * Returns the lid angle
 	 *
-	 * @param partialTicks
-	 * @return
 	 */
 	public float getLidAngle(BlockState state, float partialTicks) {
 		return state.getValue(CompostBinBlock.OPEN) ? Math.min(this.lidAngle + OPEN_SPEED * partialTicks, MAX_OPEN) : Math.max(this.lidAngle - CLOSE_SPEED * partialTicks, MIN_OPEN);
@@ -186,7 +177,6 @@ public class CompostBinBlockEntity extends NoMenuContainerBlockEntity {
 	/**
 	 * Returns the total compost at the end of the process
 	 *
-	 * @return
 	 */
 	public int getTotalCompostAmount() {
 		return this.totalCompostAmount;
@@ -195,7 +185,6 @@ public class CompostBinBlockEntity extends NoMenuContainerBlockEntity {
 	/**
 	 * Returns the current total amount of compost
 	 *
-	 * @return
 	 */
 	public int getCompostedAmount() {
 		return this.compostedAmount;

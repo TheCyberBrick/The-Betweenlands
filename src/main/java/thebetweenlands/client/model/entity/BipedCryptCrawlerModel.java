@@ -9,14 +9,12 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.monster.BipedCryptCrawler;
+import thebetweenlands.client.state.BipedCryptCrawlerRenderState;
 
-public class BipedCryptCrawlerModel<T extends BipedCryptCrawler> extends MowzieModelBase<T> implements ArmedModel {
+public class BipedCryptCrawlerModel extends MowzieModelBase<BipedCryptCrawlerRenderState> implements ArmedModel {
 
-	private final ModelPart root;
 	private final ModelPart body_main;
 	private final ModelPart body_lower;
 	private final ModelPart head;
@@ -39,7 +37,7 @@ public class BipedCryptCrawlerModel<T extends BipedCryptCrawler> extends MowzieM
 	private final ModelPart tail4;
 
 	public BipedCryptCrawlerModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.body_main = root.getChild("body_main");
 		this.body_lower = this.body_main.getChild("body_lower");
 		this.head = this.body_main.getChild("neck").getChild("head");
@@ -175,24 +173,14 @@ public class BipedCryptCrawlerModel<T extends BipedCryptCrawler> extends MowzieM
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void setupAnim(BipedCryptCrawler entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
-	}
-
-	@Override
-	public void prepareMobModel(BipedCryptCrawler entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		float animation = Mth.sin(limbSwing * 0.4F) * limbSwingAmount * 0.2F;
-		float flap = Mth.sin((entity.tickCount + partialTick) * 0.3F) * 0.8F;
+	public void setupAnim(BipedCryptCrawlerRenderState state) {
+		float animation = Mth.sin(state.walkAnimationPos * 0.4F) * state.walkAnimationSpeed * 0.2F;
+		float flap = Mth.sin(state.ageInTicks * 0.3F) * 0.8F;
 		this.tail1.xRot = 0.36425021489121656F - animation * 0.25F;
 		this.tail2.xRot = 0.22759093446006054F - animation * 0.5F;
 		this.tail3.xRot = 0.22759093446006054F - animation * 0.75F;
 		this.tail4.xRot = 0.22759093446006054F - animation;
-		if (!entity.isBlocking()) {
+		if (!state.isBlocking) {
 			this.leg_front_right1.xRot = 0.9105382707654417F - 1F + animation * 2F;
 			this.leg_front_left1.xRot = 0.9105382707654417F - 1F - animation * 2F;
 
@@ -245,39 +233,34 @@ public class BipedCryptCrawlerModel<T extends BipedCryptCrawler> extends MowzieM
 
 		this.head.xRot = 0.5462880558742251F;
 
-		if (!entity.onGround())
+		if (!state.onGround)
 			this.jaw.xRot = -0.091106186954104F;
 		else
 			this.jaw.xRot = 0.091106186954104F + flap * 0.5F;
 
-		HumanoidArm arm = this.getMainHand(entity);
+		HumanoidArm arm = state.mainArm;
 		ModelPart modelrenderer = this.getArmForSide(arm);
-		if (this.attackTime > 0.0F) {
-			float f1 = this.attackTime;
+		if (state.attackTime > 0.0F) {
+			float f1 = state.attackTime;
 			this.body_main.yRot = Mth.sin(Mth.sqrt(f1) * Mth.TWO_PI) * 0.5F;
 
 			if (arm == HumanoidArm.LEFT)
 				this.body_main.yRot *= -1.0F;
 
-			f1 = 1.0F - this.attackTime;
+			f1 = 1.0F - state.attackTime;
 			f1 = f1 * f1;
 			f1 = f1 * f1;
 			f1 = 1.0F - f1;
 			float f2 = Mth.sin(f1 * Mth.PI);
-			float f3 = Mth.sin(this.attackTime * Mth.PI) * -(this.head.xRot + 0.7F) * 0.75F;
+			float f3 = Mth.sin(state.attackTime * Mth.PI) * -(this.head.xRot + 0.7F) * 0.75F;
 			modelrenderer.xRot -= f2 * 0.8F + f3;
 			modelrenderer.yRot += this.body_main.yRot;
-			modelrenderer.zRot += Mth.sin(this.attackTime * Mth.PI) * -0.4F;
+			modelrenderer.zRot += Mth.sin(state.attackTime * Mth.PI) * -0.4F;
 		}
 	}
 
 	protected ModelPart getArmForSide(HumanoidArm side) {
 		return side == HumanoidArm.LEFT ? this.leg_front_left1 : this.leg_front_right1;
-	}
-
-	protected HumanoidArm getMainHand(BipedCryptCrawler entity) {
-		HumanoidArm arm = entity.getMainArm();
-		return entity.swingingArm == InteractionHand.MAIN_HAND ? arm : arm.getOpposite();
 	}
 
 	@Override

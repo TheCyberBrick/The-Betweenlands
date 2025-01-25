@@ -5,14 +5,14 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.ToolMaterial;
 
 public class InstakillWeaponItem extends SwordItem {
 
 	private final TagKey<EntityType<?>> instakillMobs;
 
-	public InstakillWeaponItem(Tier tier, TagKey<EntityType<?>> instakillMobs, Properties properties) {
-		super(tier, properties);
+	public InstakillWeaponItem(ToolMaterial material, TagKey<EntityType<?>> instakillMobs, Properties properties) {
+		super(material, 3.0F, -2.4F, properties);
 		this.instakillMobs = instakillMobs;
 	}
 
@@ -22,10 +22,5 @@ public class InstakillWeaponItem extends SwordItem {
 			target.hurt(attacker.damageSources().indirectMagic(attacker, attacker), target.getMaxHealth());
 		}
 		return super.hurtEnemy(stack, target, attacker);
-	}
-
-	@Override
-	public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-		return false;
 	}
 }

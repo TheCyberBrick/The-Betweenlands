@@ -3,6 +3,7 @@ package thebetweenlands.common.entity.monster;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
@@ -11,8 +12,7 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -38,7 +38,7 @@ public class SludgeWorm extends Monster implements BLEntity {
 	public SludgeWormMultipart[] parts;
 
 	private int wallInvulnerabilityTicks = 40;
-	private boolean doSpawningAnimation = true;
+	private final boolean doSpawningAnimation = true;
 
 	public SludgeWorm(EntityType<? extends Monster> type, Level level) {
 		super(type, level);
@@ -55,7 +55,7 @@ public class SludgeWorm extends Monster implements BLEntity {
 			};
 		setId(ENTITY_COUNTER.getAndAdd(this.parts.length + 1) + 1);
 	}
-	
+
 	@Override
 	public void setId(int id) {
 		super.setId(id);
@@ -79,7 +79,7 @@ public class SludgeWorm extends Monster implements BLEntity {
 		this.goalSelector.addGoal(1, new RandomStrollGoal(this, 0.8D, 1));
 		this.targetSelector.addGoal(0, new HurtByTargetGoal(this));
 		this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
-		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false, entity -> !(entity instanceof Enemy)));
+		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false, (entity, level) -> !(entity instanceof Enemy)));
 	}
 
 	public static AttributeSupplier.Builder registerAttributes() {
@@ -94,7 +94,7 @@ public class SludgeWorm extends Monster implements BLEntity {
 	@Override
 	public void aiStep() {
 		super.aiStep();
-		setHitBoxes();
+		this.setHitBoxes();
 	}
 
 	protected float getHeadMotionYMultiplier() {
@@ -131,10 +131,10 @@ public class SludgeWorm extends Monster implements BLEntity {
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		if (source.is(DamageTypes.IN_WALL) && this.wallInvulnerabilityTicks > 0)
 			return false;
-		return super.hurt(source, amount);
+		return super.hurtServer(level, source, amount);
 	}
 
 	@Override
@@ -247,7 +247,7 @@ public class SludgeWorm extends Monster implements BLEntity {
 
 	@Nullable
 	@Override
-	public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType type, @Nullable SpawnGroupData data) {
+	public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason type, @Nullable SpawnGroupData data) {
 		for (SludgeWormMultipart part : this.parts) {
 			part.setPos(this.xo, this.yo, this.zo);
 			part.setYRot(this.getYRot());

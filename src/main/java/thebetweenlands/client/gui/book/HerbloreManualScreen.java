@@ -7,6 +7,7 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -74,8 +75,8 @@ public class HerbloreManualScreen extends Screen {
 			}
 
 			boolean leftTab = this.currentCategory.getCategoryNumber() == 2;
-			this.addRenderableWidget(new HerbloreTabButton(this.leftPos + (leftTab ? 0 : 279), this.topPos + 33, leftTab, 0xFFA55154, (graphics, x, y) -> graphics.blitSprite(ELIXIR_TAB_ICON, x + (leftTab ? 5 : 0), y + 4, 9, 11), button -> this.changeCategory(HerbloreEntryCategory.elixirCategory)));
-			this.addRenderableWidget(new HerbloreTabButton(this.leftPos, this.topPos + 11, true, 0xFF6195CC, (graphics, x, y) -> graphics.blitSprite(ASPECT_TAB_ICON, x + 5, y + 4, 9, 11), button -> this.changeCategory(HerbloreEntryCategory.aspectCategory)));
+			this.addRenderableWidget(new HerbloreTabButton(this.leftPos + (leftTab ? 0 : 279), this.topPos + 33, leftTab, 0xFFA55154, (graphics, x, y) -> graphics.blitSprite(RenderType::guiTextured, ELIXIR_TAB_ICON, x + (leftTab ? 5 : 0), y + 4, 9, 11), button -> this.changeCategory(HerbloreEntryCategory.elixirCategory)));
+			this.addRenderableWidget(new HerbloreTabButton(this.leftPos, this.topPos + 11, true, 0xFF6195CC, (graphics, x, y) -> graphics.blitSprite(RenderType::guiTextured, ASPECT_TAB_ICON, x + 5, y + 4, 9, 11), button -> this.changeCategory(HerbloreEntryCategory.aspectCategory)));
 		}
 	}
 
@@ -108,7 +109,7 @@ public class HerbloreManualScreen extends Screen {
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		this.renderBackground(graphics, mouseX, mouseY, partialTick);
-		graphics.blit(BOOK, this.leftPos, this.topPos, 0, 0, BOOK_WIDTH, BOOK_HEIGHT, BOOK_WIDTH, BOOK_HEIGHT);
+		graphics.blit(RenderType::guiTextured, BOOK, this.leftPos, this.topPos, 0, 0, BOOK_WIDTH, BOOK_HEIGHT, BOOK_WIDTH, BOOK_HEIGHT);
 
 		for (Renderable renderable : this.renderables) {
 			renderable.render(graphics, mouseX, mouseY, partialTick);

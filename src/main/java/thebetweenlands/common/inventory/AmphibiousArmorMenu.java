@@ -104,7 +104,7 @@ public class AmphibiousArmorMenu extends AbstractContainerMenu {
 					ItemStack invItem = this.container.getContainerStack();
 
 					if (invItem.getItem() instanceof AmphibiousArmorItem armor) {
-						Holder<AmphibiousArmorUpgrade> upgrade = ArmorEffectHelper.getUpgrade(armor.getType().getSlot(), stack);
+						Holder<AmphibiousArmorUpgrade> upgrade = ArmorEffectHelper.getUpgrade(stack);
 
 						if (upgrade != AmphibiousArmorUpgradeRegistry.NONE) {
 							UpgradeDamage damage = stack.getOrDefault(DataComponentRegistry.UPGRADE_DAMAGE, UpgradeDamage.EMPTY);

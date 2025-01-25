@@ -7,7 +7,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import thebetweenlands.api.BLRegistries;
 import thebetweenlands.api.recipes.CenserRecipe;
 import thebetweenlands.common.TheBetweenlands;
-import thebetweenlands.common.item.recipe.censer.*;
+import thebetweenlands.common.recipe.censer.*;
 
 import javax.annotation.Nullable;
 

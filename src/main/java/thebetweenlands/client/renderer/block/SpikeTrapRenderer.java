@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import thebetweenlands.client.BLModelLayers;
 import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.block.structure.SpikeTrapBlock;
@@ -52,7 +52,7 @@ public class SpikeTrapRenderer implements BlockEntityRenderer<SpikeTrapBlockEnti
 			float spoopTicks = entity.prevSpoopAnimationTicks + (entity.spoopAnimationTicks - entity.prevSpoopAnimationTicks) * partialTick;
 			if (entity.activeSpoop || spoopTicks > 0) {
 				float alpha = 0.0375F * spoopTicks;
-				this.spoop.render(stack, source.getBuffer(SPOOP_TEXTURE), light, overlay, FastColor.ARGB32.colorFromFloat(alpha, 1.0F, 1.0F, 1.0F));
+				this.spoop.render(stack, source.getBuffer(SPOOP_TEXTURE), light, overlay, ARGB.white(alpha));
 			}
 		}
 		stack.popPose();

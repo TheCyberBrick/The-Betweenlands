@@ -24,8 +24,6 @@ public class AspectVialBlockEntity extends SyncedBlockEntity {
 	/**
 	 * Tries to add an amount and returns the added amount
 	 *
-	 * @param amount
-	 * @return
 	 */
 	public int addAmount(int amount) {
 		int canAdd = (int) (MAX_AMOUNT - this.aspect.amount());
@@ -41,8 +39,6 @@ public class AspectVialBlockEntity extends SyncedBlockEntity {
 	/**
 	 * Tries to remove an amount and returns the removed amount
 	 *
-	 * @param amount
-	 * @return
 	 */
 	public int removeAmount(int amount) {
 		int removed = Math.min(this.aspect.amount(), amount);

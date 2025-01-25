@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix4f;
@@ -49,14 +49,14 @@ public class LoreScrapScreen extends Screen {
 		float vmax = (float) (1.0F / textureHeight * textureYEnd);
 
 		RenderSystem.setShaderTexture(0, this.pageTexture);
-		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+		RenderSystem.setShader(CoreShaders.POSITION_TEX);
 		RenderSystem.enableBlend();
 		Matrix4f matrix4f = graphics.pose().last().pose();
-		BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-		buffer.addVertex(matrix4f, xStart, yStart, 0).setUv(umin, vmin).setColor(-1);
-		buffer.addVertex(matrix4f, xStart, yStart + height, 0).setUv(umin, vmax).setColor(-1);
-		buffer.addVertex(matrix4f, xStart + width, yStart + height, 0).setUv(umax, vmax).setColor(-1);
-		buffer.addVertex(matrix4f, xStart + width, yStart, 0).setUv(umax, vmin).setColor(-1);
+		BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+		buffer.addVertex(matrix4f, xStart, yStart, 0).setUv(umin, vmin);
+		buffer.addVertex(matrix4f, xStart, yStart + height, 0).setUv(umin, vmax);
+		buffer.addVertex(matrix4f, xStart + width, yStart + height, 0).setUv(umax, vmax);
+		buffer.addVertex(matrix4f, xStart + width, yStart, 0).setUv(umax, vmin);
 		BufferUploader.drawWithShader(buffer.buildOrThrow());
 		RenderSystem.disableBlend();
 	}

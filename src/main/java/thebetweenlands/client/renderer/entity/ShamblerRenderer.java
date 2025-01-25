@@ -4,19 +4,24 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import thebetweenlands.client.BLModelLayers;
 import thebetweenlands.client.model.entity.ShamblerModel;
+import thebetweenlands.client.state.ShamblerRenderState;
 import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.entity.monster.Shambler;
 import thebetweenlands.common.entity.monster.ShamblerTongueMultipart;
 
-public class ShamblerRenderer extends MobRenderer<Shambler, ShamblerModel> {
+import java.util.ArrayList;
+import java.util.List;
+
+public class ShamblerRenderer extends MobRenderer<Shambler, ShamblerRenderState, ShamblerModel> {
 	public static final ResourceLocation TEXTURE = TheBetweenlands.prefix("textures/entity/shambler.png");
 
 	public ShamblerRenderer(EntityRendererProvider.Context context) {
@@ -24,56 +29,65 @@ public class ShamblerRenderer extends MobRenderer<Shambler, ShamblerModel> {
 	}
 
 	@Override
-    protected void scale(Shambler entity, PoseStack stack, float partialTickTime) {
-		float flap = (float) (Math.sin(entity.tickCount * 0.3F) * 0.8F);
-		stack.pushPose();
-		stack.translate(0F, 0F - flap * 0.0625F, 0F);
-		stack.popPose();
+    protected void scale(ShamblerRenderState state, PoseStack stack) {
+		float flap = (float) (Math.sin(state.ageInTicks * 0.3F) * 0.8F);
+		stack.translate(0.0F, -flap * 0.0625F, 0.0F);
     }
 
 	@Override
-	public void render(Shambler entity, float entityYaw, float partialTicks, PoseStack stack, MultiBufferSource buffer, int packedLight) {
-		super.render(entity, entityYaw, partialTicks, stack, buffer, packedLight);
-		Minecraft minecraft = Minecraft.getInstance();
-		boolean isVisible = this.isBodyVisible(entity);
-		boolean isTranslucentToPlayer = !isVisible && !entity.isInvisibleTo(minecraft.player);
-		boolean isGlowing = minecraft.shouldEntityAppearGlowing(entity);
-		int overlay = getOverlayCoords(entity, this.getWhiteOverlayProgress(entity, partialTicks));
+	public void render(ShamblerRenderState state, PoseStack stack, MultiBufferSource buffer, int light) {
+		super.render(state, stack, buffer, light);
+		boolean isVisible = this.isBodyVisible(state);
+		boolean isTranslucentToPlayer = !isVisible && !state.isInvisibleToPlayer;
+		int overlay = getOverlayCoords(state, this.getWhiteOverlayProgress(state));
 		int colour = isTranslucentToPlayer ? 654311423 : -1;
 
-		if (entity.getTongueLength() > 0) {
-			double ex = entity.xOld + (entity.getX() - entity.xOld) * (double) partialTicks;
-			double ey = entity.yOld + (entity.getY() - entity.yOld) * (double) partialTicks;
-			double ez = entity.zOld + (entity.getZ() - entity.zOld) * (double) partialTicks;
-			RenderType renderType = getRenderType(entity, isVisible, isTranslucentToPlayer, isGlowing);
+		if (state.tongueLength > 0) {
+			RenderType renderType = this.getRenderType(state, isVisible, isTranslucentToPlayer, state.appearsGlowing);
 			if (renderType != null) {
-				for (int i = 0; i < entity.tongue_array.length; i++) {
-					renderTonguePart(entity, entity.tongue_array[i], ex, ey, ez, partialTicks, stack, buffer.getBuffer(renderType), packedLight, overlay, colour);
+				for (int i = 0; i < state.tongueParts.length; i++) {
+					renderTonguePart(state, state.tongueParts[i], stack, buffer.getBuffer(renderType), light, overlay, colour);
 				}
 			}
 		}
 	}
 
-	@Override
-	public ResourceLocation getTextureLocation(Shambler entity) {
-		return TEXTURE;
+	private void renderTonguePart(ShamblerRenderState state, ShamblerRenderState.ShamblerTongueInfo info, PoseStack stack, VertexConsumer consumer, int packedLight, int overlay, int colour) {
+		double x = info.pos().x() - state.x;
+		double y = info.pos().y() - state.y;
+		double z = info.pos().z() - state.z;
+		stack.pushPose();
+		stack.translate(x, y - 0.9375F, z);
+		stack.scale(-1.0F, -1.0F, 1.0F);
+		stack.mulPose(Axis.YP.rotationDegrees(180.0F + state.yRot));
+		stack.mulPose(Axis.XP.rotationDegrees(180.0F + state.xRot));
+		this.model.renderTonguePart(stack, consumer, packedLight, overlay, colour, info.end());
+		stack.popPose();
 	}
 
-	private void renderTonguePart(Shambler entity, ShamblerTongueMultipart part, double rx, double ry, double rz, float partialTicks, PoseStack stack, VertexConsumer consumer, int packedLight, int overlay, int colour) {
-		double x = part.xOld + (part.getX() - part.xOld) * (double)partialTicks - rx;
-        double y = part.yOld + (part.getY() - part.yOld) * (double)partialTicks - ry;
-        double z = part.zOld + (part.getZ() - part.zOld) * (double)partialTicks - rz;
-        float yaw = entity.yRotO + (entity.getYRot() - entity.yRotO) * partialTicks;
-        float pitch = entity.xRotO + (entity.getXRot() - entity.xRotO) * partialTicks;
-		stack.pushPose();
-		stack.translate(x, y - 0.9375, z);
-		stack.scale(-1F, -1F, 1F);
-		stack.mulPose(Axis.YP.rotationDegrees(180F + yaw));
-		stack.mulPose(Axis.XP.rotationDegrees(180F + pitch));
-		if(part == entity.tongue_end)
-			model.renderTongueEnd(stack, consumer, packedLight, overlay, colour);
-		else
-			model.renderTonguePart(stack, consumer, packedLight, overlay, colour);
-		stack.popPose();
+	@Override
+	public ShamblerRenderState createRenderState() {
+		return new ShamblerRenderState();
+	}
+
+	@Override
+	public void extractRenderState(Shambler entity, ShamblerRenderState state, float partialTick) {
+		super.extractRenderState(entity, state, partialTick);
+		state.jawsOpen = entity.areJawsOpen();
+		state.tongueLength = entity.getTongueLength();
+		state.jawAngle = Mth.lerp(partialTick, entity.getJawAnglePrev(), entity.getJawAngle());
+		List<ShamblerRenderState.ShamblerTongueInfo> partList = new ArrayList<>();
+		for (ShamblerTongueMultipart part : entity.tongue_array) {
+			double x = Mth.lerp(partialTick, part.xOld, part.getX());
+			double y = Mth.lerp(partialTick, part.yOld, part.getY());
+			double z = Mth.lerp(partialTick, part.zOld, part.getZ());
+			partList.add(new ShamblerRenderState.ShamblerTongueInfo(new Vec3(x, y, z), part == entity.tongue_end));
+		}
+		state.tongueParts = partList.toArray(ShamblerRenderState.ShamblerTongueInfo[]::new);
+	}
+
+	@Override
+	public ResourceLocation getTextureLocation(ShamblerRenderState state) {
+		return TEXTURE;
 	}
 }

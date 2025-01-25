@@ -3,9 +3,9 @@ package thebetweenlands.common.entity.monster;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
-import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
@@ -17,10 +17,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.ServerLevelAccessor;
-import org.jetbrains.annotations.Nullable;
 import thebetweenlands.common.entity.BLEntity;
-import thebetweenlands.common.registries.EntityRegistry;
 import thebetweenlands.common.registries.SoundRegistry;
 
 public class CryptCrawler extends Monster implements BLEntity {
@@ -130,21 +127,17 @@ public class CryptCrawler extends Monster implements BLEntity {
 		return EntityDimensions.scalable(0.95F - this.standingAngle * 0.2F, 1F + this.standingAngle * 0.75F);
 	}
 
-	public float smoothedStandingAngle(float partialTicks) {
-		return this.prevStandingAngle + (this.standingAngle - this.prevStandingAngle) * partialTicks;
-	}
-
 	@Override
 	public int getMaxSpawnClusterSize() {
 		return 3;
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		if (this.tickCount < 40 && source.is(DamageTypes.IN_WALL)) {
 			return false;
 		}
 
-		return super.hurt(source, amount);
+		return super.hurtServer(level, source, amount);
 	}
 }

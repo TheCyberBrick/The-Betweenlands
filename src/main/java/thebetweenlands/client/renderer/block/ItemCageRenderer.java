@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import thebetweenlands.client.BLModelLayers;
 import thebetweenlands.client.shader.LightSource;
 import thebetweenlands.client.shader.ShaderHelper;
@@ -44,7 +44,7 @@ public class ItemCageRenderer implements BlockEntityRenderer<ItemCageBlockEntity
 		stack.translate(0.5F, 0.0F, 0.5F);
 		stack.scale(1.0F, -1.0F, -1.0F);
 		this.cage.render(stack, source.getBuffer(TEXTURE), light, overlay);
-		this.bars.render(stack, source.getBuffer(RenderType.energySwirl(POWER_TEXTURE, ticks * 0.0015F % 1.0F, ticks * 0.0015F % 1.0F)), light, overlay, FastColor.ARGB32.colorFromFloat(1.0F, 0.5F, 0.5F, 0.5F));
+		this.bars.render(stack, source.getBuffer(RenderType.energySwirl(POWER_TEXTURE, ticks * 0.0015F % 1.0F, ticks * 0.0015F % 1.0F)), light, overlay, ARGB.colorFromFloat(1.0F, 0.5F, 0.5F, 0.5F));
 		stack.popPose();
 	}
 }

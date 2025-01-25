@@ -123,7 +123,7 @@ public class ObstructionAwareGroundNavigation<T extends PathfinderMob & PathObst
 			};
 
 			Vec3 facingDiff = checkPos.subtract(entityPos.add(0, axis == 1 ? this.mob.getBbHeight() / 2 : 0, 0));
-			Direction facing = Direction.getNearest((float) facingDiff.x, (float) facingDiff.y, (float) facingDiff.z);
+			Direction facing = Direction.getNearest((int) facingDiff.x, (int) facingDiff.y, (int) facingDiff.z, Direction.UP);
 
 			boolean blocked = false;
 

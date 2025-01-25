@@ -6,8 +6,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -111,7 +111,7 @@ public class CrabPotBlockEntity extends SyncedBlockEntity implements ContainerSi
 
 					int remainingCatchTicks = entity.getRemainingCatchTicks();
 
-					if (remainingCatchTicks <= 0 && level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && level.getNearestPlayer(pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 32.0D, false) == null && level.canSeeSky(pos.above())) {
+					if (remainingCatchTicks <= 0 && ((ServerLevel)level).getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && level.getNearestPlayer(pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 32.0D, false) == null && level.canSeeSky(pos.above())) {
 						int checks = 64;
 						int spawnableBlocks = 0;
 
@@ -282,7 +282,7 @@ public class CrabPotBlockEntity extends SyncedBlockEntity implements ContainerSi
 	public EntityType<?> getEntity() {
 		ItemStack stack = this.getItem(0);
 		if (!stack.isEmpty() && stack.getItem() instanceof MobItem<?> mob && !mob.getEntityData(stack).isEmpty()) {
-			return BuiltInRegistries.ENTITY_TYPE.get(mob.getCapturedEntityId(stack));
+			return BuiltInRegistries.ENTITY_TYPE.getValue(mob.getCapturedEntityId(stack));
 		}
 		return null;
 	}

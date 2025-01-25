@@ -14,10 +14,6 @@ public interface ConnectedTextureBlock {
 
 	/**
 	 * Can be used to cache connection rules
-	 * @param level
-	 * @param pos
-	 * @param state
-	 * @return
 	 */
 	default ConnectionRules getConnectionRules(BlockAndTintGetter level, BlockPos pos, BlockState state) {
 		return this.createConnectionRules(level, pos, state);
@@ -25,10 +21,6 @@ public interface ConnectedTextureBlock {
 
 	/**
 	 * Takes the supplied {@link ModelData} and applies any custom cullface or face index properties
-	 * @param level
-	 * @param pos
-	 * @param state
-	 * @param modelData
 	 * @return modified ModelData
 	 */
 	default ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData modelData) {
@@ -108,8 +100,6 @@ public interface ConnectedTextureBlock {
 
 	/**
 	 * Returns whether the specified face has a connected texture
-	 * @param face
-	 * @return
 	 */
 	default boolean isFaceConnectedTexture(BlockAndTintGetter level, BlockPos pos, BlockState builder, Direction face) {
 		return true;

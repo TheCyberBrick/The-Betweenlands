@@ -8,6 +8,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
@@ -61,7 +62,7 @@ public class ImitationSimulacrumEffect implements SimulacrumEffect {
 			ResourceLocation key = viewer.getData(AttachmentRegistry.LAST_KILLED).getLastKilled();
 
 			if (key != null) {
-				Entity entity = BuiltInRegistries.ENTITY_TYPE.get(key).create(level);
+				Entity entity = BuiltInRegistries.ENTITY_TYPE.getValue(key).create(level, EntitySpawnReason.EVENT);
 
 				if (entity != null) {
 					SoundEvent sound;

@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
@@ -32,6 +33,7 @@ import thebetweenlands.common.registries.SoundRegistry;
 
 import java.util.List;
 
+//TODO variant registry
 public class Jellyfish extends WaterAnimal implements BLEntity {
 
 	protected Vec3 prevOrientationPos = Vec3.ZERO;
@@ -90,7 +92,7 @@ public class Jellyfish extends WaterAnimal implements BLEntity {
 
 	@Nullable
 	@Override
-	public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+	public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnGroupData) {
 		this.setJellyfishSize(0.5F + this.getRandom().nextFloat() * 0.75F);
 		this.setJellyfishLength(0.5f + this.getRandom().nextFloat() * 0.5f);
 		this.setJellyfishColor((byte) this.getRandom().nextInt(5));
@@ -237,12 +239,12 @@ public class Jellyfish extends WaterAnimal implements BLEntity {
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		if (source.getEntity() instanceof Jellyfish) {
 			return false;
 		}
 
-		return super.hurt(source, amount);
+		return super.hurtServer(level, source, amount);
 	}
 
 	@Override

@@ -25,9 +25,9 @@ public class ControlledAnimation {
     private int timerChange;
 
     public ControlledAnimation(int d) {
-        prevTimer = 0;
-        timer = 0;
-        duration = d;
+		this.prevTimer = 0;
+		this.timer = 0;
+		this.duration = d;
     }
 
     /**
@@ -36,8 +36,8 @@ public class ControlledAnimation {
      * @param duration is the maximum number of ticks that the timer can reach.
      */
     public void setDuration(int duration) {
-        prevTimer = 0;
-        timer = 0;
+		this.prevTimer = 0;
+		this.timer = 0;
         this.duration = duration;
     }
 
@@ -46,7 +46,7 @@ public class ControlledAnimation {
      * animation.
      */
     public int getTimer() {
-        return timer;
+        return this.timer;
     }
 
     /**
@@ -55,12 +55,12 @@ public class ControlledAnimation {
      * @param time is the number of ticks to be set.
      */
     public void setTimer(int time) {
-        timer = time;
+		this.timer = time;
 
-        if (timer > duration) {
-            timer = duration;
-        } else if (timer < 0) {
-            timer = 0;
+        if (this.timer > this.duration) {
+			this.timer = this.duration;
+        } else if (this.timer < 0) {
+			this.timer = 0;
         }
     }
 
@@ -68,20 +68,20 @@ public class ControlledAnimation {
      * Sets the timer to 0.
      */
     public void resetTimer() {
-        timer = 0;
+		this.timer = 0;
     }
 
     public void updateTimer() {
-        prevTimer = timer;
+		this.prevTimer = this.timer;
     }
 
     /**
      * Increases the timer by 1.
      */
     public void increaseTimer() {
-        if (timer < duration) {
-            timer++;
-            timerChange = 1;
+        if (this.timer < this.duration) {
+			this.timer++;
+			this.timerChange = 1;
         }
     }
 
@@ -89,7 +89,7 @@ public class ControlledAnimation {
      * Checks if the timer can be increased
      */
     public boolean canIncreaseTimer() {
-        return timer < duration;
+        return this.timer < this.duration;
     }
 
     /**
@@ -98,11 +98,11 @@ public class ControlledAnimation {
      * @param time is the number of ticks to be increased in the timer
      */
     public void increaseTimer(int time) {
-        int newTime = timer + time;
-        if (newTime <= duration && newTime >= 0) {
-            timer = newTime;
+        int newTime = this.timer + time;
+        if (newTime <= this.duration && newTime >= 0) {
+			this.timer = newTime;
         } else {
-            timer = newTime < 0 ? 0 : duration;
+			this.timer = newTime < 0 ? 0 : this.duration;
         }
     }
 
@@ -110,9 +110,9 @@ public class ControlledAnimation {
      * Decreases the timer by 1.
      */
     public void decreaseTimer() {
-        if (timer > 0) {
-            timer--;
-            timerChange = -1;
+        if (this.timer > 0) {
+			this.timer--;
+			this.timerChange = -1;
         }
     }
 
@@ -120,7 +120,7 @@ public class ControlledAnimation {
      * Checks if the timer can be decreased
      */
     public boolean canDecreaseTimer() {
-        return timer > 0;
+        return this.timer > 0;
     }
 
     /**
@@ -129,10 +129,10 @@ public class ControlledAnimation {
      * @param time is the number of ticks to be decreased in the timer
      */
     public void decreaseTimer(int time) {
-        if (timer - time > 0) {
-            timer -= time;
+        if (this.timer - time > 0) {
+			this.timer -= time;
         } else {
-            timer = 0;
+			this.timer = 0;
         }
     }
 
@@ -141,7 +141,7 @@ public class ControlledAnimation {
      * between 0.0F and 1.0F.
      */
     public float getAnimationFraction(float partialRenderTicks) {
-        return (prevTimer + (timer - prevTimer) * partialRenderTicks) / duration;
+        return (this.prevTimer + (this.timer - this.prevTimer) * partialRenderTicks) / this.duration;
     }
 
     /**
@@ -150,9 +150,9 @@ public class ControlledAnimation {
      * uniform but slow, and needs if statements.
      */
     public float getAnimationProgressSmooth(float partialRenderTicks) {
-        if (timer > 0) {
-            if (timer < duration) {
-                return (float) (1.0D / (1.0D + Math.exp(4.0D - 8.0D * getAnimationFraction(partialRenderTicks))));
+        if (this.timer > 0) {
+            if (this.timer < this.duration) {
+                return (float) (1.0D / (1.0D + Math.exp(4.0D - 8.0D * this.getAnimationFraction(partialRenderTicks))));
             } else {
                 return 1.0F;
             }
@@ -166,7 +166,7 @@ public class ControlledAnimation {
      * uniform, but fast.
      */
     public float getAnimationProgressSteep(float partialRenderTicks) {
-        return (float) (1.0D / (1.0D + Math.exp(6.0D - 12.0D * getAnimationFraction(partialRenderTicks))));
+        return (float) (1.0D / (1.0D + Math.exp(6.0D - 12.0D * this.getAnimationFraction(partialRenderTicks))));
     }
 
     /**
@@ -175,7 +175,7 @@ public class ControlledAnimation {
      * the beginning and slow in the end.
      */
     public float getAnimationProgressSin(float partialRenderTicks) {
-        return Mth.sin(1.57079632679F * getAnimationFraction(partialRenderTicks));
+        return Mth.sin(1.57079632679F * this.getAnimationFraction(partialRenderTicks));
     }
 
     /**
@@ -184,7 +184,7 @@ public class ControlledAnimation {
      * very smooth.
      */
     public float getAnimationProgressSinSqrt(float partialRenderTicks) {
-        float result = Mth.sin(1.57079632679F * getAnimationFraction(partialRenderTicks));
+        float result = Mth.sin(1.57079632679F * this.getAnimationFraction(partialRenderTicks));
         return result * result;
     }
 
@@ -194,12 +194,12 @@ public class ControlledAnimation {
      * ten. It is slow in the beginning and fast in the end.
      */
     public float getAnimationProgressSinToTen(float partialRenderTicks) {
-        return (float) Math.pow(Mth.sin(1.57079632679F * getAnimationFraction(partialRenderTicks)), 10);
+        return (float) Math.pow(Mth.sin(1.57079632679F * this.getAnimationFraction(partialRenderTicks)), 10);
     }
 
     public float getAnimationProgressSinToTenWithoutReturn(float partialRenderTicks) {
-        float t = getAnimationFraction(partialRenderTicks);
-        if (timerChange == -1) {
+        float t = this.getAnimationFraction(partialRenderTicks);
+        if (this.timerChange == -1) {
             return Mth.sin(1.57079632679F * t) * Mth.sin(1.57079632679F * t);
         }
         return (float) Math.pow(Mth.sin(1.57079632679F * t), 10);
@@ -213,7 +213,7 @@ public class ControlledAnimation {
      * @param i is the power of the sine function.
      */
     public float getAnimationProgressSinPowerOf(float partialRenderTicks, int i) {
-        return (float) Math.pow(Mth.sin(1.57079632679F * getAnimationFraction(partialRenderTicks)), i);
+        return (float) Math.pow(Mth.sin(1.57079632679F * this.getAnimationFraction(partialRenderTicks)), i);
     }
 
     /**
@@ -222,7 +222,7 @@ public class ControlledAnimation {
      * smooth.
      */
     public float getAnimationProgressPoly2(float partialRenderTicks) {
-        float x = getAnimationFraction(partialRenderTicks);
+        float x = this.getAnimationFraction(partialRenderTicks);
         float x2 = x * x;
         return x2 / (x2 + (1 - x) * (1 - x));
     }
@@ -233,7 +233,7 @@ public class ControlledAnimation {
      * steep.
      */
     public float getAnimationProgressPoly3(float partialRenderTicks) {
-        float x = getAnimationFraction(partialRenderTicks);
+        float x = this.getAnimationFraction(partialRenderTicks);
         float x3 = x * x * x;
         return x3 / (x3 + (1 - x) * (1 - x) * (1 - x));
     }
@@ -246,7 +246,7 @@ public class ControlledAnimation {
      * @param n is the power of the polynomial function.
      */
     public float getAnimationProgressPolyN(float partialRenderTicks, int n) {
-        double x = getAnimationFraction(partialRenderTicks);
+        double x = this.getAnimationFraction(partialRenderTicks);
         double xi = Math.pow(x, n);
         return (float) (xi / (xi + Math.pow(1.0D - x, n)));
     }
@@ -257,7 +257,7 @@ public class ControlledAnimation {
      * 2.00776964. It is super smooth.
      */
     public float getAnimationProgressArcTan(float partialRenderTicks) {
-        return (float) (0.5F + 0.49806510671F * Math.atan(3.14159265359D * (getAnimationFraction(partialRenderTicks) - 0.5D)));
+        return (float) (0.5F + 0.49806510671F * Math.atan(3.14159265359D * (this.getAnimationFraction(partialRenderTicks) - 0.5D)));
     }
 
     /**
@@ -267,7 +267,7 @@ public class ControlledAnimation {
      * smooth.
      */
     public float getAnimationProgressTemporary(float partialRenderTicks) {
-        float x = 6.28318530718F * getAnimationFraction(partialRenderTicks);
+        float x = 6.28318530718F * this.getAnimationFraction(partialRenderTicks);
         return 0.5F - 0.5F * Mth.cos(x + Mth.sin(x));
     }
 
@@ -278,7 +278,7 @@ public class ControlledAnimation {
      * and slow in the end.
      */
     public float getAnimationProgressTemporaryFS(float partialRenderTicks) {
-        float x = 3.14159265359F * getAnimationFraction(partialRenderTicks);
+        float x = 3.14159265359F * this.getAnimationFraction(partialRenderTicks);
         return Mth.sin(x + Mth.sin(x));
     }
 
@@ -289,7 +289,18 @@ public class ControlledAnimation {
      * smooth.
      */
     public float getAnimationProgressTemporaryInvesed(float partialRenderTicks) {
-        float x = 6.28318530718F * getAnimationFraction(partialRenderTicks);
+        float x = 6.28318530718F * this.getAnimationFraction(partialRenderTicks);
         return 0.5F + 0.5F * Mth.cos(x + Mth.sin(x));
     }
+
+	/**
+	 * Sets this animation's values to be identical to the one provided.
+	 * @param animation the animation to copy
+	 */
+	public void copyFrom(ControlledAnimation animation) {
+		this.duration = animation.duration;
+		this.timer = animation.timer;
+		this.prevTimer = animation.prevTimer;
+		this.timerChange = animation.timerChange;
+	}
 }

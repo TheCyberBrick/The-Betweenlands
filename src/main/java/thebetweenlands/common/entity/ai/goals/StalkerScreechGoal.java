@@ -5,7 +5,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.AABB;
@@ -138,7 +138,7 @@ public class StalkerScreechGoal extends Goal {
 					if (isBlockedFromSight || isNotInView) {
 						stalker.moveTo(pos.getX() + 0.5f, pos.getY(), pos.getZ() + 0.5f, this.entity.getRandom().nextFloat() * 360.0f, 0);
 
-						if (EventHooks.checkSpawnPosition(stalker, ((ServerLevel) this.entity.level()), MobSpawnType.REINFORCEMENT)) {
+						if (EventHooks.checkSpawnPosition(stalker, ((ServerLevel) this.entity.level()), EntitySpawnReason.REINFORCEMENT)) {
 							stalker.setCanCallAllies(false);
 							stalker.setTarget(this.entity.getTarget());
 							stalker.isStalking = false;

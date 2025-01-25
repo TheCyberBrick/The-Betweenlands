@@ -50,7 +50,7 @@ public class AshSpriteChargeGoal extends Goal {
 
 		if (target != null) {
 			if (this.ashSprite.getBoundingBox().intersects(target.getBoundingBox())) {
-				this.ashSprite.doHurtTarget(target);
+				this.ashSprite.doHurtTarget(getServerLevel(target), target);
 				this.ashSprite.setCharging(false);
 			} else {
 				double d0 = this.ashSprite.distanceToSqr(target);

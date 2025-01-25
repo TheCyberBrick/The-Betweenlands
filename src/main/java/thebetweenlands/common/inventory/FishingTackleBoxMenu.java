@@ -74,7 +74,7 @@ public class FishingTackleBoxMenu extends AbstractContainerMenu {
 			if (optional.isPresent()) {
 				RecipeHolder<CraftingRecipe> recipeholder = optional.get();
 				CraftingRecipe craftingrecipe = recipeholder.value();
-				if (resultSlots.setRecipeUsed(level, serverplayer, recipeholder)) {
+				if (this.resultSlots.setRecipeUsed(serverplayer, recipeholder)) {
 					ItemStack itemstack1 = craftingrecipe.assemble(craftinginput, level.registryAccess());
 					if (itemstack1.isItemEnabled(level.enabledFeatures())) {
 						itemstack = itemstack1;

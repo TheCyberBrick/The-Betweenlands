@@ -137,7 +137,6 @@ public abstract class ChunkStorageImpl implements IChunkStorage, TickableStorage
 
 	/**
 	 * Called when a new watcher is added
-	 * @param player
 	 */
 	protected void onWatched(ServerPlayer player) {
 		for(LocalStorageReference ref : this.localStorageReferences) {
@@ -161,7 +160,6 @@ public abstract class ChunkStorageImpl implements IChunkStorage, TickableStorage
 
 	/**
 	 * Called when a player stops watching this chunk
-	 * @param player
 	 */
 	protected void onUnwatched(ServerPlayer player) {
 		for(LocalStorageReference ref : this.localStorageReferences) {
@@ -185,7 +183,7 @@ public abstract class ChunkStorageImpl implements IChunkStorage, TickableStorage
 	@Override
 	public void setDirty(boolean dirty) {
 		if(dirty) {
-			this.chunk.setUnsaved(true);
+			this.chunk.markUnsaved();
 		}
 		this.dirty = dirty;
 	}

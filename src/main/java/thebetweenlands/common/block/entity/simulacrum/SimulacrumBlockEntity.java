@@ -183,8 +183,8 @@ public class SimulacrumBlockEntity extends RepellerBlockEntity implements Spawne
 		super.loadAdditional(tag, registries);
 		this.readFromNbt = true;
 
-		this.effect = BLRegistries.SIMULACRUM_EFFECTS.get(ResourceLocation.parse(tag.getString("effect_id")));
-		this.secondaryEffect = BLRegistries.SIMULACRUM_EFFECTS.get(ResourceLocation.parse(tag.getString("secondary_effect_id")));
+		this.effect = BLRegistries.SIMULACRUM_EFFECTS.getValue(ResourceLocation.parse(tag.getString("effect_id")));
+		this.secondaryEffect = BLRegistries.SIMULACRUM_EFFECTS.getValue(ResourceLocation.parse(tag.getString("secondary_effect_id")));
 		this.isActive = tag.getBoolean("is_active");
 		if (tag.contains("name", Tag.TAG_STRING)) {
 			this.name = parseCustomNameSafe(tag.getString("name"), registries);
@@ -207,6 +207,6 @@ public class SimulacrumBlockEntity extends RepellerBlockEntity implements Spawne
 
 	@Override
 	public void setEntityId(EntityType<?> entityType, RandomSource random) {
-//		this.mireSnailSpawner.setEntityId(EntityRegistry.MIRE_SNAIL.get(), this.getLevel(), random, this.getBlockPos());
+		this.mireSnailSpawner.setEntityId(EntityRegistry.MIRE_SNAIL.get(), this.getLevel(), random, this.getBlockPos());
 	}
 }

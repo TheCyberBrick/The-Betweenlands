@@ -1,19 +1,16 @@
 package thebetweenlands.client.model.entity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.creature.Greebling;
+import thebetweenlands.client.state.GreeblingRenderState;
 
 import javax.annotation.Nullable;
 
-public class GreeblingModel extends MowzieModelBase<Greebling> {
+public class GreeblingModel extends MowzieModelBase<GreeblingRenderState> {
 
-	private final ModelPart actualRoot;
 	private final ModelPart root;
 	private final ModelPart bodyBase;
 	private final ModelPart chest;
@@ -24,7 +21,7 @@ public class GreeblingModel extends MowzieModelBase<Greebling> {
 	private final ModelPart instrument;
 
 	public GreeblingModel(ModelPart root) {
-		this.actualRoot = root;
+		super(root);
 		this.root = root.getChild("root");
 		this.bodyBase = this.root.getChild("body_base");
 		this.chest = this.bodyBase.getChild("chest");
@@ -200,44 +197,33 @@ public class GreeblingModel extends MowzieModelBase<Greebling> {
 		return LayerDefinition.create(definition, 64, 32);
 	}
 
-	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
 	@Nullable
 	public ModelPart getCup() {
-		if (this.actualRoot.hasChild("cup")) {
-			return this.actualRoot.getChild("cup");
+		if (this.root().hasChild("cup")) {
+			return this.root().getChild("cup");
 		}
 		return null;
 	}
 
 	@Override
-	public void setupAnim(Greebling entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
-	}
-
-	@Override
-	public void prepareMobModel(Greebling entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		this.setInitPose();
-		float frame = entity.tickCount + partialTick;
+	public void setupAnim(GreeblingRenderState state) {
+		super.setupAnim(state);
 		float swaySpeed = 0.06F;
 		float strokeSpeed = swaySpeed * 0.33F;
 
-		this.flap(this.bodyBase, swaySpeed, 0.15F, false, 0.0F, 0.0F, frame, 1.0F);
-		this.flap(this.legleft1, swaySpeed, 0.15F, true, 0.0F, 0.0F, frame, 1.0F);
-		this.flap(this.legright1, swaySpeed, 0.15F, true, 0.0F, 0.0F, frame, 1.0F);
-		this.chest.y += Mth.sin((frame - 3.0F) * swaySpeed * 2.0F) * 0.25F;
-		this.flap(this.head1, swaySpeed * 4.0F, 0.075F, false, 0, 0, frame, 1.0F);
+		this.flap(this.bodyBase, swaySpeed, 0.15F, false, 0.0F, 0.0F, state.ageInTicks, 1.0F);
+		this.flap(this.legleft1, swaySpeed, 0.15F, true, 0.0F, 0.0F, state.ageInTicks, 1.0F);
+		this.flap(this.legright1, swaySpeed, 0.15F, true, 0.0F, 0.0F, state.ageInTicks, 1.0F);
+		this.chest.y += Mth.sin((state.ageInTicks - 3.0F) * swaySpeed * 2.0F) * 0.25F;
+		this.flap(this.head1, swaySpeed * 4.0F, 0.075F, false, 0, 0, state.ageInTicks, 1.0F);
 
-		if (entity.getGreeblingType() == 0) {
-			this.swing(this.armright1, strokeSpeed * 4.0F, 0.3F, false, 0.0F, 0.0F, frame, 1.0F);
-			this.walk(this.instrument, strokeSpeed * 4.0F, 0.2F, false, 0.0F, 0.0F, frame, 1.0F);
-			this.flap(this.instrument, strokeSpeed * 4.0F, 0.4F, true, 0.0F, 0.0F, frame, 1.0F);
+		if (state.type == 0) {
+			this.swing(this.armright1, strokeSpeed * 4.0F, 0.3F, false, 0.0F, 0.0F, state.ageInTicks, 1.0F);
+			this.walk(this.instrument, strokeSpeed * 4.0F, 0.2F, false, 0.0F, 0.0F, state.ageInTicks, 1.0F);
+			this.flap(this.instrument, strokeSpeed * 4.0F, 0.4F, true, 0.0F, 0.0F, state.ageInTicks, 1.0F);
 		}
 
-		float disappearFrame = entity.disappearTimer > 0 ? entity.disappearTimer + partialTick : 0.0F;
+		float disappearFrame = state.vanishTimer;
 
 		this.bodyBase.y -= (float) (16.0F * Math.pow(disappearFrame / 8.0F, 1.5F));
 		this.bodyBase.yRot += (float) Math.pow(5.0F * disappearFrame / 8.0F, 1.4F);

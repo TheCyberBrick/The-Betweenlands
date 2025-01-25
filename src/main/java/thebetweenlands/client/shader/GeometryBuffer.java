@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.lwjgl.opengl.GL11;
@@ -43,8 +42,6 @@ public class GeometryBuffer extends AbstractTexture {
 
 	/**
 	 * Initializes the geometry buffer if necessary and updates the dimensions
-	 * @param width
-	 * @param height
 	 * @return Returns true if the FBO was initialized or resized
 	 */
 	public boolean updateGeometryBuffer(int width, int height) {
@@ -87,7 +84,6 @@ public class GeometryBuffer extends AbstractTexture {
 
 	/**
 	 * Returns the diffuse buffer
-	 * @return
 	 */
 	public int getDiffuseTexture() {
 		if(this.geometryBuffer != null)
@@ -97,7 +93,6 @@ public class GeometryBuffer extends AbstractTexture {
 
 	/**
 	 * Returns the depth buffer
-	 * @return
 	 */
 	public int getDepthTexture() {
 		if(this.depthBuffer && this.geometryDepthBuffer != null) {
@@ -118,7 +113,6 @@ public class GeometryBuffer extends AbstractTexture {
 
 	/**
 	 * Returns whether the buffer has been initialized already
-	 * @return
 	 */
 	public boolean isInitialized() {
 		return this.geometryBuffer != null;
@@ -138,7 +132,7 @@ public class GeometryBuffer extends AbstractTexture {
 			this.geometryBuffer.bindWrite(false);
 			RenderSystem.clearColor(r, g, b, a);
 			RenderSystem.clearDepth(depth);
-			RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT, Minecraft.ON_OSX);
+			RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
 		}
 	}
 
@@ -164,7 +158,6 @@ public class GeometryBuffer extends AbstractTexture {
 
 	/**
 	 * Returns whether this geometry buffer has a depth buffer
-	 * @return
 	 */
 	public boolean hasDepthBuffer() {
 		return this.depthBuffer;

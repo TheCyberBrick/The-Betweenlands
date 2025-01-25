@@ -4,7 +4,6 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -37,13 +36,13 @@ public class WaterFilterBlock extends BaseEntityBlock {
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (level.getBlockEntity(pos) instanceof WaterFilterBlockEntity filter) {
 			Optional<IFluidHandler> fluidHandler = FluidUtil.getFluidHandler(level, pos, hitResult.getDirection());
 
 			if (fluidHandler.isPresent() && FluidUtil.getFluidHandler(stack).isPresent()) {
 				if (FluidUtil.interactWithFluidHandler(player, hand, level, pos, hitResult.getDirection())) {
-					return ItemInteractionResult.sidedSuccess(level.isClientSide());
+					return InteractionResult.SUCCESS;
 				}
 			} else if (stack.is(ItemRegistry.MOSS_FILTER) || stack.is(ItemRegistry.SILK_FILTER)) {
 				if (filter.getItem(0).isEmpty()) {
@@ -52,7 +51,7 @@ public class WaterFilterBlock extends BaseEntityBlock {
 						stack.consume(1, player);
 						level.sendBlockUpdated(pos, state, state, 2);
 					}
-					return ItemInteractionResult.sidedSuccess(level.isClientSide());
+					return InteractionResult.SUCCESS;
 				}
 			}
 		}
@@ -74,7 +73,7 @@ public class WaterFilterBlock extends BaseEntityBlock {
 					}
 				}
 			}
-			return anyExtracted ? InteractionResult.sidedSuccess(level.isClientSide()) : super.useWithoutItem(state, level, pos, player, hitResult);
+			return anyExtracted ? InteractionResult.SUCCESS : super.useWithoutItem(state, level, pos, player, hitResult);
 		}
 		return super.useWithoutItem(state, level, pos, player, hitResult);
 	}

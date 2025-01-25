@@ -6,21 +6,19 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.creature.RootSprite;
-import thebetweenlands.common.entity.creature.Tarminion;
 
-public class TarminionModel extends MowzieModelBase<Tarminion> {
+public class TarminionModel extends MowzieModelBase<LivingEntityRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart leftArm;
 	private final ModelPart rightArm;
 	private final ModelPart leftLeg;
 	private final ModelPart rightLeg;
 
 	public TarminionModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.leftArm = root.getChild("left_arm");
 		this.rightArm = root.getChild("right_arm");
 		this.leftLeg = root.getChild("left_leg");
@@ -56,16 +54,11 @@ public class TarminionModel extends MowzieModelBase<Tarminion> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
+	public void setupAnim(LivingEntityRenderState state) {
+		this.leftArm.xRot = Mth.cos(state.walkAnimationPos * 1.5F + Mth.PI) * 2.0F * state.walkAnimationSpeed * 0.5F;
+		this.rightArm.xRot = Mth.cos(state.walkAnimationPos * 1.5F) * 2.0F * state.walkAnimationSpeed * 0.5F;
 
-	@Override
-	public void setupAnim(Tarminion entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		this.leftArm.xRot = Mth.cos(limbSwing * 1.5F + Mth.PI) * 2.0F * limbSwingAmount * 0.5F;
-		this.rightArm.xRot = Mth.cos(limbSwing * 1.5F) * 2.0F * limbSwingAmount * 0.5F;
-
-		this.leftLeg.xRot = Mth.cos(limbSwing * 1.5F) * 1.4F * limbSwingAmount;
-		this.rightLeg.xRot = Mth.cos(limbSwing * 1.5F + Mth.PI) * 1.4F * limbSwingAmount;
+		this.leftLeg.xRot = Mth.cos(state.walkAnimationPos * 1.5F) * 1.4F * state.walkAnimationSpeed;
+		this.rightLeg.xRot = Mth.cos(state.walkAnimationPos * 1.5F + Mth.PI) * 1.4F * state.walkAnimationSpeed;
 	}
 }

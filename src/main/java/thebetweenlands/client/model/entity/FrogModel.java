@@ -8,11 +8,10 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.creature.frog.Frog;
+import thebetweenlands.client.state.FrogRenderState;
 
-public class FrogModel extends MowzieModelBase<Frog> {
+public class FrogModel extends MowzieModelBase<FrogRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart torso;
 	private final ModelPart head;
 	private final ModelPart legfrontleft1;
@@ -25,7 +24,7 @@ public class FrogModel extends MowzieModelBase<Frog> {
 	private final ModelPart legbackright2;
 
 	public FrogModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.torso = root.getChild("torso");
 		this.head = root.getChild("head");
 		this.legfrontleft1 = root.getChild("left_front_leg_1");
@@ -81,26 +80,13 @@ public class FrogModel extends MowzieModelBase<Frog> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
+	public void setupAnim(FrogRenderState state) {
+		super.setupAnim(state);
 
-	@Override
-	public void setupAnim(Frog entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		this.head.yRot = netHeadYaw / Mth.RAD_TO_DEG;
-		this.head.xRot = headPitch / Mth.RAD_TO_DEG - 0.07435719668865202F + Mth.sin(ageInTicks / 8.0F) / 15.0F;
-	}
-
-	@Override
-	public void prepareMobModel(Frog entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		this.setInitPose();
-		float leapProgress = entity.prevJumpAnimationTicks + (entity.jumpAnimationTicks - entity.prevJumpAnimationTicks) * partialTick;
-		float frame = entity.tickCount + partialTick;
-
-		if (!entity.isInWater()) {
+		if (!state.isInWater) {
 			//Idle animation
-			this.torso.xRot = -0.55F - (float) (Math.sin(frame / 10.0F) + 1) / 35.0F;
-			this.torso.y = 19 + (float) Math.sin(frame / 8.0F) / 15.0F;
+			this.torso.xRot = -0.55F - (float) (Math.sin(state.ageInTicks / 10.0F) + 1) / 35.0F;
+			this.torso.y = 19 + (float) Math.sin(state.ageInTicks / 8.0F) / 15.0F;
 
 			this.legbackleft1.y = 22;
 			this.legbackright1.y = 22;
@@ -114,7 +100,7 @@ public class FrogModel extends MowzieModelBase<Frog> {
 			this.legbackleft2.xRot = 0.5F;
 			this.legbackright2.xRot = 0.5F;
 
-			if (entity.onGround()) {
+			if (state.onGround) {
 				this.legbackleft1.xRot = -0.296705972839036F;
 				this.legbackright1.xRot = -0.296705972839036F;
 				this.legbackleft2.xRot = 0.45378560551852565F;
@@ -127,44 +113,47 @@ public class FrogModel extends MowzieModelBase<Frog> {
 			}
 		} else {
 			//Idle animation
-			this.torso.xRot = -0.1F - (float) (Math.sin(frame / 10.0F) + 1) / 35.0F;
+			this.torso.xRot = -0.1F - (float) (Math.sin(state.ageInTicks / 10.0F) + 1) / 35.0F;
 
 			//Water bobbing animation
-			this.torso.y = 19 + (float) Math.sin(frame / 8.0F) / 2.0F;
-			this.legbackleft1.y = 21 + (float) Math.sin(frame / 8.0F) / 2.0F;
-			this.legbackright1.y = 21 + (float) Math.sin(frame / 8.0F) / 2.0F;
-			this.head.y = 19 + (float) Math.sin(frame / 8.0F) / 2.0F;
-			this.legfrontleft1.y = 20 + (float) Math.sin(frame / 8.0F) / 2.0F;
-			this.legfrontleft2.y = 20 + (float) Math.sin(frame / 8.0F) / 2.0F;
-			this.legfrontright1.y = 20 + (float) Math.sin(frame / 8.0F) / 2.0F;
-			this.legfrontright2.y = 20 + (float) Math.sin(frame / 8.0F) / 2.0F;
+			this.torso.y = 19 + (float) Math.sin(state.ageInTicks / 8.0F) / 2.0F;
+			this.legbackleft1.y = 21 + (float) Math.sin(state.ageInTicks / 8.0F) / 2.0F;
+			this.legbackright1.y = 21 + (float) Math.sin(state.ageInTicks / 8.0F) / 2.0F;
+			this.head.y = 19 + (float) Math.sin(state.ageInTicks / 8.0F) / 2.0F;
+			this.legfrontleft1.y = 20 + (float) Math.sin(state.ageInTicks / 8.0F) / 2.0F;
+			this.legfrontleft2.y = 20 + (float) Math.sin(state.ageInTicks / 8.0F) / 2.0F;
+			this.legfrontright1.y = 20 + (float) Math.sin(state.ageInTicks / 8.0F) / 2.0F;
+			this.legfrontright2.y = 20 + (float) Math.sin(state.ageInTicks / 8.0F) / 2.0F;
 
 			this.legbackleft2.xRot = 0.5F + 0.6F;
 			this.legbackright2.xRot = 0.5F + 0.6F;
 		}
 
-		if (!entity.onGround() || entity.jumpAnimationTicks > 0) {
-			if (entity.jumpAnimationTicks > 0 && entity.jumpAnimationTicks <= 7) {
-				this.legbackleft1.xRot = -0.296705972839036F + 0.15F * leapProgress;
-				this.legbackright1.xRot = -0.296705972839036F + 0.15F * leapProgress;
-				this.legbackleft2.xRot = 0.45378560551852565F + 0.2F * leapProgress;
-				this.legbackright2.xRot = 0.45378560551852565F + 0.2F * leapProgress;
+		if (!state.onGround || state.jumpTicks > 0) {
+			if (state.jumpTicks > 0 && state.jumpTicks <= 7) {
+				this.legbackleft1.xRot = -0.296705972839036F + 0.15F * state.jumpTicks;
+				this.legbackright1.xRot = -0.296705972839036F + 0.15F * state.jumpTicks;
+				this.legbackleft2.xRot = 0.45378560551852565F + 0.2F * state.jumpTicks;
+				this.legbackright2.xRot = 0.45378560551852565F + 0.2F * state.jumpTicks;
 
-				this.legfrontleft1.zRot = -0.3717860877513886F - 0.15F * leapProgress;
-				this.legfrontright1.zRot = 0.37178999185562134F + 0.15F * leapProgress;
-				this.legfrontleft2.zRot = 0.5948578119277954F - 0.15F * leapProgress;
-				this.legfrontright2.zRot = -0.5948606133460999F + 0.15F * leapProgress;
-			} else if (entity.jumpAnimationTicks > 7 && entity.jumpAnimationTicks <= 14) {
-				this.legbackleft1.xRot = -0.296705972839036F + 1.05F - 0.075F * leapProgress;
-				this.legbackright1.xRot = -0.296705972839036F + 1.05F - 0.075F * leapProgress;
-				this.legbackleft2.xRot = 0.45378560551852565F + 1.4F - 0.1F * leapProgress;
-				this.legbackright2.xRot = 0.45378560551852565F + 1.4F - 0.1F * leapProgress;
+				this.legfrontleft1.zRot = -0.3717860877513886F - 0.15F * state.jumpTicks;
+				this.legfrontright1.zRot = 0.37178999185562134F + 0.15F * state.jumpTicks;
+				this.legfrontleft2.zRot = 0.5948578119277954F - 0.15F * state.jumpTicks;
+				this.legfrontright2.zRot = -0.5948606133460999F + 0.15F * state.jumpTicks;
+			} else if (state.jumpTicks > 7 && state.jumpTicks <= 14) {
+				this.legbackleft1.xRot = -0.296705972839036F + 1.05F - 0.075F * state.jumpTicks;
+				this.legbackright1.xRot = -0.296705972839036F + 1.05F - 0.075F * state.jumpTicks;
+				this.legbackleft2.xRot = 0.45378560551852565F + 1.4F - 0.1F * state.jumpTicks;
+				this.legbackright2.xRot = 0.45378560551852565F + 1.4F - 0.1F * state.jumpTicks;
 
-				this.legfrontleft1.zRot = -0.3717860877513886F - 1.05F + 0.075F * leapProgress;
-				this.legfrontright1.zRot = 0.37178999185562134F + 1.05F - 0.075F * leapProgress;
-				this.legfrontleft2.zRot = 0.5948578119277954F - 1.05F + 0.075F * leapProgress;
-				this.legfrontright2.zRot = -0.5948606133460999F + 1.05F - 0.075F * leapProgress;
+				this.legfrontleft1.zRot = -0.3717860877513886F - 1.05F + 0.075F * state.jumpTicks;
+				this.legfrontright1.zRot = 0.37178999185562134F + 1.05F - 0.075F * state.jumpTicks;
+				this.legfrontleft2.zRot = 0.5948578119277954F - 1.05F + 0.075F * state.jumpTicks;
+				this.legfrontright2.zRot = -0.5948606133460999F + 1.05F - 0.075F * state.jumpTicks;
 			}
 		}
+
+		this.head.yRot = state.yRot / Mth.RAD_TO_DEG;
+		this.head.xRot = state.xRot / Mth.RAD_TO_DEG - 0.07435719668865202F + Mth.sin(state.ageInTicks / 8.0F) / 15.0F;
 	}
 }

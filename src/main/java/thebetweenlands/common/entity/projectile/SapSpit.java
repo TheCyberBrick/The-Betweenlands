@@ -23,7 +23,8 @@ public class SapSpit extends ThrowableItemProjectile {
 	}
 
 	public SapSpit(Level level, LivingEntity thrower, float damage) {
-		super(EntityRegistry.SAP_SPIT.get(), thrower, level);
+		super(EntityRegistry.SAP_SPIT.get(), level);
+		this.setOwner(thrower);
 		this.damage = damage;
 	}
 

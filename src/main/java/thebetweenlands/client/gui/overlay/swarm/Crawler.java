@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -123,7 +123,7 @@ public class Crawler {
 		float gb = 1 - this.hurtTint;
 		RenderSystem.enableBlend();
 		RenderSystem.setShaderTexture(0, this.sprite.atlasLocation());
-		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+		RenderSystem.setShader(CoreShaders.POSITION_TEX_COLOR);
 		Matrix4f matrix4f = graphics.pose().last().pose();
 		BufferBuilder builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 		builder.addVertex(matrix4f, mpx, mpy, 0.0F).setUv(this.sprite.getU0(), this.sprite.getV1()).setColor(1.0f, gb, gb, alpha);

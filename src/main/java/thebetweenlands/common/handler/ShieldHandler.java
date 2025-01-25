@@ -72,7 +72,7 @@ public class ShieldHandler {
 					if(attacked instanceof Player player) {
 						int cooldown = shield.getShieldBlockingCooldown(stack, player, event.getAmount(), source);
 						if(cooldown > 0) {
-							player.getCooldowns().addCooldown(shield, cooldown);
+							player.getCooldowns().addCooldown(stack, cooldown);
 							attacked.stopUsingItem();
 						}
 					}

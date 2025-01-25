@@ -3,11 +3,9 @@ package thebetweenlands.common.block.terrain;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import thebetweenlands.common.registries.BlockRegistry;
 
@@ -19,13 +17,6 @@ public class SmoulderingPeatBlock extends PeatBlock {
 	@Override
 	protected void attack(BlockState state, Level level, BlockPos pos, Player player) {
 		if (!level.isClientSide() && level.isEmptyBlock(pos.above())) {
-			level.setBlockAndUpdate(pos, BlockRegistry.PEAT.get().defaultBlockState());
-		}
-	}
-
-	@Override
-	protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
-		if (!level.isClientSide() && level.getBlockState(pos.above()).is(BlockTags.FIRE)) {
 			level.setBlockAndUpdate(pos, BlockRegistry.PEAT.get().defaultBlockState());
 		}
 	}

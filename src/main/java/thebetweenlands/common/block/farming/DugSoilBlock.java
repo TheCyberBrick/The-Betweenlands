@@ -9,7 +9,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -28,7 +28,6 @@ import net.neoforged.neoforge.common.util.TriState;
 import thebetweenlands.api.block.DungeonFogBlock;
 import thebetweenlands.api.block.FarmablePlant;
 import thebetweenlands.api.client.ConnectedTextureBlock;
-import thebetweenlands.api.client.ConnectedTextureHelper;
 import thebetweenlands.api.client.ConnectionRules;
 import thebetweenlands.common.block.entity.DugSoilBlockEntity;
 import thebetweenlands.common.registries.ItemRegistry;
@@ -182,10 +181,6 @@ public abstract class DugSoilBlock extends BaseEntityBlock implements ConnectedT
 	 * Updates the fogged state, i.e. whether a nearby censer is producing fog or not. Pretty much
 	 * like farmland and water.
 	 *
-	 * @param level
-	 * @param pos
-	 * @param state
-	 * @return
 	 */
 	protected BlockState updateFoggedState(Level level, BlockPos pos, BlockState state) {
 		boolean shouldBeFogged = false;
@@ -211,25 +206,20 @@ public abstract class DugSoilBlock extends BaseEntityBlock implements ConnectedT
 	/**
 	 * Returns the decay chance
 	 *
-	 * @param level
-	 * @param pos
-	 * @param state
-	 * @param random
-	 * @return
 	 */
 	protected float getDecayChance(Level level, BlockPos pos, BlockState state, RandomSource random) {
 		return 0.25F;
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (level.getBlockEntity(pos) instanceof DugSoilBlockEntity soil && soil.getCompost() == 0 && stack.is(ItemRegistry.COMPOST)) {
 			if (!level.isClientSide()) {
 				level.playSound(null, pos, SoundEvents.GRASS_PLACE, SoundSource.PLAYERS, 1, 0.5f + level.getRandom().nextFloat() * 0.5f);
 				soil.setCompost(level, pos, 30);
 				stack.consume(1, player);
 			}
-			return ItemInteractionResult.SUCCESS;
+			return InteractionResult.SUCCESS;
 		}
 		return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
 	}
@@ -315,10 +305,6 @@ public abstract class DugSoilBlock extends BaseEntityBlock implements ConnectedT
 	/**
 	 * Returns whether the soil is purified
 	 *
-	 * @param level
-	 * @param pos
-	 * @param state
-	 * @return
 	 */
 	public boolean isPurified(Level level, BlockPos pos, BlockState state) {
 		return this.purified;
@@ -327,10 +313,6 @@ public abstract class DugSoilBlock extends BaseEntityBlock implements ConnectedT
 	/**
 	 * Returns how often crops can be harvested before the purified soil turns into unpurified soil
 	 *
-	 * @param level
-	 * @param pos
-	 * @param state
-	 * @return
 	 */
 	public int getPurifiedHarvests(Level level, BlockPos pos, BlockState state) {
 		return 3;
@@ -341,10 +323,6 @@ public abstract class DugSoilBlock extends BaseEntityBlock implements ConnectedT
 	 * This should also copy the {@link #COMPOSTED} and {@link #DECAYED}
 	 * properties.
 	 *
-	 * @param level
-	 * @param pos
-	 * @param state
-	 * @return
 	 */
 	public abstract BlockState getUnpurifiedDugSoil(Level level, BlockPos pos, BlockState state);
 }

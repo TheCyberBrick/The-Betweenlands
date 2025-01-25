@@ -25,19 +25,19 @@ public class UpdateSynchedAttachmentPacket<T extends ISynchedAttachment<T>> impl
 	public static final StreamCodec<RegistryFriendlyByteBuf, UpdateSynchedAttachmentPacket<?>> STREAM_CODEC = StreamCodec.of(UpdateSynchedAttachmentPacket::encode, UpdateSynchedAttachmentPacket::decode);
 
 	// Serialization
-	public static final <T extends ISynchedAttachment<T>> void encode(RegistryFriendlyByteBuf buffer, UpdateSynchedAttachmentPacket<T> packet) {
+	public static <T extends ISynchedAttachment<T>> void encode(RegistryFriendlyByteBuf buffer, UpdateSynchedAttachmentPacket<T> packet) {
 		T attachment = packet.getAttachment();
 		Preconditions.checkNotNull(attachment);
-		
+
 		if(!(attachment instanceof ISynchedAttachment<T> synchedAttachment)) throw new IllegalArgumentException();
-		
+
 		AttachmentHolderIdentifier<?> holder = packet.getAttachmentHolder();
-		
+
 		SynchedAttachmentType<T> attachmentType = synchedAttachment.getSynchedAttachmentType(holder);
-		
+
 		Optional<ResourceKey<SynchedAttachmentType<?>>> resourceKeyOptional = BLRegistries.SYNCHED_ATTACHMENT_TYPES.getResourceKey(attachmentType);
 		Preconditions.checkArgument(resourceKeyOptional.isPresent());
-		
+
 		holder.encode(buffer);
 		buffer.writeResourceKey(resourceKeyOptional.get());
 		attachmentType.getStreamCodec(holder).encode(buffer, attachment);
@@ -45,27 +45,27 @@ public class UpdateSynchedAttachmentPacket<T extends ISynchedAttachment<T>> impl
 
 	// Deserialization
 	@SuppressWarnings("unchecked")
-	public static final <T extends ISynchedAttachment<T>> UpdateSynchedAttachmentPacket<T> decode(RegistryFriendlyByteBuf buffer) {
+	public static <T extends ISynchedAttachment<T>> UpdateSynchedAttachmentPacket<T> decode(RegistryFriendlyByteBuf buffer) {
 		AttachmentHolderIdentifier<?> holder = AttachmentHolderIdentifier.decode(buffer);
-		
+
 		ResourceKey<SynchedAttachmentType<?>> resourceKey = buffer.readResourceKey(BLRegistries.Keys.SYNCHED_ATTACHMENT_TYPES);
-		
-		SynchedAttachmentType<T> attachmentType = (SynchedAttachmentType<T>) BLRegistries.SYNCHED_ATTACHMENT_TYPES.get(resourceKey);
+
+		SynchedAttachmentType<T> attachmentType = (SynchedAttachmentType<T>) BLRegistries.SYNCHED_ATTACHMENT_TYPES.getValueOrThrow(resourceKey);
 		Preconditions.checkNotNull(attachmentType);
-		
-		AttachmentType<T> type = (AttachmentType<T>) NeoForgeRegistries.ATTACHMENT_TYPES.get(attachmentType.getAttachmentKey());
-		
+
+		AttachmentType<T> type = (AttachmentType<T>) NeoForgeRegistries.ATTACHMENT_TYPES.getValueOrThrow(attachmentType.getAttachmentKey());
+
 		StreamCodec<? super RegistryFriendlyByteBuf, T> codec = attachmentType.getStreamCodec(holder);
 		T attachment = codec.decode(buffer);
-		
-		return new UpdateSynchedAttachmentPacket<T>(holder, type, attachment);
+
+		return new UpdateSynchedAttachmentPacket<>(holder, type, attachment);
 	}
-	
+
 	// Packet Contents
-	
-	private AttachmentType<T> attachmentType;
-	private AttachmentHolderIdentifier<?> attachmentHolder;
-	private T attachment;
+
+	private final AttachmentType<T> attachmentType;
+	private final AttachmentHolderIdentifier<?> attachmentHolder;
+	private final T attachment;
 
 	public UpdateSynchedAttachmentPacket(IAttachmentHolder attachmentHolder, AttachmentType<T> type, T attachment) {
 		this.attachmentType = type;
@@ -78,19 +78,19 @@ public class UpdateSynchedAttachmentPacket<T extends ISynchedAttachment<T>> impl
 		this.attachmentHolder = attachmentHolder;
 		this.attachment = attachment;
 	}
-	
+
 	public AttachmentHolderIdentifier<?> getAttachmentHolder() {
 		return attachmentHolder;
 	}
-	
+
 	public AttachmentType<T> getAttachmentType() {
 		return attachmentType;
 	}
-	
+
 	public T getAttachment() {
 		return attachment;
 	}
-	
+
 	@Override
 	public Type<? extends CustomPacketPayload> type() {
 		return TYPE;
@@ -100,7 +100,7 @@ public class UpdateSynchedAttachmentPacket<T extends ISynchedAttachment<T>> impl
 //		TheBetweenlands.LOGGER.info("Handle Sync Packet: {} {} {} {}", message, message.getAttachmentHolder(), message.getAttachmentType(), message.getAttachment());
 		context.enqueueWork(() -> {
 			IAttachmentHolder attachee = message.getAttachmentHolder().toRealHolder(context.player().level());
-			
+
 			if(attachee != null) {
 				attachee.setData(message.getAttachmentType(), message.getAttachment());
 //				TheBetweenlands.LOGGER.info("Successfully autosynced data {} to client!", NeoForgeRegistries.ATTACHMENT_TYPES.getKey(message.getAttachmentType()));

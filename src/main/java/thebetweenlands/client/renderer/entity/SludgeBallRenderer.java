@@ -1,24 +1,19 @@
 package thebetweenlands.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import thebetweenlands.client.BLModelLayers;
-import thebetweenlands.client.model.entity.MummyArmModel;
 import thebetweenlands.client.model.entity.SludgeBallModel;
 import thebetweenlands.common.TheBetweenlands;
-import thebetweenlands.common.block.container.AnimatorBlock;
-import thebetweenlands.common.entity.monster.MummyArm;
 import thebetweenlands.common.entity.projectile.SludgeBall;
-import thebetweenlands.common.registries.BlockRegistry;
 
-public class SludgeBallRenderer extends EntityRenderer<SludgeBall> {
+public class SludgeBallRenderer extends EntityRenderer<SludgeBall, EntityRenderState> {
 	private static final ResourceLocation TEXTURE = TheBetweenlands.prefix("textures/entity/sludge.png");
 	private final SludgeBallModel model;
 
@@ -28,17 +23,17 @@ public class SludgeBallRenderer extends EntityRenderer<SludgeBall> {
 	}
 
 	@Override
-	public void render(SludgeBall entity, float entityYaw, float partialTick, PoseStack stack, MultiBufferSource buffer, int light) {
+	public void render(EntityRenderState state, PoseStack stack, MultiBufferSource buffer, int light) {
 		stack.pushPose();
 		stack.scale(0.5F, 0.5F, 0.5F);
-		this.model.renderToBuffer(stack, buffer.getBuffer(RenderType.entityTranslucent(this.getTextureLocation(entity))), light, OverlayTexture.NO_OVERLAY);
+		this.model.renderToBuffer(stack, buffer.getBuffer(RenderType.entityTranslucent(TEXTURE)), light, OverlayTexture.NO_OVERLAY);
 		stack.popPose();
 
-		super.render(entity, entityYaw, partialTick, stack, buffer, light);
+		super.render(state, stack, buffer, light);
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(SludgeBall entity) {
-		return TEXTURE;
+	public EntityRenderState createRenderState() {
+		return new EntityRenderState();
 	}
 }

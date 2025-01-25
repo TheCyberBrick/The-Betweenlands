@@ -17,7 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -107,7 +107,7 @@ public class BLItemRenderer extends BlockEntityWithoutLevelRenderer {
 			pose.pushPose();
 			pose.scale(-1.0F, -1.0F, -1.0F);
 			Material material = new Material(Sheets.SHIELD_SHEET, TheBetweenlands.prefix("entity/shield/" + BuiltInRegistries.ITEM.getKey(item).getPath().replace("living_", "")));
-			VertexConsumer vertexconsumer = material.sprite().wrap(ItemRenderer.getFoilBufferDirect(source, shieldModel.renderType(material.atlasLocation()), true, stack.hasFoil()));
+			VertexConsumer vertexconsumer = material.sprite().wrap(ItemRenderer.getFoilBuffer(source, shieldModel.renderType(material.atlasLocation()), true, stack.hasFoil()));
 			shieldModel.renderToBuffer(pose, vertexconsumer, light, overlay);
 			if (shield instanceof LivingWeedwoodShieldItem) {
 				pose.pushPose();
@@ -117,8 +117,8 @@ public class BLItemRenderer extends BlockEntityWithoutLevelRenderer {
 				this.face.render(pose, source.getBuffer(RenderType.entityCutoutNoCull(TheBetweenlands.prefix("textures/entity/small_spirit_tree_face.png"))), light, OverlayTexture.NO_OVERLAY);
 				if (stack.getOrDefault(DataComponentRegistry.SHIELD_SPIT, ShieldSpitData.EMPTY).ticks() > 0) {
 					int ticks = stack.getOrDefault(DataComponentRegistry.SHIELD_SPIT, ShieldSpitData.EMPTY).ticks();
-					float alpha = (ticks - Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true)) / 15.0F;
-					this.face.render(pose, source.getBuffer(RenderType.entityTranslucent(TheBetweenlands.prefix("textures/entity/small_spirit_tree_face_glow.png"))), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.colorFromFloat(alpha, 1.0F, 1.0F, 1.0F));
+					float alpha = (ticks - Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true)) / 15.0F;
+					this.face.render(pose, source.getBuffer(RenderType.entityTranslucent(TheBetweenlands.prefix("textures/entity/small_spirit_tree_face_glow.png"))), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ARGB.white(alpha));
 				}
 				pose.popPose();
 			}

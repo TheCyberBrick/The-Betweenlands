@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -245,7 +245,7 @@ public class ClientRegistrationEvents {
 	private static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
 		event.registerEntityRenderer(EntityRegistry.SWAMP_HAG.get(), SwampHagRenderer::new);
 		event.registerEntityRenderer(EntityRegistry.GECKO.get(), GeckoRenderer::new);
-		event.registerEntityRenderer(EntityRegistry.WIGHT.get(), RenderWight::new);
+		event.registerEntityRenderer(EntityRegistry.WIGHT.get(), WightRenderer::new);
 		event.registerEntityRenderer(EntityRegistry.BUBBLER_CRAB.get(), BubblerCrabRenderer::new);
 		event.registerEntityRenderer(EntityRegistry.SILT_CRAB.get(), SiltCrabRenderer::new);
 		event.registerEntityRenderer(EntityRegistry.ANADIA.get(), AnadiaRenderer::new);
@@ -355,8 +355,8 @@ public class ClientRegistrationEvents {
 		event.registerLayerDefinition(BLModelLayers.VALONITE_SHIELD, ValoniteShieldModel::create);
 		event.registerLayerDefinition(BLModelLayers.WEEDWOOD_SHIELD, WeedwoodShieldModel::create);
 
-		event.registerLayerDefinition(SwampHagRenderer.SWAMP_HAG_MODEL_LAYER, SwampHagModel::createModelLayer);
-		event.registerLayerDefinition(RenderWight.WIGHT_MODEL_LAYER, ModelWight::createModelLayer);
+		event.registerLayerDefinition(BLModelLayers.SWAMP_HAG, SwampHagModel::create);
+		event.registerLayerDefinition(BLModelLayers.WIGHT, WightModel::create);
 		event.registerLayerDefinition(BLModelLayers.BUBBLER_CRAB, BubblerCrabModel::create);
 		event.registerLayerDefinition(BLModelLayers.SILT_CRAB, SiltCrabModel::create);
 		event.registerLayerDefinition(BLModelLayers.ANADIA, AnadiaModel::create);
@@ -585,7 +585,6 @@ public class ClientRegistrationEvents {
 
 	public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
 		event.registerReloadListener(riftVariantListener = new RiftVariantReloadListener());
-		event.registerReloadListener(new CircleGemTextureManager());
 		event.registerReloadListener(BLItemRenderer.INSTANCE.get());
 		event.registerReloadListener(aspectIcons = new AspectIconTextureManager(Minecraft.getInstance().getTextureManager()));
 	}
@@ -648,23 +647,23 @@ public class ClientRegistrationEvents {
 				}
 
 				@Override
-				public boolean renderInventoryIcon(MobEffectInstance instance, EffectRenderingInventoryScreen<?> screen, GuiGraphics graphics, int x, int y, int blitOffset) {
+				public boolean renderInventoryIcon(MobEffectInstance instance, AbstractContainerScreen<?> screen, GuiGraphics graphics, int x, int y, int blitOffset) {
 					if (potEffect.getIcon() != null) {
 						RenderSystem.enableBlend();
-						graphics.blit(potEffect.getIcon(), x + 1, y + 7, 0, 0, 0, 16, 16, 16, 16);
+						graphics.blit(RenderType::guiTextured, potEffect.getIcon(), x + 1, y + 7, 0, 0, 0, 16, 16, 16, 16);
 					}
 					return true;
 				}
 
 				@Override
-				public boolean renderInventoryText(MobEffectInstance instance, EffectRenderingInventoryScreen<?> screen, GuiGraphics graphics, int x, int y, int blitOffset) {
+				public boolean renderInventoryText(MobEffectInstance instance, AbstractContainerScreen<?> screen, GuiGraphics graphics, int x, int y, int blitOffset) {
 					return true;
 				}
 
 				@Override
 				public boolean renderGuiIcon(MobEffectInstance instance, Gui gui, GuiGraphics graphics, int x, int y, float z, float alpha) {
 					if (potEffect.getIcon() != null) {
-						graphics.blit(potEffect.getIcon(), x + 4, y + 4, 0, 0, 0, 16, 16, 16, 16);
+						graphics.blit(RenderType::guiTextured, potEffect.getIcon(), x + 4, y + 4, 0, 0, 0, 16, 16, 16, 16);
 					}
 					return true;
 				}

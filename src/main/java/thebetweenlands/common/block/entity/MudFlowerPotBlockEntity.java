@@ -44,6 +44,6 @@ public class MudFlowerPotBlockEntity extends SyncedBlockEntity {
 	@Override
 	public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
 		super.loadAdditional(tag, registries);
-		this.flowerBlock = BuiltInRegistries.BLOCK.get(ResourceLocation.tryParse(tag.getString("flower")));
+		this.flowerBlock = BuiltInRegistries.BLOCK.getValue(ResourceLocation.tryParse(tag.getString("flower")));
 	}
 }

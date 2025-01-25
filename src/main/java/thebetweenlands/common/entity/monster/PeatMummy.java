@@ -13,6 +13,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
@@ -21,7 +22,7 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -41,7 +42,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.EventHooks;
 import thebetweenlands.api.entity.ScreenShaker;
@@ -71,8 +71,8 @@ public class PeatMummy extends Monster implements BLEntity, ScreenShaker {
 	//Adjust to length of screaming sound
 	private static final int SCREAMING_TIMER_MAX = 50;
 
-	private float prevSpawningOffset = 0.0F;
-	private float prevSpawningProgress = 0.0F;
+	public float prevSpawningOffset = 0.0F;
+	public float prevSpawningProgress = 0.0F;
 
 	private List<Goal> activeTargetTasks;
 	private List<Goal> inactiveTargetTasks;
@@ -160,7 +160,7 @@ public class PeatMummy extends Monster implements BLEntity, ScreenShaker {
 	protected boolean isImmobile() {
 		return super.isImmobile() || this.getChargingState() == 1;
 	}
-	
+
     @Nullable
     @Override
     public LivingEntity getControllingPassenger() {
@@ -331,17 +331,17 @@ public class PeatMummy extends Monster implements BLEntity, ScreenShaker {
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount) {
-		return !source.is(DamageTypes.IN_WALL) && super.hurt(source, amount);
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+		return !source.is(DamageTypes.IN_WALL) && super.hurtServer(level, source, amount);
 	}
 
 	@Override
-	public boolean doHurtTarget(Entity entity) {
+	public boolean doHurtTarget(ServerLevel level, Entity entity) {
 		if (this.isCharging()) {
 			this.stopCharging();
 		}
 		if (this.isSpawningFinished()) {
-			return super.doHurtTarget(entity);
+			return super.doHurtTarget(level, entity);
 		}
 		return false;
 	}
@@ -444,13 +444,6 @@ public class PeatMummy extends Monster implements BLEntity, ScreenShaker {
 			return 1.0F;
 		}
 		return 1.0F / this.getSpawningLength() * this.getSpawningTicks();
-	}
-
-	/**
-	 * Returns the interpolated relative spawning progress
-	 */
-	public float getInterpolatedSpawningProgress(float partialTicks) {
-		return this.prevSpawningProgress + (this.getSpawningProgress() - this.prevSpawningProgress) * partialTicks;
 	}
 
 	/**
@@ -583,11 +576,6 @@ public class PeatMummy extends Monster implements BLEntity, ScreenShaker {
 	}
 
 	@Override
-	public AABB getBoundingBoxForCulling() {
-		return this.getSpawningTicks() > 0 ? this.getBoundingBox() : new AABB(0, 0, 0, 0, 0, 0);
-	}
-
-	@Override
 	public float getShakeIntensity(Entity viewer) {
 		if (this.isScreaming()) {
 			float dist = this.distanceTo(viewer);
@@ -608,7 +596,7 @@ public class PeatMummy extends Monster implements BLEntity, ScreenShaker {
 
 	@Nullable
 	@Override
-	public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+	public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnGroupData) {
 		spawnGroupData = super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
 		if (!level.isClientSide() && level.getRandom().nextInt(20) == 0) {
 			SwampHag hag = new SwampHag(EntityRegistry.SWAMP_HAG.get(), this.level());

@@ -1,44 +1,30 @@
 package thebetweenlands.api.recipes;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
+import thebetweenlands.common.registries.RecipeCategoryRegistry;
 import thebetweenlands.common.registries.RecipeRegistry;
 
-public interface TrimmingTableRecipe extends Recipe<SingleRecipeInput> {
+import java.util.List;
 
-	@Override
-	default ItemStack assemble(SingleRecipeInput input, HolderLookup.Provider registries) {
-		return ItemStack.EMPTY;
+public abstract class TrimmingTableRecipe extends SingleItemRecipe {
+
+	public TrimmingTableRecipe(Ingredient input) {
+		super("", input, ItemStack.EMPTY);
 	}
 
-	NonNullList<ItemStack> assembleRecipe(SingleRecipeInput input, Level level);
+	public abstract List<ItemStack> assembleRecipe(SingleRecipeInput input, Level level);
+
+	public abstract ItemStack getRemains();
 
 	@Override
-	default ItemStack getResultItem(HolderLookup.Provider registries) {
-		return ItemStack.EMPTY;
-	}
-
-	NonNullList<ItemStack> getResultItems(HolderLookup.Provider registries);
-
-	ItemStack getRemains();
-
-	@Override
-	default boolean canCraftInDimensions(int width, int height) {
-		return true;
-	}
-
-	@Override
-	default RecipeType<?> getType() {
+	public RecipeType<TrimmingTableRecipe> getType() {
 		return RecipeRegistry.TRIMMING_TABLE_RECIPE.get();
 	}
 
 	@Override
-	default boolean isIncomplete() {
-		return true;
+	public RecipeBookCategory recipeBookCategory() {
+		return RecipeCategoryRegistry.TRIMMING_TABLE.get();
 	}
 }

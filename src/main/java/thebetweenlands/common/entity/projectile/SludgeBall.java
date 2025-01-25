@@ -4,9 +4,11 @@ import java.util.List;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -27,6 +29,7 @@ import net.neoforged.neoforge.event.EventHooks;
 import thebetweenlands.common.entity.boss.DreadfulPeatMummy;
 import thebetweenlands.common.entity.monster.PeatMummy;
 import thebetweenlands.common.registries.EntityRegistry;
+import thebetweenlands.common.registries.ItemRegistry;
 
 public class SludgeBall extends ThrowableProjectile {
 	private int bounces = 0;
@@ -80,7 +83,7 @@ public class SludgeBall extends ThrowableProjectile {
 	protected void onHitBlock(BlockHitResult result) {
 		super.onHitBlock(result);
 
-		if (!this.level().isClientSide() && EventHooks.canEntityGrief(this.level(), this) && this.bounces == 0) {
+		if (this.level() instanceof ServerLevel level && EventHooks.canEntityGrief(level, this) && this.bounces == 0) {
 			Entity owner = this.getOwner();
 
 			if (owner instanceof LivingEntity living && this.getY() > owner.getBoundingBox().maxY && this.getDeltaMovement().y() > 0.1D) {
@@ -150,7 +153,7 @@ public class SludgeBall extends ThrowableProjectile {
 		super.onHitEntity(result);
 		if (result.getEntity() != this.getOwner() && !(result.getEntity() instanceof SludgeBall) && !(result.getEntity() instanceof PartEntity<?>) && !(result.getEntity() instanceof PeatMummy) && !(result.getEntity() instanceof DreadfulPeatMummy)) {
 			if (this.attackEntity(result.getEntity())) {
-				explode();
+				this.explode();
 			} else {
 				this.setDeltaMovement(this.getDeltaMovement().multiply(-0.1D, -0.1D, -0.1D));
 				this.bounces++;
@@ -173,7 +176,6 @@ public class SludgeBall extends ThrowableProjectile {
 			this.level().playSound(null, this.blockPosition(), SoundEvents.SLIME_SQUISH_SMALL, SoundSource.HOSTILE, 1, 0.5f);
 			this.discard();
 		} else {
-			//TODO Better explosion particle effects
 			this.spawnBounceParticles(20);
 		}
 	}
@@ -182,9 +184,9 @@ public class SludgeBall extends ThrowableProjectile {
 		boolean attacked;
 		Entity owner = this.getOwner();
 		if (owner instanceof LivingEntity living) {
-			attacked = entity.hurt(this.damageSources().mobProjectile(this, living), 8);
+			attacked = entity.hurtOrSimulate(this.damageSources().mobProjectile(this, living), 8);
 		} else {
-			attacked = entity.hurt(this.damageSources().mobProjectile(this, null), 8);
+			attacked = entity.hurtOrSimulate(this.damageSources().mobProjectile(this, null), 8);
 		}
 		if (!this.level().isClientSide() && attacked && entity instanceof LivingEntity living) {
 			living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 80, 3));
@@ -199,7 +201,7 @@ public class SludgeBall extends ThrowableProjectile {
 
 	private void spawnBounceParticles(int amount) {
 		for (int i = 0; i <= amount; i++) {
-			this.level().addParticle(ParticleTypes.ITEM_SLIME, this.getX() + (amount / 8) * (this.getRandom().nextFloat() - 0.5), this.getY() + 0.3, this.getZ() + (amount / 8) * (this.getRandom().nextFloat() - 0.5), 0, 0, 0);
+			this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, ItemRegistry.SLUDGE_BALL.toStack()), this.getX() + (amount / 8) * (this.getRandom().nextFloat() - 0.5), this.getY() + 0.3, this.getZ() + (amount / 8) * (this.getRandom().nextFloat() - 0.5), 0, 0, 0);
 		}
 	}
 

@@ -5,7 +5,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -64,7 +63,7 @@ public class DungeonDoorRunesBlock extends HorizontalBaseEntityBlock {
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (!state.getValue(INVISIBLE) && !level.isClientSide() && hitResult.getDirection() == state.getValue(FACING)) {
 			if (level.getBlockEntity(pos) instanceof DungeonDoorRunesBlockEntity runes && !runes.is_gate_entrance) {
 				if (stack.is(ItemRegistry.RUNE_DOOR_KEY)) {
@@ -73,7 +72,7 @@ public class DungeonDoorRunesBlock extends HorizontalBaseEntityBlock {
 					runes.bottom_state = runes.bottom_code;
 					stack.consume(1, player);
 					level.sendBlockUpdated(pos, state, state, 3);
-					return ItemInteractionResult.SUCCESS;
+					return InteractionResult.SUCCESS;
 				}
 			}
 		}
@@ -109,7 +108,7 @@ public class DungeonDoorRunesBlock extends HorizontalBaseEntityBlock {
 		return !state.getValue(INVISIBLE) ? new DungeonDoorRunesBlockEntity(pos, state, this.mimic, this.barrishee) : null;
 	}
 
-	@org.jetbrains.annotations.Nullable
+	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
 		return createTickerHelper(type, BlockEntityRegistry.DUNGEON_DOOR_RUNES.get(), DungeonDoorRunesBlockEntity::tick);

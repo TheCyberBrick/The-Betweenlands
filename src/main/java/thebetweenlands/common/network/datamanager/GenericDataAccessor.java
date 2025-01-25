@@ -73,10 +73,6 @@ public class GenericDataAccessor implements GenericDataAccessorAccess {
 
 	/**
 	 * Creates a data parameter with custom de-/serializers. Values will be de-/serialized on the main thread.
-	 * @param clazz
-	 * @param serializer
-	 * @param deserializer
-	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> EntityDataAccessor<T> defineId(Class<?> clazz, Serializer<T> serializer, Deserializer<T> deserializer) {
@@ -94,9 +90,6 @@ public class GenericDataAccessor implements GenericDataAccessorAccess {
 
 	/**
 	 * Creates a data parameter with a normal serializer. Values will be de-/serialized on the network thread.
-	 * @param clazz
-	 * @param serializer
-	 * @return
 	 */
 	public static <T> EntityDataAccessor<T> defineId(Class<?> clazz, EntityDataSerializer<T> serializer) {
 		if (BetweenlandsConfig.debug) {
@@ -507,7 +500,6 @@ public class GenericDataAccessor implements GenericDataAccessorAccess {
 
 		/**
 		 * Returns the value of the data parameter
-		 * @return
 		 */
 		public T getValue() {
 			return this.entry.value;

@@ -13,12 +13,12 @@ import net.neoforged.neoforge.client.textures.UnitTextureAtlasSprite;
 
 // More flexible than the ones provided by default, but there are still improvements I want to make
 public class CustomQuadVertexConsumer implements VertexConsumer {
-	
+
 	private final int[] elementOffsets;
 	private final int vertexStride;
 	private final int[] quadData;
 	private final VertexFormat format;
-	
+
 	private int vertexIndex = 0;
 	private boolean building = false;
 
@@ -26,49 +26,49 @@ public class CustomQuadVertexConsumer implements VertexConsumer {
 	private Direction direction = Direction.DOWN;
 	private TextureAtlasSprite sprite = UnitTextureAtlasSprite.INSTANCE;
 	private boolean shade;
-	private boolean hasAmbientOcclusion;
-	
+	private int light;
+
 	public CustomQuadVertexConsumer(VertexFormat format) {
 		this.format = format;
 		this.vertexStride = this.format.getVertexSize() >> 2;
-		this.quadData = new int[4 * vertexStride];
+		this.quadData = new int[4 * this.vertexStride];
 		this.elementOffsets = this.format.getOffsetsByElement().clone();
 	}
 
 	public VertexFormat getVertexFormat() {
 		return this.format;
 	}
-	
+
 	public int getElementOffset(VertexFormatElement element) {
 		final int offset = this.elementOffsets[element.id()];
 		return offset != -1 ? offset >> 2 : offset;
 	}
-	
+
 	public int getElementOffsetOrThrow(VertexFormatElement element) {
 		final int offset = this.elementOffsets[element.id()];
 		if(offset == -1)
 			throw new IllegalArgumentException("This vertex format does not support elements of type " + element);
 		return offset >> 2;
 	}
-	
+
 	public CustomQuadVertexConsumer beginVertex() {
-		if (building) {
-			if (++vertexIndex >= 4) {
+		if (this.building) {
+			if (++this.vertexIndex >= 4) {
 				throw new IllegalStateException("Expected quad export after fourth vertex");
 			}
 		}
-		building = true;
-		
+		this.building = true;
+
 		return this;
 	}
-	
+
 	@Override
 	public VertexConsumer addVertex(float x, float y, float z) {
 		this.beginVertex();
 		this.setPosition(x, y, z);
 		return this;
 	}
-	
+
 	public CustomQuadVertexConsumer setPosition(float x, float y, float z) {
 		int offset = this.vertexIndex * this.vertexStride + this.getElementOffsetOrThrow(VertexFormatElement.POSITION);
 		this.quadData[offset] = Float.floatToRawIntBits(x);
@@ -90,8 +90,8 @@ public class CustomQuadVertexConsumer implements VertexConsumer {
 	@Override
 	public VertexConsumer setUv(float u, float v) {
 		int offset = this.vertexIndex * this.vertexStride + this.getElementOffsetOrThrow(VertexFormatElement.UV0);
-		quadData[offset] = Float.floatToRawIntBits(u);
-		quadData[offset + 1] = Float.floatToRawIntBits(v);
+		this.quadData[offset] = Float.floatToRawIntBits(u);
+		this.quadData[offset + 1] = Float.floatToRawIntBits(v);
 		return this;
 	}
 
@@ -149,20 +149,20 @@ public class CustomQuadVertexConsumer implements VertexConsumer {
 		this.shade = shade;
 	}
 
-	public void setHasAmbientOcclusion(boolean hasAmbientOcclusion) {
-		this.hasAmbientOcclusion = hasAmbientOcclusion;
+	public void setBlockLight(int light) {
+		this.light = light;
 	}
 
 	public BakedQuad bakeQuad() {
-		if (!building || ++vertexIndex != 4) {
-			throw new IllegalStateException("Not enough vertices available. Vertices in buffer: " + vertexIndex);
+		if (!this.building || ++this.vertexIndex != 4) {
+			throw new IllegalStateException("Not enough vertices available. Vertices in buffer: " + this.vertexIndex);
 		}
-		
-		BakedQuad quad = new BakedQuad(quadData.clone(), tintIndex, direction, sprite, shade, hasAmbientOcclusion);
-		vertexIndex = 0;
-		building = false;
-		Arrays.fill(quadData, 0);
+
+		BakedQuad quad = new BakedQuad(this.quadData.clone(), this.tintIndex, this.direction, this.sprite, this.shade, this.light);
+		this.vertexIndex = 0;
+		this.building = false;
+		Arrays.fill(this.quadData, 0);
 		return quad;
 	}
-	
+
 }

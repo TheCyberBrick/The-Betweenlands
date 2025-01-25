@@ -15,7 +15,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemOverride;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
@@ -52,7 +52,7 @@ public record RootGeometry(boolean emissiveBase, boolean emissiveOverlay) implem
 	public static final ModelProperty<Boolean> HAS_OVERLAY = new ModelProperty<>(Predicates.notNull());
 
 	@Override
-	public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
+	public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, List<ItemOverride> overrides) {
 		TextureAtlasSprite textureTop = spriteGetter.apply(context.getMaterial("top"));
 		TextureAtlasSprite textureMiddle = spriteGetter.apply(context.getMaterial("middle"));
 		TextureAtlasSprite textureBottom = spriteGetter.apply(context.getMaterial("bottom"));
@@ -223,7 +223,7 @@ public record RootGeometry(boolean emissiveBase, boolean emissiveOverlay) implem
 					mutableBlockState = level.getBlockState(mutablePos.setY(pos_getY + (1 + distUp)));
 					if (stalactite.doesConnect(level, mutablePos, mutableBlockState))
 						continue;
-					if (mutableBlockState.isAir() || !mutableBlockState.isSolidRender(level, pos))
+					if (mutableBlockState.isAir() || !mutableBlockState.isSolidRender())
 						noTop = true;
 					break;
 				}
@@ -231,7 +231,7 @@ public record RootGeometry(boolean emissiveBase, boolean emissiveOverlay) implem
 					mutableBlockState = level.getBlockState(mutablePos.setY(pos_getY - (1 + distDown)));
 					if (stalactite.doesConnect(level, mutablePos, mutableBlockState))
 						continue;
-					if (mutableBlockState.isAir() || !mutableBlockState.isSolidRender(level, pos))
+					if (mutableBlockState.isAir() || !mutableBlockState.isSolidRender())
 						noBottom = true;
 					break;
 				}
@@ -274,11 +274,6 @@ public record RootGeometry(boolean emissiveBase, boolean emissiveOverlay) implem
 		@Override
 		public TextureAtlasSprite getParticleIcon() {
 			return this.textureParticle;
-		}
-
-		@Override
-		public ItemOverrides getOverrides() {
-			return ItemOverrides.EMPTY;
 		}
 	}
 

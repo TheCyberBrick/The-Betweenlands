@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.Entity;
@@ -22,7 +23,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import thebetweenlands.api.recipes.SmokingRackRecipe;
-import thebetweenlands.common.block.container.CenserBlock;
 import thebetweenlands.common.block.container.SmokingRackBlock;
 import thebetweenlands.common.block.waterlog.SwampWaterLoggable;
 import thebetweenlands.common.inventory.SmokingRackMenu;
@@ -87,7 +87,7 @@ public class SmokingRackBlockEntity extends BaseContainerBlockEntity {
 	public static void tick(Level level, BlockPos pos, BlockState state, SmokingRackBlockEntity entity) {
 		if (state.getValue(SmokingRackBlock.WATER_TYPE) != SwampWaterLoggable.WaterType.NONE) return;
 		if (!level.getBlockState(pos.above()).is(BlockRegistry.SMOKING_RACK) || level.getBlockState(pos.above()).getValue(SmokingRackBlock.WATER_TYPE) != SwampWaterLoggable.WaterType.NONE) return;
-		if (!level.isClientSide()) {
+		if (level instanceof ServerLevel sl) {
 			boolean setChanged = false;
 			if (state.getValue(SmokingRackBlock.HEATED)) {
 				if (entity.smokeProgress > 0) {
@@ -97,7 +97,7 @@ public class SmokingRackBlockEntity extends BaseContainerBlockEntity {
 
 				for (int i = 1; i <= 3; i++) {
 					SingleRecipeInput input = new SingleRecipeInput(entity.getItem(i));
-					RecipeHolder<SmokingRackRecipe> recipe = entity.quickChecks.get(i - 1).getRecipeFor(input, level).orElse(null);
+					RecipeHolder<SmokingRackRecipe> recipe = entity.quickChecks.get(i - 1).getRecipeFor(input, sl).orElse(null);
 
 					if (!setSmokingAlready && entity.smokeProgress <= 0 && entity.canSmokeItem(level, i, recipe)) {
 						entity.smokeProgress = SMOKING_TIME;
@@ -110,7 +110,7 @@ public class SmokingRackBlockEntity extends BaseContainerBlockEntity {
 						entity.data.set(i, entity.data.get(i) + 1);
 						if (entity.data.get(i) == entity.data.get(i + 3)) {
 							entity.data.set(i, 0);
-							entity.data.set(i + 3, entity.getTotalSmokeTime(level, i));
+							entity.data.set(i + 3, entity.getTotalSmokeTime(sl, i));
 							entity.smokeItem(level, i, recipe);
 							setChanged = true;
 						}
@@ -170,7 +170,7 @@ public class SmokingRackBlockEntity extends BaseContainerBlockEntity {
 		}
 	}
 
-	private int getTotalSmokeTime(Level level, int index) {
+	private int getTotalSmokeTime(ServerLevel level, int index) {
 		SingleRecipeInput input = new SingleRecipeInput(this.getItem(index));
 		return this.quickChecks.get(index - 1).getRecipeFor(input, level).map(recipe -> recipe.value().smokingTime()).orElse(200);
 	}
@@ -205,8 +205,8 @@ public class SmokingRackBlockEntity extends BaseContainerBlockEntity {
 		boolean flag = !stack.isEmpty() && ItemStack.isSameItemSameComponents(itemstack, stack);
 		this.items.set(slot, stack);
 		stack.limitSize(this.getMaxStackSize(stack));
-		if (slot > 0 && slot < 4 && !flag) {
-			this.data.set(slot + 3, this.getTotalSmokeTime(this.getLevel(), slot));
+		if (slot > 0 && slot < 4 && !flag && this.level instanceof ServerLevel serverlevel) {
+			this.data.set(slot + 3, this.getTotalSmokeTime(serverlevel, slot));
 			this.data.set(slot, 0);
 			this.setChanged();
 		}

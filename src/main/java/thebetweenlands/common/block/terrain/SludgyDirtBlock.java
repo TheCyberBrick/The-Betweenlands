@@ -34,7 +34,7 @@ public class SludgyDirtBlock extends Block {
 	protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
 		if (!level.isClientSide()) {
 			BlockState stateAbove = level.getBlockState(pos.above());
-			if (stateAbove.getLightBlock(level, pos.above()) > 2 || stateAbove.getBlock() == this) {
+			if (stateAbove.getLightBlock() > 2 || stateAbove.getBlock() == this) {
 				level.setBlockAndUpdate(pos, BlockRegistry.SWAMP_DIRT.get().defaultBlockState());
 			}
 		}

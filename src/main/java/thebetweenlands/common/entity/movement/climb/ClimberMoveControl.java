@@ -175,7 +175,7 @@ public class ClimberMoveControl extends MoveControl {
 				dz += oz;
 			}
 
-			Direction mainOffsetDir = Direction.getNearest(dx, dy, dz);
+			Direction mainOffsetDir = Direction.getNearest((int) dx, (int) dy, (int) dz, Direction.UP);
 
 			float reach = switch (mainOffsetDir) {
 				case DOWN -> -0.5F;

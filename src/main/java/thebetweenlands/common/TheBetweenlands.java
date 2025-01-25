@@ -82,7 +82,6 @@ public class TheBetweenlands {
 		ElixirEffectRegistry.EFFECTS.register(eventbus);
 		AttachmentRegistry.ATTACHMENT_TYPES.register(eventbus);
 		AttachmentRegistry.SYNCHED_ATTACHMENT_TYPES.register(eventbus);
-		ArmorMaterialRegistry.MATERIALS.register(eventbus);
 		BlockEntityRegistry.BLOCK_ENTITIES.register(eventbus);
 		DataComponentRegistry.COMPONENTS.register(eventbus);
 		RecipeRegistry.RECIPE_TYPES.register(eventbus);
@@ -104,6 +103,8 @@ public class TheBetweenlands {
 		LootFunctionRegistry.CONDITIONS.register(eventbus);
 		StructureTypeRegistry.TYPES.register(eventbus);
 		StructureTypeRegistry.PIECE_TYPES.register(eventbus);
+		RecipeCategoryRegistry.CATEGORIES.register(eventbus);
+		ConsumeEffectRegistry.CONSUME_EFFECTS.register(eventbus);
 
 		BetweenlandsConfigSetup.init(eventbus, dist);
 

@@ -62,8 +62,8 @@ public class PlayerDecayHandler {
 
 					float decaySpeed = 0;
 
-					if (player.walkDist - player.walkDistO > 0) {
-						decaySpeed += (player.walkDist - player.walkDistO) * 4 * decayBaseSpeed;
+					if (player.getKnownMovement().horizontalDistanceSqr() > 0) {
+						decaySpeed += (float) (player.getKnownMovement().horizontalDistanceSqr() * 4.0F * decayBaseSpeed);
 					}
 
 					BetweenlandsWorldStorage storage = BetweenlandsWorldStorage.get(player.level());
@@ -153,15 +153,13 @@ public class PlayerDecayHandler {
 	/**
 	 * Returns the base decay speed per tick
 	 *
-	 * @param difficulty
-	 * @return
 	 */
 	public static float getDecayBaseSpeed(Difficulty difficulty) {
 		return switch (difficulty) {
 			case PEACEFUL -> 0.0F;
 			case EASY -> 0.0025F;
-			default -> 0.0033F;
 			case HARD -> 0.005F;
+			default -> 0.0033F;
 		};
 	}
 

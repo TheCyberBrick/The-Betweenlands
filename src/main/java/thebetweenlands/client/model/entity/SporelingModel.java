@@ -5,11 +5,10 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.creature.Sporeling;
+import thebetweenlands.client.state.SporelingRenderState;
 
-public class SporelingModel extends MowzieModelBase<Sporeling> {
+public class SporelingModel extends MowzieModelBase<SporelingRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart leftLeg;
 	private final ModelPart rightLeg;
@@ -17,7 +16,7 @@ public class SporelingModel extends MowzieModelBase<Sporeling> {
 	private final ModelPart rightArm;
 
 	public SporelingModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.head = root.getChild("head");
 		this.rightArm = root.getChild("right_arm");
 		this.leftArm = root.getChild("left_arm");
@@ -68,16 +67,11 @@ public class SporelingModel extends MowzieModelBase<Sporeling> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
+	public void setupAnim(SporelingRenderState state) {
+		this.leftArm.xRot = Mth.cos(state.walkAnimationPos * 1.5F + Mth.PI) * 2.0F * state.walkAnimationSpeed * 0.5F - (Mth.cos(state.ageInTicks / 10.0F) + 0.7F) / 2.0F * 0.3F;
+		this.rightArm.xRot = Mth.cos(state.walkAnimationPos * 1.5F) * 2.0F * state.walkAnimationSpeed * 0.5F - (Mth.cos(state.ageInTicks / 11.0F) + 0.7F) / 2.0F * 0.3F;
 
-	@Override
-	public void setupAnim(Sporeling entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		this.leftArm.xRot = Mth.cos(limbSwing * 1.5F + Mth.PI) * 2.0F * limbSwingAmount * 0.5F - (Mth.cos(ageInTicks / 10.0F) + 0.7F) / 2.0F * 0.3F;
-		this.rightArm.xRot = Mth.cos(limbSwing * 1.5F) * 2.0F * limbSwingAmount * 0.5F - (Mth.cos(ageInTicks / 11.0F) + 0.7F) / 2.0F * 0.3F;
-
-		if (entity.getIsFalling()) {
+		if (state.falling) {
 			this.head.xScale = 2.0F;
 			this.head.zScale = 2.0F;
 			this.head.xRot = 0.0F;
@@ -87,9 +81,9 @@ public class SporelingModel extends MowzieModelBase<Sporeling> {
 			this.head.xRot = -30.0F * Mth.DEG_TO_RAD;
 		}
 
-		if (!entity.isPassenger()) {
-			this.leftLeg.xRot = Mth.cos(limbSwing * 1.5F) * 1.4F * limbSwingAmount;
-			this.rightLeg.xRot = Mth.cos(limbSwing * 1.5F + Mth.PI) * 1.4F * limbSwingAmount;
+		if (!state.passenger) {
+			this.leftLeg.xRot = Mth.cos(state.walkAnimationPos * 1.5F) * 1.4F * state.walkAnimationSpeed;
+			this.rightLeg.xRot = Mth.cos(state.walkAnimationPos * 1.5F + Mth.PI) * 1.4F * state.walkAnimationSpeed;
 		} else {
 			this.leftLeg.xRot = -80 * Mth.DEG_TO_RAD;
 			this.rightLeg.xRot = -80 * Mth.DEG_TO_RAD;

@@ -5,9 +5,9 @@ import java.util.EnumSet;
 import javax.annotation.Nullable;
 
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
-import thebetweenlands.common.entity.monster.PeatMummy;
 import thebetweenlands.common.entity.monster.TinySludgeWorm;
 import thebetweenlands.common.entity.monster.SwampHag;
 import thebetweenlands.common.registries.EntityRegistry;
@@ -30,7 +30,7 @@ public class ThrowWormGoal extends Goal {
 
 		if (!this.hag.isRidingMummy())
 			return false;
-		if (this.hag.isRidingMummy() && !((PeatMummy) this.hag.getMummyMount()).isSpawningFinished())
+		if (this.hag.getMummyMount() != null && !this.hag.getMummyMount().isSpawningFinished())
 			return false;
 		if (this.target == null)
 			return false;
@@ -57,7 +57,7 @@ public class ThrowWormGoal extends Goal {
 				double targetY = this.target.getBoundingBox().minY + (double) (this.target.getBbHeight() / 2.0F) - (this.hag.getY() + (double) (this.hag.getBbHeight() / 2.0F));
 				double targetZ = this.target.getZ() - this.hag.getZ();
 				double targetDistance = Math.sqrt(targetX * targetX + targetZ * targetZ);
-				TinySludgeWorm worm = EntityRegistry.TINY_SLUDGE_WORM.get().create(hag.level());
+				TinySludgeWorm worm = EntityRegistry.TINY_SLUDGE_WORM.get().create(hag.level(), EntitySpawnReason.REINFORCEMENT);
 				worm.setPos(this.hag.getX(), this.hag.getY() + (double) this.hag.getEyeHeight() - 0.10000000149011612D, this.hag.getZ());
 				this.throwWorm(worm, targetX, targetY + targetDistance * 0.2D, targetZ, 1.8F, 0F);
 				this.hag.level().addFreshEntity(worm);

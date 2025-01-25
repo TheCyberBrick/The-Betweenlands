@@ -8,11 +8,10 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.boss.DreadfulPeatMummy;
+import thebetweenlands.client.state.DreadfulPeatMummyRenderState;
 
-public class DreadfulPeatMummyModel extends MowzieModelBase<DreadfulPeatMummy> {
+public class DreadfulPeatMummyModel extends MowzieModelBase<DreadfulPeatMummyRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart shoulders;
 	private final ModelPart neck;
 	private final ModelPart bodyBase;
@@ -41,7 +40,7 @@ public class DreadfulPeatMummyModel extends MowzieModelBase<DreadfulPeatMummy> {
 
 
 	public DreadfulPeatMummyModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.shoulders = root.getChild("shoulders");
 		this.armright1 = this.shoulders.getChild("right_shoulder").getChild("right_arm");
 		this.armleft1 = this.shoulders.getChild("left_shoulder").getChild("left_arm_1");
@@ -229,15 +228,40 @@ public class DreadfulPeatMummyModel extends MowzieModelBase<DreadfulPeatMummy> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
+	public void setupAnim(DreadfulPeatMummyRenderState state) {
+		super.setupAnim(state);
 
-	@Override
-	public void setupAnim(DreadfulPeatMummy entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		float partialTicks = ageInTicks - entity.tickCount;
+		this.chainWave(this.tentacle1, 0.2f, 0.3f, -2, state.ageInTicks, 1);
+		this.chainWave(this.tentacle2, 0.3f, 0.3f, -2, state.ageInTicks, 1);
 
-		float spawningProgress = entity.getSpawningProgress(partialTicks);
+		if (state.hasPrey) {
+			this.walk(this.neck, 0.8f, 0.7f, false, 0, -0.2f, state.ageInTicks, 1);
+			this.walk(this.head1, 0.8f, 0.7f, true, 0, 0.2f, state.ageInTicks, 1);
+			this.walk(this.jaw, 0.8f, 0.8f, true, -0.7f, -0.6f, state.ageInTicks, 1);
+			this.walk(this.tongue1, 0.8f, 0.8f, true, -0.7f, -0.5f, state.ageInTicks, 1);
+			this.swing(this.neck, 0.4f, 0.3f, false, 0, 0, state.ageInTicks, 1);
+			this.swing(this.head1, 0.4f, 0.3f, false, 0, 0, state.ageInTicks, 1);
+			this.tongue2.xRot += Mth.PI;
+			this.tongue3.xRot += Mth.PI;
+			this.tongue4.xRot += Mth.PI;
+			this.tongue5.xRot += Mth.PI;
+			this.armleft1.xRot -= 1.2F;
+		} else {
+			this.chainWave(this.tongue, 0.2f, -0.3f, -3, state.ageInTicks, 1);
+			this.walk(this.neck, 0.2f, 0.05f, true, 2, 0, state.ageInTicks, 1);
+			this.walk(this.head1, 0.2f, 0.05f, true, 1, 0, state.ageInTicks, 1);
+			if (state.deathTime > 0) {
+				float rot = Math.min((state.deathTime) / 80.0F, (Mth.PI * 2.0F) / 7.0F);
+				this.head1.xRot += rot;
+				this.head1.yRot += rot;
+				this.tongue1.zRot -= rot;
+			}
+			this.walk(this.jaw, 0.2f, 0.2f, true, 0, 0.2f, state.ageInTicks, 1);
+			this.walk(this.armleft1, 0.15f, 0.2f, true, 2, 0, state.ageInTicks, 1);
+			this.walk(this.armleft2, 0.15f, 0.2f, true, 1, 0, state.ageInTicks, 1);
+		}
+
+		float spawningProgress = state.spawningProgress;
 		this.bodyBase.xRot -= Math.min((1 - spawningProgress) * 1.5f, 0.7f);
 		this.head1.xRot -= Math.min((1 - spawningProgress) * 2.0f, 1.5f);
 
@@ -245,16 +269,16 @@ public class DreadfulPeatMummyModel extends MowzieModelBase<DreadfulPeatMummy> {
 		this.legright1.xRot += (1 - spawningProgress) * 0.85f;
 
 
-		this.faceTarget(this.neck, 1, Mth.clamp(Mth.wrapDegrees(netHeadYaw), -25, 25), Mth.clamp(Mth.wrapDegrees(headPitch), -35, 35));
+		this.faceTarget(this.neck, 1, Mth.clamp(Mth.wrapDegrees(state.yRot), -25, 25), Mth.clamp(Mth.wrapDegrees(state.xRot), -35, 35));
 
-		if (entity.deathTicks > 0) {
-			float contractAngle = this.bodyBase.xRot - this.bodyBase.xRot / (entity.deathTicks / 120.0F + 1.0F);
+		if (state.deathTime > 0) {
+			float contractAngle = this.bodyBase.xRot - this.bodyBase.xRot / (state.deathTime / 120.0F + 1.0F);
 			this.bodyBase.xRot -= contractAngle;
 			this.legright1.xRot += contractAngle;
-			limbSwingAmount += Mth.cos(entity.deathTicks) / 2.0F * Mth.sin(entity.deathTicks / 2.0F);
+			state.walkAnimationSpeed += Mth.cos(state.deathTime) / 2.0F * Mth.sin(state.deathTime / 2.0F);
 
-			if (entity.deathTicks > 60) {
-				float progress = (entity.deathTicks - 60) / 40.0F;
+			if (state.deathTime > 60) {
+				float progress = (state.deathTime - 60) / 40.0F;
 				float rotateAngle = progress * Mth.PI * 2.0F / 8F;
 				this.shoulders.xRot = rotateAngle;
 				this.bodyBase.xRot = rotateAngle;
@@ -264,70 +288,35 @@ public class DreadfulPeatMummyModel extends MowzieModelBase<DreadfulPeatMummy> {
 		float speed = 0.3f;
 		float degree = 0.65f;
 		float height = 0.7f;
-		this.swing(this.spiderleg1a, speed, degree * 0.5f, false, 0f, 0.3f, limbSwing, limbSwingAmount);
-		this.swing(this.spiderleg2, speed, degree * 0.5f, false, 0f, 0f, limbSwing, limbSwingAmount);
-		this.walk(this.spiderleg1, speed, degree * 0.4f, true, Mth.HALF_PI, -0.1f, limbSwing, limbSwingAmount);
-		this.walk(this.spiderleg1a, speed, degree * 0.4f, false, Mth.HALF_PI, 0, limbSwing, limbSwingAmount);
-		this.walk(this.spiderleg2, speed, degree * 0.4f, false, Mth.HALF_PI, -0.1f, limbSwing, limbSwingAmount);
-		this.walk(this.spiderleg2a, speed, degree * 0.4f, true, Mth.HALF_PI, 0, limbSwing, limbSwingAmount);
-		this.swing(this.spiderleg3, speed, degree * 0.5f, false, Mth.PI, 0f, limbSwing, limbSwingAmount);
-		this.walk(this.spiderleg3, speed, degree * 0.4f, true, Mth.HALF_PI + Mth.PI, -0.1f, limbSwing, limbSwingAmount);
-		this.walk(this.spiderleg3a, speed, degree * 0.4f, false, Mth.HALF_PI + Mth.PI, 0, limbSwing, limbSwingAmount);
-		this.walk(this.legright1, speed, degree * 0.6f, false, 2, 0.1f, limbSwing, limbSwingAmount);
-		this.walk(this.legright2, speed, degree * 0.6f, false, 0, 0.3f, limbSwing, limbSwingAmount);
+		this.swing(this.spiderleg1a, speed, degree * 0.5f, false, 0f, 0.3f, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.swing(this.spiderleg2, speed, degree * 0.5f, false, 0f, 0f, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.spiderleg1, speed, degree * 0.4f, true, Mth.HALF_PI, -0.1f, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.spiderleg1a, speed, degree * 0.4f, false, Mth.HALF_PI, 0, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.spiderleg2, speed, degree * 0.4f, false, Mth.HALF_PI, -0.1f, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.spiderleg2a, speed, degree * 0.4f, true, Mth.HALF_PI, 0, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.swing(this.spiderleg3, speed, degree * 0.5f, false, Mth.PI, 0f, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.spiderleg3, speed, degree * 0.4f, true, Mth.HALF_PI + Mth.PI, -0.1f, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.spiderleg3a, speed, degree * 0.4f, false, Mth.HALF_PI + Mth.PI, 0, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.legright1, speed, degree * 0.6f, false, 2, 0.1f, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.legright2, speed, degree * 0.6f, false, 0, 0.3f, state.walkAnimationPos, state.walkAnimationSpeed);
 
-		this.bob(this.shoulders, 2 * speed, height, false, limbSwing, limbSwingAmount);
-		this.walk(this.shoulders, 2 * speed, height * 0.05f, true, Mth.PI, 0, limbSwing, limbSwingAmount);
-		this.walk(this.neck, 2 * speed, height * 0.05f, true, Mth.PI + 0.5f, 0, limbSwing, limbSwingAmount);
-		this.walk(this.head1, 2 * speed, height * 0.05f, true, Mth.PI + 1, 0, limbSwing, limbSwingAmount);
-		this.walk(this.jaw, 2 * speed, height * 0.3f, false, Mth.PI + 1.5f, 0, limbSwing, limbSwingAmount);
-		this.chainWave(this.tongue, 2 * speed, height * 0.2f, -3, limbSwing, limbSwingAmount);
-		this.tongue1.xRot -= 0.2F * limbSwingAmount;
-		this.swing(this.neck, speed, height * 0.2f, true, Mth.PI + 0.5f, 0, limbSwing, limbSwingAmount);
-		this.swing(this.head1, speed, height * 0.2f, true, Mth.PI + 1, 0, limbSwing, limbSwingAmount);
-		this.chainSwing(this.tongue, speed, height * 0.2f, -2, limbSwing, limbSwingAmount);
+		this.bob(this.shoulders, 2 * speed, height, false, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.shoulders, 2 * speed, height * 0.05f, true, Mth.PI, 0, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.neck, 2 * speed, height * 0.05f, true, Mth.PI + 0.5f, 0, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.head1, 2 * speed, height * 0.05f, true, Mth.PI + 1, 0, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.jaw, 2 * speed, height * 0.3f, false, Mth.PI + 1.5f, 0, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.chainWave(this.tongue, 2 * speed, height * 0.2f, -3, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.tongue1.xRot -= 0.2F * state.walkAnimationSpeed;
+		this.swing(this.neck, speed, height * 0.2f, true, Mth.PI + 0.5f, 0, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.swing(this.head1, speed, height * 0.2f, true, Mth.PI + 1, 0, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.chainSwing(this.tongue, speed, height * 0.2f, -2, state.walkAnimationPos, state.walkAnimationSpeed);
 
-		this.walk(this.legleft1, 2 * speed, height * 0.3f, false, 0, 0, limbSwing, limbSwingAmount);
-		this.walk(this.armright1, 2 * speed, height * 0.2f, false, Mth.PI - 1, 0, limbSwing, limbSwingAmount);
-		this.walk(this.armleft1, 2 * speed, height * 0.2f, false, Mth.PI - 1, 0, limbSwing, limbSwingAmount);
-		this.walk(this.armleft2, 2 * speed, height * 0.2f, false, Mth.PI - 3f, 0, limbSwing, limbSwingAmount);
+		this.walk(this.legleft1, 2 * speed, height * 0.3f, false, 0, 0, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.armright1, 2 * speed, height * 0.2f, false, Mth.PI - 1, 0, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.armleft1, 2 * speed, height * 0.2f, false, Mth.PI - 1, 0, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.armleft2, 2 * speed, height * 0.2f, false, Mth.PI - 3f, 0, state.walkAnimationPos, state.walkAnimationSpeed);
 
-		this.chainWave(this.tentacle1, 2 * speed, height * 0.2f, -3, limbSwing, limbSwingAmount);
-		this.chainWave(this.tentacle2, 2 * speed, height * 0.2f, -2, limbSwing, limbSwingAmount);
-	}
-
-	@Override
-	public void prepareMobModel(DreadfulPeatMummy entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		this.setInitPose();
-		float frame = entity.tickCount + partialTick;
-		this.chainWave(this.tentacle1, 0.2f, 0.3f, -2, frame, 1);
-		this.chainWave(this.tentacle2, 0.3f, 0.3f, -2, frame, 1);
-
-		if (entity.currentEatPrey != null) {
-			this.walk(this.neck, 0.8f, 0.7f, false, 0, -0.2f, frame, 1);
-			this.walk(this.head1, 0.8f, 0.7f, true, 0, 0.2f, frame, 1);
-			this.walk(this.jaw, 0.8f, 0.8f, true, -0.7f, -0.6f, frame, 1);
-			this.walk(this.tongue1, 0.8f, 0.8f, true, -0.7f, -0.5f, frame, 1);
-			this.swing(this.neck, 0.4f, 0.3f, false, 0, 0, frame, 1);
-			this.swing(this.head1, 0.4f, 0.3f, false, 0, 0, frame, 1);
-			this.tongue2.xRot += Mth.PI;
-			this.tongue3.xRot += Mth.PI;
-			this.tongue4.xRot += Mth.PI;
-			this.tongue5.xRot += Mth.PI;
-			this.armleft1.xRot -= 1.2F;
-		} else {
-			this.chainWave(this.tongue, 0.2f, -0.3f, -3, frame, 1);
-			this.walk(this.neck, 0.2f, 0.05f, true, 2, 0, frame, 1);
-			this.walk(this.head1, 0.2f, 0.05f, true, 1, 0, frame, 1);
-			if (entity.deathTicks > 0) {
-				float rot = Math.min((entity.deathTicks) / 80.0F, (Mth.PI * 2.0F) / 7.0F);
-				this.head1.xRot += rot;
-				this.head1.yRot += rot;
-				this.tongue1.zRot -= rot;
-			}
-			this.walk(this.jaw, 0.2f, 0.2f, true, 0, 0.2f, frame, 1);
-			this.walk(this.armleft1, 0.15f, 0.2f, true, 2, 0, frame, 1);
-			this.walk(this.armleft2, 0.15f, 0.2f, true, 1, 0, frame, 1);
-		}
+		this.chainWave(this.tentacle1, 2 * speed, height * 0.2f, -3, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.chainWave(this.tentacle2, 2 * speed, height * 0.2f, -2, state.walkAnimationPos, state.walkAnimationSpeed);
 	}
 }

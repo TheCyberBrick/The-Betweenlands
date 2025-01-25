@@ -58,8 +58,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Creates a new location
 	 *
-	 * @param worldStorage
-	 * @param id
 	 */
 	public LocationStorage(IWorldStorage worldStorage, StorageID id, @Nullable LocalRegion region, String name, EnumLocationType type) {
 		super(worldStorage, id, region);
@@ -84,8 +82,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Adds the specified bounding boxes
 	 *
-	 * @param boundingBoxes
-	 * @return
 	 */
 	public LocationStorage addBounds(AABB... boundingBoxes) {
 		for (AABB boundingBox : boundingBoxes) {
@@ -99,7 +95,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns the bounding boxes of this location
 	 *
-	 * @return
 	 */
 	public List<AABB> getBounds() {
 		return Collections.unmodifiableList(this.boundingBoxes);
@@ -108,7 +103,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Removes the specified bounding boxes
 	 *
-	 * @param boundingBoxes
 	 */
 	public void removeBounds(AABB... boundingBoxes) {
 		for (AABB boundingBox : boundingBoxes) {
@@ -138,7 +132,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns a bounding box that encloses all bounds
 	 *
-	 * @return
 	 */
 	@Nullable
 	public AABB getEnclosingBounds() {
@@ -157,7 +150,6 @@ public class LocationStorage extends LocalStorageImpl {
 	 * Called when the location is initially added to the world.
 	 * If the location bounds are changed this needs to be called again manually.
 	 *
-	 * @return
 	 */
 	public LocationStorage linkChunks(Level level) {
 		for (AABB boundingBox : this.boundingBoxes) {
@@ -178,7 +170,6 @@ public class LocationStorage extends LocalStorageImpl {
 	 * Returns the location guard. Must be created before
 	 * {@link #readFromNBT(CompoundTag)} is called
 	 *
-	 * @return
 	 */
 	@Nullable
 	public ILocationGuard getGuard() {
@@ -188,8 +179,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Sets the location seed
 	 *
-	 * @param seed
-	 * @return
 	 */
 	public LocationStorage setSeed(long seed) {
 		this.locationSeed = seed;
@@ -200,7 +189,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns the location seed
 	 *
-	 * @return
 	 */
 	public long getSeed() {
 		return this.locationSeed;
@@ -209,8 +197,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Sets whether this location should inherit ambiences from lower layers
 	 *
-	 * @param inherit
-	 * @return
 	 */
 	public LocationStorage setInheritAmbience(boolean inherit) {
 		this.inheritAmbience = inherit;
@@ -222,8 +208,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Sets whether this location is visible
 	 *
-	 * @param visible
-	 * @return
 	 */
 	public LocationStorage setVisible(boolean visible) {
 		this.dataManager.set(VISIBLE, visible);
@@ -234,8 +218,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Sets the location layer
 	 *
-	 * @param layer
-	 * @return
 	 */
 	public LocationStorage setLayer(int layer) {
 		this.layer = layer;
@@ -246,7 +228,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns the location layer
 	 *
-	 * @return
 	 */
 	public int getLayer() {
 		return this.layer;
@@ -255,8 +236,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Sets the location ambience
 	 *
-	 * @param ambience
-	 * @return
 	 */
 	public LocationStorage setAmbience(@Nullable LocationAmbience ambience) {
 		if (ambience != null) {
@@ -273,7 +252,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns whether the location has an ambience
 	 *
-	 * @return
 	 */
 	public boolean hasAmbience() {
 		return this.ambience != null;
@@ -282,7 +260,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns the localized name of this location
 	 *
-	 * @return
 	 */
 	public Component getLocalizedName() {
 		return Component.translatable("location." + this.dataManager.get(NAME) + ".name");
@@ -346,7 +323,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Reads the guard data from NBT
 	 *
-	 * @param nbt
 	 */
 	public void readGuardNBT(CompoundTag nbt) {
 		if (this.getGuard() != null) {
@@ -384,8 +360,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Writes the guard data to NBT
 	 *
-	 * @param nbt
-	 * @return
 	 */
 	public CompoundTag writeGuardNBT(CompoundTag nbt) {
 		if (this.getGuard() != null) {
@@ -410,8 +384,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns whether the specified entity is inside this location
 	 *
-	 * @param entity
-	 * @return
 	 */
 	public boolean isInside(Entity entity) {
 		return this.intersects(entity.getBoundingBox());
@@ -420,8 +392,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns whether the specified position is inside this location
 	 *
-	 * @param pos
-	 * @return
 	 */
 	public boolean isInside(Vec3i pos) {
 		for (AABB boundingBox : this.boundingBoxes) {
@@ -435,8 +405,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns whether the specified position is inside this location
 	 *
-	 * @param pos
-	 * @return
 	 */
 	public boolean isInside(Vec3 pos) {
 		for (AABB boundingBox : this.boundingBoxes) {
@@ -450,8 +418,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns whether this location intersects with the specified AABB
 	 *
-	 * @param aabb
-	 * @return
 	 */
 	public boolean intersects(AABB aabb) {
 		for (AABB boundingBox : this.boundingBoxes) {
@@ -465,9 +431,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns whether the vector touches the AABB or is fully inside
 	 *
-	 * @param aabb
-	 * @param vec
-	 * @return
 	 */
 	protected final boolean isVecInsideOrEdge(AABB aabb, Vec3 vec) {
 		return vec.x >= aabb.minX && vec.x <= aabb.maxX && (vec.y >= aabb.minY && vec.y <= aabb.maxY && vec.z >= aabb.minZ && vec.z <= aabb.maxZ);
@@ -476,7 +439,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns the location name
 	 *
-	 * @return
 	 */
 	public String getName() {
 		return this.dataManager.get(NAME);
@@ -485,7 +447,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Sets the location's name
 	 *
-	 * @param name
 	 */
 	public void setName(String name) {
 		this.dataManager.set(NAME, name);
@@ -495,7 +456,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns the location type
 	 *
-	 * @return
 	 */
 	public EnumLocationType getType() {
 		return this.type;
@@ -504,8 +464,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns whether the location is visible and has a title
 	 *
-	 * @param entity
-	 * @return
 	 */
 	public boolean isVisible(Entity entity) {
 		return this.dataManager.get(VISIBLE);
@@ -516,8 +474,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns a list of all locations at the specified entity
 	 *
-	 * @param entity
-	 * @return
 	 */
 	public static List<LocationStorage> getLocations(Entity entity) {
 		return getLocations(entity.level(), entity.getBoundingBox());
@@ -526,8 +482,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns a list of all locations at the specified position
 	 *
-	 * @param level
-	 * @return
 	 */
 	public static List<LocationStorage> getLocations(Level level, Vec3 position) {
 		BetweenlandsWorldStorage worldStorage = BetweenlandsWorldStorage.get(level);
@@ -540,9 +494,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns a list of all locations that intersect the specified AABB
 	 *
-	 * @param level
-	 * @param aabb
-	 * @return
 	 */
 	public static List<LocationStorage> getLocations(Level level, AABB aabb) {
 		BetweenlandsWorldStorage worldStorage = BetweenlandsWorldStorage.get(level);
@@ -555,8 +506,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns the highest priority ambience at the specified position
 	 *
-	 * @param level
-	 * @return
 	 */
 	public static LocationAmbience getAmbience(Level level, Vec3 position) {
 		List<LocationStorage> locations = LocationStorage.getLocations(level, position);
@@ -583,8 +532,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns the highest priority ambience at the specified entity
 	 *
-	 * @param entity
-	 * @return
 	 */
 	@Nullable
 	public static LocationAmbience getAmbience(Entity entity) {
@@ -612,9 +559,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns whether the entity is in the specified location type
 	 *
-	 * @param entity
-	 * @param type
-	 * @return
 	 */
 	public static boolean isInLocationType(Entity entity, EnumLocationType type) {
 		List<LocationStorage> locations = getLocations(entity);
@@ -628,8 +572,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Returns whether the location at the entity position is guarded
 	 *
-	 * @param entity
-	 * @return
 	 */
 	public static boolean isLocationGuarded(Level level, @Nullable Entity entity, BlockPos pos) {
 		List<LocationStorage> locations = getLocations(level, pos.getCenter());
@@ -648,8 +590,6 @@ public class LocationStorage extends LocalStorageImpl {
 	/**
 	 * Called when a block is broken inside the location
 	 *
-	 * @param event
-	 * @return
 	 */
 	public void onBreakBlock(BlockEvent.BreakEvent event) {
 

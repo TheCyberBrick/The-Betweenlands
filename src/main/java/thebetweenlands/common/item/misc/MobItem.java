@@ -7,7 +7,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -57,7 +56,7 @@ public class MobItem<T extends Entity> extends Item {
 	private final Consumer<T> defaultMobSetter;
 	private final double defaultHealth;
 
-	public MobItem(Item.Properties properties, double defaultHealth, @Nullable EntityType<T> defaultMob, @Nullable Consumer<T> defaultMobSetter) {
+	public MobItem(double defaultHealth, @Nullable EntityType<T> defaultMob, @Nullable Consumer<T> defaultMobSetter, Item.Properties properties) {
 		super(properties);
 		this.defaultHealth = defaultHealth;
 		this.defaultMob = defaultMob;
@@ -79,12 +78,12 @@ public class MobItem<T extends Entity> extends Item {
 	}
 
 	@Override
-	public String getDescriptionId(ItemStack stack) {
+	public Component getName(ItemStack stack) {
 		ResourceLocation id = this.getCapturedEntityId(stack);
 		if (id != null) {
-			return BuiltInRegistries.ENTITY_TYPE.get(id).getDescriptionId();
+			return BuiltInRegistries.ENTITY_TYPE.getValue(id).getDescription();
 		}
-		return super.getDescriptionId(stack);
+		return super.getName(stack);
 	}
 
 	@Override
@@ -173,7 +172,7 @@ public class MobItem<T extends Entity> extends Item {
 			CompoundTag entityNbt = this.getEntityData(stack);
 
 			if (entityNbt.contains("id", Tag.TAG_STRING)) {
-				EntityType<?> capturedType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(entityNbt.getString("id")));
+				EntityType<?> capturedType = BuiltInRegistries.ENTITY_TYPE.getValue(ResourceLocation.parse(entityNbt.getString("id")));
 				Class<?> cls = getEntityClass(type);
 				Class<?> capturedCls = getEntityClass(capturedType);
 				return cls != null && capturedCls != null && cls.isAssignableFrom(capturedCls);
@@ -231,7 +230,7 @@ public class MobItem<T extends Entity> extends Item {
 
 	protected static void handleOnInitialSpawn(Entity entity) {
 		if (!entity.level().isClientSide() && entity instanceof Mob mob) {
-			EventHooks.finalizeMobSpawn(mob, (ServerLevel) entity.level(), entity.level().getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
+			EventHooks.finalizeMobSpawn(mob, (ServerLevel) entity.level(), entity.level().getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
 		}
 	}
 
@@ -251,7 +250,7 @@ public class MobItem<T extends Entity> extends Item {
 		}
 
 		if (this.defaultMob != null) {
-			T entity = this.defaultMob.create(level);
+			T entity = this.defaultMob.create(level, EntitySpawnReason.SPAWN_ITEM_USE);
 			if (entity != null) {
 				entity.moveTo(x, y, z, level.getRandom().nextFloat() * 360.0f, 0);
 				if (this.defaultMobSetter != null) {
@@ -270,7 +269,7 @@ public class MobItem<T extends Entity> extends Item {
 	@Nullable
 	@SuppressWarnings("unchecked")
 	protected T createCapturedEntityFromNBT(Level level, double x, double y, double z, CompoundTag nbt) {
-		T entity = (T) EntityType.loadEntityRecursive(nbt, level, p_331097_ -> p_331097_);
+		T entity = (T) EntityType.loadEntityRecursive(nbt, level, EntitySpawnReason.SPAWN_ITEM_USE, p_331097_ -> p_331097_);
 
 		if (entity != null) {
 			entity.moveTo(x, y, z, level.getRandom().nextFloat() * 360.0f, 0);

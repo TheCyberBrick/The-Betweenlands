@@ -1,67 +1,78 @@
 package thebetweenlands.common.datagen.builders;
 
 import net.minecraft.advancements.Criterion;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import javax.annotation.Nullable;
-import thebetweenlands.common.item.recipe.FluidSteepingPotRecipe;
+
+import thebetweenlands.common.TheBetweenlands;
+import thebetweenlands.common.recipe.FluidSteepingPotRecipe;
 
 public class SteepingPotRecipeBuilder implements RecipeBuilder {
 
+	private final HolderGetter<Item> itemGetter;
+	private final HolderGetter<Fluid> fluidGetter;
 	private final FluidIngredient input;
 	private final NonNullList<Ingredient> ingredients = NonNullList.create();
 	private final FluidStack result;
 
-	private SteepingPotRecipeBuilder(FluidIngredient input, FluidStack result) {
+	private SteepingPotRecipeBuilder(HolderLookup.Provider registries, FluidIngredient input, FluidStack result) {
+		this.itemGetter = registries.lookupOrThrow(Registries.ITEM);
+		this.fluidGetter = registries.lookupOrThrow(Registries.FLUID);
 		this.input = input;
 		this.result = result;
 	}
 
-	public static SteepingPotRecipeBuilder steeping(Fluid input, Fluid result, int amount) {
-		return new SteepingPotRecipeBuilder(FluidIngredient.of(input), new FluidStack(result, amount));
+	public static SteepingPotRecipeBuilder steeping(HolderLookup.Provider registries, Fluid input, Fluid result, int amount) {
+		return new SteepingPotRecipeBuilder(registries, FluidIngredient.of(input), new FluidStack(result, amount));
 	}
 
-	public static SteepingPotRecipeBuilder steeping(TagKey<Fluid> input, Fluid result, int amount) {
-		return new SteepingPotRecipeBuilder(FluidIngredient.tag(input), new FluidStack(result, amount));
+	public static SteepingPotRecipeBuilder steeping(HolderLookup.Provider registries, TagKey<Fluid> input, Fluid result, int amount) {
+		return new SteepingPotRecipeBuilder(registries, FluidIngredient.of(registries.lookupOrThrow(Registries.FLUID).getOrThrow(input)), new FluidStack(result, amount));
 	}
 
-	public static SteepingPotRecipeBuilder steeping(FluidStack input, Fluid result, int amount) {
-		return new SteepingPotRecipeBuilder(FluidIngredient.of(input), new FluidStack(result, amount));
+	public static SteepingPotRecipeBuilder steeping(HolderLookup.Provider registries, FluidStack input, Fluid result, int amount) {
+		return new SteepingPotRecipeBuilder(registries, FluidIngredient.of(input), new FluidStack(result, amount));
 	}
 
-	public static SteepingPotRecipeBuilder steeping(FluidIngredient input, Fluid result, int amount) {
-		return new SteepingPotRecipeBuilder(input, new FluidStack(result, amount));
+	public static SteepingPotRecipeBuilder steeping(HolderLookup.Provider registries, FluidIngredient input, Fluid result, int amount) {
+		return new SteepingPotRecipeBuilder(registries, input, new FluidStack(result, amount));
 	}
 
-	public static SteepingPotRecipeBuilder steeping(Fluid input, FluidStack result) {
-		return new SteepingPotRecipeBuilder(FluidIngredient.of(input), result);
+	public static SteepingPotRecipeBuilder steeping(HolderLookup.Provider registries, Fluid input, FluidStack result) {
+		return new SteepingPotRecipeBuilder(registries, FluidIngredient.of(input), result);
 	}
 
-	public static SteepingPotRecipeBuilder steeping(TagKey<Fluid> input, FluidStack result) {
-		return new SteepingPotRecipeBuilder(FluidIngredient.tag(input), result);
+	public static SteepingPotRecipeBuilder steeping(HolderLookup.Provider registries, TagKey<Fluid> input, FluidStack result) {
+		return new SteepingPotRecipeBuilder(registries, FluidIngredient.of(registries.lookupOrThrow(Registries.FLUID).getOrThrow(input)), result);
 	}
 
-	public static SteepingPotRecipeBuilder steeping(FluidStack input, FluidStack result) {
-		return new SteepingPotRecipeBuilder(FluidIngredient.of(input), result);
+	public static SteepingPotRecipeBuilder steeping(HolderLookup.Provider registries, FluidStack input, FluidStack result) {
+		return new SteepingPotRecipeBuilder(registries, FluidIngredient.of(input), result);
 	}
 
-	public static SteepingPotRecipeBuilder steeping(FluidIngredient input, FluidStack result) {
-		return new SteepingPotRecipeBuilder(input, result);
+	public static SteepingPotRecipeBuilder steeping(HolderLookup.Provider registries, FluidIngredient input, FluidStack result) {
+		return new SteepingPotRecipeBuilder(registries, input, result);
 	}
 
 	public SteepingPotRecipeBuilder requires(TagKey<Item> tag) {
-		return this.requires(Ingredient.of(tag));
+		return this.requires(Ingredient.of(this.itemGetter.getOrThrow(tag)));
 	}
 
 	public SteepingPotRecipeBuilder requires(ItemLike item) {
@@ -105,23 +116,12 @@ public class SteepingPotRecipeBuilder implements RecipeBuilder {
 
 	@Override
 	public void save(RecipeOutput output) {
-		this.save(output, getDefaultRecipeId(this.result));
+		this.save(output, ResourceKey.create(Registries.RECIPE, TheBetweenlands.prefix("steeping/" + getDefaultRecipeId(this.result).getPath())));
 	}
 
 	@Override
-	public void save(RecipeOutput output, String id) {
-		ResourceLocation resourcelocation = getDefaultRecipeId(this.result);
-		ResourceLocation resourcelocation1 = ResourceLocation.parse(id);
-		if (resourcelocation1.equals(resourcelocation)) {
-			throw new IllegalStateException("Recipe " + id + " should remove its 'save' argument as it is equal to default one");
-		} else {
-			this.save(output, resourcelocation1);
-		}
-	}
-
-	@Override
-	public void save(RecipeOutput output, ResourceLocation id) {
-		output.accept(id.withPrefix("steeping/"), new FluidSteepingPotRecipe(this.input, this.ingredients, this.result), null);
+	public void save(RecipeOutput output, ResourceKey<Recipe<?>> id) {
+		output.accept(id, new FluidSteepingPotRecipe(this.input, this.ingredients, this.result), null);
 	}
 
 	static ResourceLocation getDefaultRecipeId(FluidStack result) {

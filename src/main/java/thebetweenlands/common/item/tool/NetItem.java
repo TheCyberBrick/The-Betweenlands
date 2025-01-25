@@ -73,7 +73,7 @@ public class NetItem extends Item {
 							item.onCapturedByPlayer(player, hand, mobItemStack, target);
 						}
 					}
-					return InteractionResult.sidedSuccess(player.level().isClientSide());
+					return InteractionResult.SUCCESS;
 				}
 			}
 		}

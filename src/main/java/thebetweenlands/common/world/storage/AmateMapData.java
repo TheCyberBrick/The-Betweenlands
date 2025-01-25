@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundMapItemDataPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.datafix.DataFixTypes;
@@ -28,10 +29,12 @@ import java.util.Map;
 
 public class AmateMapData extends MapItemSavedData {
 
-	private static final Map<String, AmateMapData> CLIENT_DATA = new HashMap<>();
-
-	public AmateMapData(int x, int y, boolean tracking, boolean trackingUnlimited, boolean locked) {
+	private AmateMapData(int x, int y, boolean tracking, boolean trackingUnlimited, boolean locked) {
 		super(x, y, (byte) 4, tracking, trackingUnlimited, locked, DimensionRegistries.DIMENSION_KEY);
+	}
+
+	public static AmateMapData createForClient(boolean locked) {
+		return new AmateMapData(0, 0, false, false, locked);
 	}
 
 	public static AmateMapData createFresh(double x, double y, boolean tracking, boolean trackingUnlimited, boolean locked) {
@@ -86,25 +89,6 @@ public class AmateMapData extends MapItemSavedData {
 		});
 		tag.put("decorations", DecorationHolder.CODEC.listOf().encodeStart(NbtOps.INSTANCE, holders).getOrThrow());
 		return tag;
-	}
-
-	// [VanillaCopy] Adapted from World.getMapData
-	@Nullable
-	public static AmateMapData getMapData(Level level, String name) {
-		if (level instanceof ServerLevel serverLevel) return (AmateMapData) serverLevel.getServer().overworld().getDataStorage().get(AmateMapData.factory(), name);
-		else return CLIENT_DATA.get(name);
-	}
-
-	// Like the method above, but if we know we're on client
-	@Nullable
-	public static AmateMapData getClientMapData(String name) {
-		return CLIENT_DATA.get(name);
-	}
-
-	// [VanillaCopy] Adapted from World.registerMapData
-	public static void registerMapData(Level level, AmateMapData data, String id) {
-		if (level instanceof ServerLevel serverLevel) serverLevel.getServer().overworld().getDataStorage().set(id, data);
-		else CLIENT_DATA.put(id, data);
 	}
 
 	public static Factory<MapItemSavedData> factory() {

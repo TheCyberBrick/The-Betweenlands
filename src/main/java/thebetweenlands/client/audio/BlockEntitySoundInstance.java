@@ -74,7 +74,6 @@ public class BlockEntitySoundInstance<T extends BlockEntity> extends AbstractSou
 
 	/**
 	 * Returns whether this sound is currently stopped or fading out
-	 * @return
 	 */
 	public boolean isStopping() {
 		return this.stopped || this.fadeOut;

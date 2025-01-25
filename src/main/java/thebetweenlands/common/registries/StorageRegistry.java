@@ -41,9 +41,6 @@ public class StorageRegistry {
 
 	/**
 	 * Registers a local storage
-	 * @param cls
-	 * @param id
-	 * @param factory
 	 */
 	public static <T extends ILocalStorage> void register(ResourceLocation id, Class<T> cls, Factory<T> factory) {
 		STORAGE_MAP.put(id, cls);
@@ -52,8 +49,6 @@ public class StorageRegistry {
 
 	/**
 	 * Returns the local storage class for the specified ID
-	 * @param id
-	 * @return
 	 */
 	public static Class<? extends ILocalStorage> getStorageType(ResourceLocation id) {
 		return STORAGE_MAP.get(id);
@@ -61,8 +56,6 @@ public class StorageRegistry {
 
 	/**
 	 * Returns the factory for the specified id
-	 * @param id
-	 * @return
 	 */
 	public static Factory<? extends ILocalStorage> getStorageFactory(ResourceLocation id) {
 		return FACTORIES.get(id);
@@ -70,8 +63,6 @@ public class StorageRegistry {
 
 	/**
 	 * Returns the ID of a local storage class
-	 * @param storage
-	 * @return
 	 */
 	public static ResourceLocation getStorageId(Class<? extends ILocalStorage> storage) {
 		return STORAGE_MAP.inverse().get(storage);
@@ -79,9 +70,6 @@ public class StorageRegistry {
 
 	/**
 	 * Registers a deferred storage operation
-	 * @param cls
-	 * @param id
-	 * @param factory
 	 */
 	public static <T extends IDeferredStorageOperation> void register(ResourceLocation id, Class<T> cls, Supplier<T> factory) {
 		DEFERRED_MAP.put(id, cls);
@@ -90,8 +78,6 @@ public class StorageRegistry {
 
 	/**
 	 * Returns the local storage class for the specified ID
-	 * @param id
-	 * @return
 	 */
 	public static Class<? extends IDeferredStorageOperation> getDeferredOperationType(ResourceLocation id) {
 		return DEFERRED_MAP.get(id);
@@ -99,8 +85,6 @@ public class StorageRegistry {
 
 	/**
 	 * Returns the factory for the specified id
-	 * @param id
-	 * @return
 	 */
 	public static Supplier<? extends IDeferredStorageOperation> getDeferredOperationFactory(ResourceLocation id) {
 		return DEFERRED_FACTORIES.get(id);
@@ -108,8 +92,6 @@ public class StorageRegistry {
 
 	/**
 	 * Returns the ID of a deferred storage operation class
-	 * @param operation
-	 * @return
 	 */
 	public static ResourceLocation getDeferredOperationId(Class<? extends IDeferredStorageOperation> operation) {
 		return DEFERRED_MAP.inverse().get(operation);

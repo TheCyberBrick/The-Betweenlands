@@ -8,16 +8,15 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.monster.DarkDruid;
+import thebetweenlands.client.state.DarkDruidRenderState;
 
-public class DarkDruidModel extends MowzieModelBase<DarkDruid> {
+public class DarkDruidModel extends MowzieModelBase<DarkDruidRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart leftArm;
 	private final ModelPart rightArm;
 
 	public DarkDruidModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.leftArm = root.getChild("left_arm");
 		this.rightArm = root.getChild("right_arm");
 	}
@@ -82,25 +81,14 @@ public class DarkDruidModel extends MowzieModelBase<DarkDruid> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void setupAnim(DarkDruid entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
-	}
-
-	@Override
-	public void prepareMobModel(DarkDruid entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		float attackAnimationTime = entity.getAttackAnimationTime(partialTick);
-		float pitch = -Mth.HALF_PI + Mth.lerp(partialTick, entity.xRotO, entity.getXRot()) * Mth.DEG_TO_RAD;
-		float ticksExisted = entity.tickCount + partialTick;
-		this.rightArm.xRot = pitch * attackAnimationTime + Mth.cos(limbSwing * 0.6662F + Mth.PI) * 2 * limbSwingAmount * 0.5F * (1 - attackAnimationTime);
-		this.leftArm.xRot = pitch * attackAnimationTime + Mth.cos(limbSwing * 0.6662F) * 2.0F * limbSwingAmount * 0.5F * (1 - attackAnimationTime);
-		this.rightArm.xRot += Mth.sin(ticksExisted * 0.4F) * 0.1F * attackAnimationTime;
-		this.leftArm.xRot += Mth.cos(ticksExisted * 0.4F) * 0.1F * attackAnimationTime;
-		this.rightArm.zRot = -Mth.sin(ticksExisted * 0.2F) * 0.1F * attackAnimationTime;
-		this.leftArm.zRot = Mth.cos(ticksExisted * 0.2F) * 0.1F * attackAnimationTime;
+	public void setupAnim(DarkDruidRenderState state) {
+		float attackAnimationTime = state.attackAnimationTime;
+		float pitch = -Mth.HALF_PI + state.xRot * Mth.DEG_TO_RAD;
+		this.rightArm.xRot = pitch * attackAnimationTime + Mth.cos(state.walkAnimationPos * 0.6662F + Mth.PI) * 2.0F * state.walkAnimationSpeed * 0.5F * (1 - attackAnimationTime);
+		this.leftArm.xRot = pitch * attackAnimationTime + Mth.cos(state.walkAnimationPos * 0.6662F) * 2.0F * state.walkAnimationSpeed * 0.5F * (1 - attackAnimationTime);
+		this.rightArm.xRot += Mth.sin(state.ageInTicks * 0.4F) * 0.1F * attackAnimationTime;
+		this.leftArm.xRot += Mth.cos(state.ageInTicks * 0.4F) * 0.1F * attackAnimationTime;
+		this.rightArm.zRot = -Mth.sin(state.ageInTicks * 0.2F) * 0.1F * attackAnimationTime;
+		this.leftArm.zRot = Mth.cos(state.ageInTicks * 0.2F) * 0.1F * attackAnimationTime;
 	}
 }

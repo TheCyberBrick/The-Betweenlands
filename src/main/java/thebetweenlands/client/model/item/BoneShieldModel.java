@@ -1,7 +1,5 @@
 package thebetweenlands.client.model.item;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -13,11 +11,8 @@ import net.minecraft.client.renderer.RenderType;
 
 public class BoneShieldModel extends Model {
 
-	private final ModelPart root;
-
 	public BoneShieldModel(ModelPart root) {
-		super(RenderType::entityCutoutNoCull);
-		this.root = root;
+		super(root, RenderType::entityCutoutNoCull);
 	}
 
 	public static LayerDefinition create() {
@@ -114,10 +109,5 @@ public class BoneShieldModel extends Model {
 			PartPose.offset(0.0F, 8.0F, 0.0F));
 
 		return LayerDefinition.create(definition, 128, 64);
-	}
-
-	@Override
-	public void renderToBuffer(PoseStack stack, VertexConsumer consumer, int light, int overlay, int color) {
-		this.root.render(stack, consumer, light, overlay, color);
 	}
 }

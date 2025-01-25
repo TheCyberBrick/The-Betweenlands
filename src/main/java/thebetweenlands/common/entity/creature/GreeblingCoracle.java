@@ -56,7 +56,7 @@ public class GreeblingCoracle extends PathfinderMob implements BLEntity {
 	private NonNullList<ItemStack> loot = NonNullList.create();
 	private int shutUpFFSTime;
 	public int rowTicks;
-	public float rowSpeed = 0.5F;
+	public final float rowSpeed = 0.5F;
 
 	public GreeblingCoracle(EntityType<? extends PathfinderMob> type, Level level) {
 		super(type, level);
@@ -96,9 +96,9 @@ public class GreeblingCoracle extends PathfinderMob implements BLEntity {
 	}
 
 	@Override
-	public boolean checkSpawnRules(LevelAccessor level, MobSpawnType spawnReason) {
+	public boolean checkSpawnRules(LevelAccessor level, EntitySpawnReason spawnReason) {
 		int y = Mth.floor(this.getBoundingBox().minY);
-		if(y <= TheBetweenlands.LAYER_HEIGHT + 1 && y > TheBetweenlands.CAVE_START)
+		if (y <= TheBetweenlands.LAYER_HEIGHT + 1 && y > TheBetweenlands.CAVE_START)
 			return this.level().noCollision(this.getBoundingBox()) && this.level().getEntityCollisions(this, this.getBoundingBox()).isEmpty() && this.level().containsAnyLiquid(this.getBoundingBox().move(0D, -0.5D, 0D));
 		return false;
 	}
@@ -113,13 +113,13 @@ public class GreeblingCoracle extends PathfinderMob implements BLEntity {
 			if (!this.isSilent() && this.getX() != this.xOld && this.getZ() != this.zOld) {
 				float rowAngle1 = Mth.cos(this.rowTicks * rowSpeed);
 				float rowAngle2 = Mth.cos((this.rowTicks + 1) * rowSpeed);
-				if(rowAngle1 <= 0.8f && rowAngle2 > 0.8f) {
+				if (rowAngle1 <= 0.8f && rowAngle2 > 0.8f) {
 					this.playSound(SoundEvents.GENERIC_SWIM, 0.2F, 0.8F + 0.4F * this.getRandom().nextFloat());
 				}
 			}
 		}
 
-		if(this.shutUpFFSTime > 0) {
+		if (this.shutUpFFSTime > 0) {
 			this.shutUpFFSTime--;
 			this.ambientSoundTime = -this.getAmbientSoundInterval();
 		}
@@ -145,7 +145,7 @@ public class GreeblingCoracle extends PathfinderMob implements BLEntity {
 		if (this.getX() != this.xOld && this.getZ() != this.zOld)
 			this.walkAnimation.setSpeed(this.walkAnimation.speed() + 0.5F);
 
-		if(!this.level().isClientSide()) {
+		if (!this.level().isClientSide()) {
 			if (this.getSinkingTicks() == 200 && this.isGreeblingAboveWater())
 				this.level().playSound(null, this.blockPosition(), SoundRegistry.GREEBLING_CORACLE_SINK.get(), SoundSource.NEUTRAL, 1F, 1F);
 
@@ -160,7 +160,7 @@ public class GreeblingCoracle extends PathfinderMob implements BLEntity {
 
 			if (this.getSinkingTicks() > 0 && !this.hasSetAIForEmptyBoat) {
 				this.goalSelector.removeAllGoals(goal -> true);
-				if(this.getNavigation().getPath() != null) {
+				if (this.getNavigation().getPath() != null) {
 					this.getNavigation().stop();
 				}
 				this.hasSetAIForEmptyBoat = true;
@@ -221,14 +221,14 @@ public class GreeblingCoracle extends PathfinderMob implements BLEntity {
 	@Override
 	public void handleEntityEvent(byte id) {
 		super.handleEntityEvent(id);
-		if(id == EVENT_DISAPPEAR)
+		if (id == EVENT_DISAPPEAR)
 			this.doLeafEffects();
-		if(id == EVENT_SPOUT)
+		if (id == EVENT_SPOUT)
 			this.doSpoutEffects();
 	}
 
 	private void doSpoutEffects() {
-		if(this.level().isClientSide()) {
+		if (this.level().isClientSide()) {
 			int count = this.getSinkingTicks() <= 240 ? 40 : 10;
 			double x = this.getX();
 			double y = this.getY() + 0.25D;
@@ -246,9 +246,9 @@ public class GreeblingCoracle extends PathfinderMob implements BLEntity {
 				float g = (waterColor >> 8 & 255) / 255.0f;
 				float b = (waterColor & 255) / 255.0f;
 
-				if(this.getSinkingTicks() <= 240) {
+				if (this.getSinkingTicks() <= 240) {
 					TheBetweenlands.createParticle(ParticleRegistry.RAIN.get(), this.level(), x, y, z, ParticleFactory.ParticleArgs.get().withMotion(dx * mag, dy * mag, dz * mag).withColor(r, g, b + 0.075f, 1.0f));
-				} else if(this.getSinkingTicks() > 240 && this.getSinkingTicks() <= 400 && this.getSinkingTicks()%5 == 0) {
+				} else if (this.getSinkingTicks() > 240 && this.getSinkingTicks() <= 400 && this.getSinkingTicks() % 5 == 0) {
 					TheBetweenlands.createParticle(ParticleRegistry.WATER_BUBBLE.get(), this.level(), x, y, z, ParticleFactory.ParticleArgs.get().withMotion(dx * mag, dy * mag, dz * mag).withColor(r + 0.05f, g + 0.15f, b + 0.05f, 1.0f));
 				}
 			}
@@ -256,7 +256,7 @@ public class GreeblingCoracle extends PathfinderMob implements BLEntity {
 	}
 
 	private void doLeafEffects() {
-		if(this.level().isClientSide()) {
+		if (this.level().isClientSide()) {
 			int leafCount = 40;
 			double x = this.getX();
 			double y = this.getY() + 0.75D;
@@ -277,7 +277,7 @@ public class GreeblingCoracle extends PathfinderMob implements BLEntity {
 	}
 
 	@Override
-	public void kill() {
+	public void kill(ServerLevel level) {
 		this.discard();
 	}
 
@@ -288,12 +288,11 @@ public class GreeblingCoracle extends PathfinderMob implements BLEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		if(this.getSinkingTicks() <= 0) {
-			if(this.getRandom().nextInt(4) == 0 && this.shutUpFFSTime <= 0) {
+		if (this.getSinkingTicks() <= 0) {
+			if (this.getRandom().nextInt(4) == 0 && this.shutUpFFSTime <= 0) {
 				this.shutUpFFSTime = 120;
 				return SoundRegistry.GREEBLING_HUM.get();
-			}
-			else
+			} else
 				return SoundRegistry.GREEBLING_GIGGLE.get();
 		}
 		return null;
@@ -305,7 +304,7 @@ public class GreeblingCoracle extends PathfinderMob implements BLEntity {
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float damage) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
 		if (source.getEntity() instanceof LivingEntity)
 			if (this.getSinkingTicks() == 0)
 				if (!this.level().isClientSide()) {
@@ -318,40 +317,38 @@ public class GreeblingCoracle extends PathfinderMob implements BLEntity {
 	@Override
 	protected InteractionResult mobInteract(Player player, InteractionHand hand) {
 		if (this.getSinkingTicks() > 0 && this.getSinkingTicks() < 200 && hand == InteractionHand.MAIN_HAND) {
-			if (!this.level().isClientSide()) {
-				this.dropLoot(player);
-				this.setLootClicks(getLootClicks() +1);
-				if(this.getLootClicks() >= this.loot.size())
+			if (this.level() instanceof ServerLevel level) {
+				this.dropLoot(level, player);
+				this.setLootClicks(getLootClicks() + 1);
+				if (this.getLootClicks() >= this.loot.size())
 					this.setSinkingTicks(200);
 				SoundType soundType = SoundType.WOOD;
 				this.level().playSound(null, this.blockPosition(), soundType.getHitSound(), SoundSource.NEUTRAL, (soundType.getVolume() + 1.0F) / 4.0F, soundType.getPitch() * 0.5F);
 			}
-			return InteractionResult.sidedSuccess(this.level().isClientSide());
+			return InteractionResult.SUCCESS;
 		}
 		return super.mobInteract(player, hand);
 	}
 
-	public void dropLoot(Player player) {
-		if(!this.level().isClientSide()) {
-			if(!this.looted) {
-				this.looted = true;
+	public void dropLoot(ServerLevel level, Player player) {
+		if (!this.looted) {
+			this.looted = true;
 
-				LootTable loot = this.level().getServer().reloadableRegistries().getLootTable(this.getLootTable());
-				LootParams params = new LootParams.Builder((ServerLevel) this.level())
-					.withParameter(LootContextParams.THIS_ENTITY, this)
-					.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player)
-					.withParameter(LootContextParams.ORIGIN, this.position())
-					.withParameter(LootContextParams.DAMAGE_SOURCE, this.damageSources().generic())
-					.withLuck(player.getLuck())
-					.create(LootContextParamSets.ENTITY);
+			LootTable loot = this.level().getServer().reloadableRegistries().getLootTable(this.getLootTable().orElseThrow());
+			LootParams params = new LootParams.Builder((ServerLevel) this.level())
+				.withParameter(LootContextParams.THIS_ENTITY, this)
+				.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, player)
+				.withParameter(LootContextParams.ORIGIN, this.position())
+				.withParameter(LootContextParams.DAMAGE_SOURCE, this.damageSources().generic())
+				.withLuck(player.getLuck())
+				.create(LootContextParamSets.ENTITY);
 
-				this.loot = NonNullList.copyOf(loot.getRandomItems(params));
-			}
+			this.loot = NonNullList.copyOf(loot.getRandomItems(params));
+		}
 
-			ItemStack stack = this.loot.get(this.getLootClicks());
-			if (!stack.isEmpty()) {
-				this.spawnAtLocation(stack, 0.0F);
-			}
+		ItemStack stack = this.loot.get(this.getLootClicks());
+		if (!stack.isEmpty()) {
+			this.spawnAtLocation(level, stack, 0.0F);
 		}
 	}
 }

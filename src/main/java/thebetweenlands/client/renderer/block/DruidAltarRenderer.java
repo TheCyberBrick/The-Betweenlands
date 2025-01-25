@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -139,7 +139,7 @@ public class DruidAltarRenderer implements BlockEntityRenderer<DruidAltarBlockEn
 		if (rotation > 0.8F) {
 			f2 = (rotation - 0.8F) / 0.2F;
 		}
-		int i = FastColor.ARGB32.colorFromFloat(1.0F - f2, 1.0F, 1.0F, 1.0F);
+		int i = ARGB.white(1.0F - f2);
 		RandomSource randomsource = RandomSource.create(432L);
 		Vector3f vector3f = new Vector3f();
 		Vector3f vector3f1 = new Vector3f();

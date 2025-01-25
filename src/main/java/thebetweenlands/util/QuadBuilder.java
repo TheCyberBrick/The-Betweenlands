@@ -87,7 +87,6 @@ public class QuadBuilder {
 
 	/**
 	 * Sets the quad's cull face
-	 * @return
 	 */
 	public QuadBuilder setCullFace(@Nullable Direction cullFace) {
 		this.cullFace = cullFace;
@@ -97,8 +96,6 @@ public class QuadBuilder {
 	/**
 	 * Sets the quad's orientation. If null, the orientation that matches the normal
 	 * the most is used.
-	 * @param orientation
-	 * @return
 	 */
 	public QuadBuilder setOrientation(@Nullable Direction orientation) {
 		this.orientation = orientation;
@@ -107,8 +104,6 @@ public class QuadBuilder {
 
 	/**
 	 * Sets whether the quad should use diffuse lighting
-	 * @param diffuseLighting
-	 * @return
 	 */
 	public QuadBuilder setDiffuseLighting(boolean diffuseLighting) {
 		this.diffuseLighting = diffuseLighting;
@@ -117,8 +112,6 @@ public class QuadBuilder {
 
 	/**
 	 * Sets the tint index
-	 * @param index
-	 * @return
 	 */
 	public QuadBuilder setTintIndex(int index) {
 		this.tintIndex = index;
@@ -127,9 +120,6 @@ public class QuadBuilder {
 
 	/**
 	 * Sets the lightmap values
-	 * @param blockLight
-	 * @param skyLight
-	 * @return
 	 */
 	public QuadBuilder setLightmap(int blockLight, int skyLight) {
 		if(BetweenlandsConfig.fullbrightBlocks) {
@@ -149,7 +139,6 @@ public class QuadBuilder {
 
 	/**
 	 * Removes the lightmap values and uses the default ones
-	 * @return
 	 */
 	public QuadBuilder removeLightmap() {
 		this.blockLight = -1;
@@ -160,8 +149,6 @@ public class QuadBuilder {
 	/**
 	 * Sets the normal.
 	 * Set to null for cross product normal.
-	 * @param normal
-	 * @return
 	 */
 	public QuadBuilder setNormal(Vec3 normal) {
 		this.normal = normal;
@@ -170,7 +157,6 @@ public class QuadBuilder {
 
 	/**
 	 * Returns the normal
-	 * @return
 	 */
 	public Vec3 getNormal() {
 		return this.normal;
@@ -178,11 +164,6 @@ public class QuadBuilder {
 
 	/**
 	 * Sets the color
-	 * @param r
-	 * @param g
-	 * @param b
-	 * @param a
-	 * @return
 	 */
 	public QuadBuilder setColor(float r, float g, float b, float a) {
 		this.color = new float[4];
@@ -195,7 +176,6 @@ public class QuadBuilder {
 
 	/**
 	 * Returns the current color
-	 * @return
 	 */
 	public float[] getColor() {
 		return this.color;
@@ -203,8 +183,6 @@ public class QuadBuilder {
 
 	/**
 	 * Sets the transformation
-	 * @param transformation
-	 * @return
 	 */
 	public QuadBuilder setTransformation(Transformation transformation) {
 		this.transformation = transformation;
@@ -213,7 +191,6 @@ public class QuadBuilder {
 
 	/**
 	 * Returns the current transformation
-	 * @return
 	 */
 	public Transformation getTransformation() {
 		return this.transformation;
@@ -221,8 +198,6 @@ public class QuadBuilder {
 
 	/**
 	 * Sets the sprite
-	 * @param sprite
-	 * @return
 	 */
 	public QuadBuilder setSprite(TextureAtlasSprite sprite) {
 		this.sprite = sprite;
@@ -231,7 +206,6 @@ public class QuadBuilder {
 
 	/**
 	 * Returns the current sprite
-	 * @return
 	 */
 	public TextureAtlasSprite getSprite() {
 		return this.sprite;
@@ -239,7 +213,6 @@ public class QuadBuilder {
 
 	/**
 	 * Sets whether the UV coordinates should be switched (U -> V, V -> U)
-	 * @return
 	 */
 	public QuadBuilder setSwitchUV(boolean switchUV) {
 		this.switchUV = switchUV;
@@ -248,7 +221,6 @@ public class QuadBuilder {
 
 	/**
 	 * Returns whether the UV coordinates are currently switched
-	 * @return
 	 */
 	public boolean getSwitchUV() {
 		return this.switchUV;
@@ -257,12 +229,6 @@ public class QuadBuilder {
 
 	/**
 	 * Adds a vertex with UV coordinates
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param u
-	 * @param v
-	 * @return
 	 */
 	public QuadBuilder addVertex(double x, double y, double z, float u, float v) {
 		return this.addVertex(new Vec3(x, y, z), u, v);
@@ -270,10 +236,6 @@ public class QuadBuilder {
 
 	/**
 	 * Adds a vertex
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
 	 */
 	public QuadBuilder addVertex(double x, double y, double z) {
 		return this.addVertex(new Vec3(x, y, z));
@@ -281,10 +243,6 @@ public class QuadBuilder {
 
 	/**
 	 * Adds a vertex with UV coordinates
-	 * @param pos
-	 * @param u
-	 * @param v
-	 * @return
 	 */
 	public QuadBuilder addVertex(Vec3 pos, float u, float v) {
 		this.vertices.add(new Vertex(pos, u, v, this.sprite, this.switchUV, this.transformation, this.color, this.normal, this.blockLight, this.skyLight, this.tintIndex, this.cullFace, this.orientation, this.diffuseLighting));
@@ -293,8 +251,6 @@ public class QuadBuilder {
 
 	/**
 	 * Adds a vertex
-	 * @param pos
-	 * @return
 	 */
 	public QuadBuilder addVertex(Vec3 pos) {
 		this.vertices.add(new Vertex(pos, 0.0F, 0.0F, this.sprite, this.switchUV, this.transformation, this.color, this.normal, this.blockLight, this.skyLight, this.tintIndex, this.cullFace, this.orientation, this.diffuseLighting));
@@ -303,10 +259,6 @@ public class QuadBuilder {
 
 	/**
 	 * Adds a vertex and infers the UV coordinates from the vertex index
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
 	 */
 	public QuadBuilder addVertexInferUV(double x, double y, double z) {
 		return this.addVertexInferUV(new Vec3(x, y, z));
@@ -314,8 +266,6 @@ public class QuadBuilder {
 
 	/**
 	 * Adds a vertex and infers the UV coordinates from the vertex index
-	 * @param pos
-	 * @return
 	 */
 	public QuadBuilder addVertexInferUV(Vec3 pos) {
 		int relIndex = this.vertices.size() % 4;
@@ -367,7 +317,6 @@ public class QuadBuilder {
 	/**
 	 * Builds the quads
 	 * @param builderConsumer Called whenever a quad is baked
-	 * @return
 	 */
 	public Quads build(@Nullable Consumer<CustomQuadVertexConsumer> builderConsumer) {
 		if(this.vertices.size() % 4 != 0)
@@ -404,7 +353,6 @@ public class QuadBuilder {
 
 	/**
 	 * Builds the quads
-	 * @return
 	 */
 	public Quads build() {
 		return this.build(null);
@@ -581,7 +529,7 @@ public class QuadBuilder {
 			builder.setDirection(vert4.orientation);
 		} else {
 			//Use orientation that matches the normal the most
-			builder.setDirection(Direction.getNearest(quadNormal.x, quadNormal.y, quadNormal.z));
+			builder.setDirection(Direction.getNearest((int) quadNormal.x, (int) quadNormal.y, (int) quadNormal.z, Direction.UP));
 		}
 		// TODO setApplyDiffuseLighting
 //		builder.setApplyDiffuseLighting(vert4.diffuse);

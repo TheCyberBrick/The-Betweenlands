@@ -4,6 +4,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -124,8 +125,6 @@ public class EmberlingShaman extends Monster implements BLEntity {
 			if (this.level().isClientSide())
 				this.flameParticles(this.level(), this.tailPart.getX(), this.tailPart.getY() + 0.25, this.tailPart.getZ(), this.getRandom());
 
-		this.checkCollision();
-
 		if (this.level().isClientSide()) {
 			if (this.isCastingSpell()) {
 				this.prevAnimationTicks = this.animationTicks;
@@ -157,8 +156,10 @@ public class EmberlingShaman extends Monster implements BLEntity {
 		}
 	}
 
-	public float smoothedAngle(float partialTicks) {
-		return this.prevAnimationTicks + (this.animationTicks - this.prevAnimationTicks) * partialTicks;
+	@Override
+	protected void customServerAiStep(ServerLevel level) {
+		super.customServerAiStep(level);
+		this.checkCollision(level);
 	}
 
 	public void flameParticles(Level level, double x, double y, double z, RandomSource rand) {
@@ -177,11 +178,11 @@ public class EmberlingShaman extends Monster implements BLEntity {
 		}
 	}
 
-	protected void checkCollision() {
-		List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class, this.tailPart.getBoundingBox());
+	protected void checkCollision(ServerLevel level) {
+		List<LivingEntity> list = level.getEntitiesOfClass(LivingEntity.class, this.tailPart.getBoundingBox());
 		for (LivingEntity entity : list) {
 			if (entity != null && entity == this.getTarget()) {
-				this.doHurtTarget(entity);
+				this.doHurtTarget(level, entity);
 				entity.push(-Mth.sin(this.tailPart.getYRot() * Mth.DEG_TO_RAD) * 0.5D, 0.3D, Mth.cos(this.tailPart.getYRot() * Mth.DEG_TO_RAD) * 0.5D);
 				entity.igniteForSeconds(5); // randomise or something?
 			}

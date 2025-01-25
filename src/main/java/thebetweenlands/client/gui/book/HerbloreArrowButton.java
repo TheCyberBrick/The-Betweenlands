@@ -3,8 +3,10 @@ package thebetweenlands.client.gui.book;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import thebetweenlands.common.TheBetweenlands;
 
 public class HerbloreArrowButton extends Button {
@@ -24,11 +26,9 @@ public class HerbloreArrowButton extends Button {
 
 	@Override
 	protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-		graphics.setColor(1.0F, 1.0F, 1.0F, this.alpha);
 		RenderSystem.enableBlend();
 		RenderSystem.enableDepthTest();
-		graphics.blitSprite(ARROW.get(this.left, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
-		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+		graphics.blitSprite(RenderType::guiTextured, ARROW.get(this.left, this.isHoveredOrFocused()), this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
 	}
 
 	public record ArrowSprites(ResourceLocation left, ResourceLocation leftFocused, ResourceLocation right, ResourceLocation rightFocused) {

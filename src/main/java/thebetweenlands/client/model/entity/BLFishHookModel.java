@@ -1,7 +1,5 @@
 package thebetweenlands.client.model.entity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -13,11 +11,8 @@ import net.minecraft.client.renderer.RenderType;
 
 public class BLFishHookModel extends Model {
 
-	private final ModelPart root;
-
 	public BLFishHookModel(ModelPart root) {
-		super(RenderType::entityCutoutNoCull);
-		this.root = root;
+		super(root, RenderType::entityCutoutNoCull);
 	}
 
 	public static LayerDefinition create() {
@@ -75,10 +70,5 @@ public class BLFishHookModel extends Model {
 			PartPose.offsetAndRotation(0.0F, -2.0F, 0.0F, 0.0F, 0.0F, -0.36425021489121656F));
 
 		return LayerDefinition.create(definition, 32, 32);
-	}
-
-	@Override
-	public void renderToBuffer(PoseStack stack, VertexConsumer consumer, int light, int overlay, int color) {
-		this.root.render(stack, consumer, light, overlay, color);
 	}
 }

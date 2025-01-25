@@ -10,13 +10,11 @@ public interface BetweenlandsSky {
 
 	/**
 	 * Sets the rift renderer that renders the rift
-	 * @param renderer
 	 */
 	void setRiftRenderer(IRiftRenderer renderer);
 
 	/**
 	 * Returns the rift renderer
-	 * @return
 	 */
 	IRiftRenderer getRiftRenderer();
 }

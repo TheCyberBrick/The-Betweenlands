@@ -42,7 +42,7 @@ public class SetCountFromAnadiaFunction extends LootItemConditionalFunction {
 
 	@Override
 	public ItemStack run(ItemStack stack, LootContext context) {
-		Entity entity = context.getParam(LootContextParams.THIS_ENTITY);
+		Entity entity = context.getOptionalParameter(LootContextParams.THIS_ENTITY);
 
 		if (entity instanceof Anadia anadia) {
 			float size = anadia.getFishSize();

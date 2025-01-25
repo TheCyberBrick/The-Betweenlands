@@ -2,6 +2,7 @@ package thebetweenlands.client.gui.screen;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -16,7 +17,7 @@ public class SilkBundleScreen extends AbstractContainerScreen<SilkBundleMenu> {
 		super(menu, playerInventory, title);
 		this.imageWidth = 174;
 		this.imageHeight = 164;
-		
+
 		menu.addUUIDChangeListener();
 	}
 
@@ -36,6 +37,6 @@ public class SilkBundleScreen extends AbstractContainerScreen<SilkBundleMenu> {
 	protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
 		int i = this.leftPos;
 		int j = (this.height - this.imageHeight) / 2;
-		graphics.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight);
+		graphics.blit(RenderType::guiTextured, TEXTURE, i, j, 0.0F, 0.0F, 0, 0, this.imageWidth, this.imageHeight);
 	}
 }

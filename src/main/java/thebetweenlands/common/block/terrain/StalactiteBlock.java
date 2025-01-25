@@ -5,13 +5,16 @@ import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.redstone.Orientation;
 import thebetweenlands.common.block.waterlog.SwampWaterLoggable;
 import thebetweenlands.util.StalactiteHelper.IStalactite;
 
@@ -30,23 +33,23 @@ public class StalactiteBlock extends Block implements SwampWaterLoggable, IStala
 		return this.defaultBlockState().setValue(WATER_TYPE, WaterType.getFromFluid(context.getLevel().getFluidState(context.getClickedPos()).getType()));
 	}
 
-	@Override
-	protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
-		super.neighborChanged(state, level, pos, neighborBlock, neighborPos, movedByPiston);
+	//TODO find a replacement if still needed
+//	@Override
+//	protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, Orientation orientation, boolean movedByPiston) {
+//		super.neighborChanged(state, level, pos, neighborBlock, orientation, movedByPiston);
+//		//tell clients to re-render all stalactites
+//		if(neighborPos.getX() == pos.getX() && neighborPos.getZ() == pos.getZ()) {
+//			reader.blockEvent(pos, state.getBlock(), 0, neighborPos.getY() < pos.getY() ? 1 : 0);
+//		}
+//	}
 
-		//tell clients to re-render all stalactites
-		if(neighborPos.getX() == pos.getX() && neighborPos.getZ() == pos.getZ()) {
-			level.blockEvent(pos, state.getBlock(), 0, neighborPos.getY() < pos.getY() ? 1 : 0);
-		}
-	}
-
 	@Override
-	protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+	protected BlockState updateShape(BlockState state, LevelReader reader, ScheduledTickAccess access, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
 		if (state.getValue(WATER_TYPE) != WaterType.NONE) {
-			level.scheduleTick(pos, state.getValue(WATER_TYPE).getFluid(), state.getValue(WATER_TYPE).getFluid().getTickDelay(level));
+			access.scheduleTick(pos, state.getValue(WATER_TYPE).getFluid(), state.getValue(WATER_TYPE).getFluid().getTickDelay(reader));
 		}
 
-		return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+		return super.updateShape(state, reader, access, pos, direction, neighborPos, neighborState, random);
 	}
 
 	@Override

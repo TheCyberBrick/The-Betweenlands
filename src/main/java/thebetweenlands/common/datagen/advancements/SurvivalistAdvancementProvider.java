@@ -7,6 +7,7 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.critereon.*;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -100,14 +101,14 @@ public class SurvivalistAdvancementProvider implements AdvancementGenerator {
 				Component.translatable("advancement.thebetweenlands.survivalist.you_are_what_you_eat"),
 				Component.translatable("advancement.thebetweenlands.survivalist.you_are_what_you_eat.desc"),
 				null, AdvancementType.TASK, true, true, false)
-			.addCriterion("eat_rotten_food", ConsumeItemTrigger.TriggerInstance.usedItem(ItemRegistry.ROTTEN_FOOD))
+			.addCriterion("eat_rotten_food", ConsumeItemTrigger.TriggerInstance.usedItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.ROTTEN_FOOD))
 			.save(consumer, "thebetweenlands:survivalist/you_are_what_you_eat");
 
 		var wing = Advancement.Builder.advancement().parent(rotten).display(ItemRegistry.CHIROMAW_WING,
 				Component.translatable("advancement.thebetweenlands.survivalist.hardcore_munchies"),
 				Component.translatable("advancement.thebetweenlands.survivalist.hardcore_munchies.desc"),
 				null, AdvancementType.TASK, true, true, false)
-			.addCriterion("eat_wing", ConsumeItemTrigger.TriggerInstance.usedItem(ItemRegistry.CHIROMAW_WING))
+			.addCriterion("eat_wing", ConsumeItemTrigger.TriggerInstance.usedItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.CHIROMAW_WING))
 			.save(consumer, "thebetweenlands:survivalist/hardcore_munchies");
 
 		Advancement.Builder.advancement().parent(wing).display(ItemRegistry.FUMIGANT,

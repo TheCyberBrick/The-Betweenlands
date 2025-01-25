@@ -3,12 +3,14 @@ package thebetweenlands.common.block.terrain;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -53,9 +55,10 @@ public class PeatBlock extends Block {
 	}
 
 	@Override
-	protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
-		if (!level.isClientSide() && neighborPos.getY() > pos.getY() && neighborBlock.defaultBlockState().is(BlockTags.FIRE) && !level.getBlockState(neighborPos).is(BlockTags.FIRE)) {
-			level.setBlockAndUpdate(pos, BlockRegistry.SMOULDERING_PEAT.get().defaultBlockState());
+	protected BlockState updateShape(BlockState state, LevelReader reader, ScheduledTickAccess access, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
+		if (direction == Direction.UP && neighborState.is(BlockTags.FIRE)) {
+			return BlockRegistry.SMOULDERING_PEAT.get().defaultBlockState();
 		}
+		return super.updateShape(state, reader, access, pos, direction, neighborPos, neighborState, random);
 	}
 }

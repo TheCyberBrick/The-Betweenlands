@@ -16,7 +16,7 @@ public class AttachmentRegistry {
 	public static final DeferredRegister<SynchedAttachmentType<?>> SYNCHED_ATTACHMENT_TYPES = DeferredRegister.create(BLRegistries.Keys.SYNCHED_ATTACHMENT_TYPES, TheBetweenlands.ID);
 
 	public static final DeferredHolder<AttachmentType<?>, AttachmentType<BlessingData>> BLESSING = ATTACHMENT_TYPES.register("blessing", () -> AttachmentType.builder(() -> new BlessingData()).serialize(BlessingData.CODEC).build());
-	public static final DeferredHolder<AttachmentType<?>, AttachmentType<CircleGemData>> CIRCLE_GEM = ATTACHMENT_TYPES.register("circle_gem", () -> AttachmentType.builder(() -> new CircleGemData()).serialize(CircleGemData.CODEC).build());
+	public static final DeferredHolder<AttachmentType<?>, AttachmentType<EntityCircleGemData>> CIRCLE_GEM = ATTACHMENT_TYPES.register("circle_gem", () -> AttachmentType.builder(() -> new EntityCircleGemData()).serialize(EntityCircleGemData.CODEC).build());
 	public static final DeferredHolder<AttachmentType<?>, AttachmentType<DecayData>> DECAY = ATTACHMENT_TYPES.register("decay", () -> AttachmentType.builder(DecayData::new).serialize(DecayData.CODEC).build());
 	public static final DeferredHolder<AttachmentType<?>, AttachmentType<FallDamageReductionData>> FALL_DAMAGE_REDUCTION = ATTACHMENT_TYPES.register("fall_damage_reduction", () -> AttachmentType.builder(() -> new FallDamageReductionData()).serialize(FallDamageReductionData.CODEC).build());
 	public static final DeferredHolder<AttachmentType<?>, AttachmentType<FoodSicknessData>> FOOD_SICKNESS = ATTACHMENT_TYPES.register("food_sickness", () -> AttachmentType.builder(FoodSicknessData::new).serialize(FoodSicknessData.CODEC).build());

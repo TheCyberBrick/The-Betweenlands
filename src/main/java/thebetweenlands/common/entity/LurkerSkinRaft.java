@@ -10,15 +10,12 @@ import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import javax.annotation.Nullable;
 import thebetweenlands.common.registries.EntityRegistry;
 import thebetweenlands.common.registries.ItemRegistry;
 
@@ -28,7 +25,7 @@ public class LurkerSkinRaft extends Boat {
 	private boolean updating = false;
 
 	public LurkerSkinRaft(EntityType<? extends Boat> entityType, Level level) {
-		super(entityType, level);
+		super(entityType, level, ItemRegistry.LURKER_SKIN_SHIELD);
 	}
 
 	public LurkerSkinRaft(Level level, double x, double y, double z, ItemStack shield) {
@@ -40,24 +37,11 @@ public class LurkerSkinRaft extends Boat {
 		this.shield = shield.copy();
 	}
 
-	@Override
-	public Item getDropItem() {
-		return ItemRegistry.LURKER_SKIN_SHIELD.get();
-	}
-
 	protected ItemStack getBoatDrop() {
 		if (!this.shield.isEmpty()) {
 			return this.shield.copy();
 		}
 		return new ItemStack(this.getDropItem());
-	}
-
-	@Override
-	public @Nullable ItemEntity spawnAtLocation(ItemStack stack, float offsetY) {
-		if (stack.is(this.getDropItem())) {
-			return super.spawnAtLocation(this.getBoatDrop(), offsetY);
-		}
-		return null;
 	}
 
 	@Override

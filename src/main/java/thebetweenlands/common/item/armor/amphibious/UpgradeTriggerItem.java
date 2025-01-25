@@ -5,7 +5,7 @@ import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -29,7 +29,7 @@ public class UpgradeTriggerItem extends HoverTextItem {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		this.initToggleMap();
 		ItemStack stack = player.getItemInHand(hand);
 		if (player.isShiftKeyDown()) {
@@ -45,11 +45,11 @@ public class UpgradeTriggerItem extends HoverTextItem {
 			}
 			ResourceLocation upgradeLoc = BLRegistries.AMPHIBIOUS_ARMOR_UPGRADES.getKey(stack.get(DataComponentRegistry.SELECTED_UPGRADE));
 			player.displayClientMessage(Component.translatable("item.thebetweenlands.stone.selected", Component.translatable(Util.makeDescriptionId("amphibious_upgrade", upgradeLoc))), true);
-			return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+			return InteractionResult.SUCCESS;
 		} else {
 			var upgrade = stack.getOrDefault(DataComponentRegistry.SELECTED_UPGRADE, AmphibiousArmorUpgradeRegistry.NONE.get());
 			if (!(upgrade instanceof TriggerableAmphibiousArmorUpgrade trigger) || !TRIGGER_LIST.contains(trigger)) {
-				return InteractionResultHolder.pass(stack);
+				return InteractionResult.PASS;
 			}
 			boolean anyTriggered = false;
 			for (ItemStack armorStack : player.getInventory().armor) {
@@ -61,7 +61,7 @@ public class UpgradeTriggerItem extends HoverTextItem {
 				}
 			}
 			if (anyTriggered) {
-				return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+				return InteractionResult.SUCCESS;
 			}
 		}
 		return super.use(level, player, hand);

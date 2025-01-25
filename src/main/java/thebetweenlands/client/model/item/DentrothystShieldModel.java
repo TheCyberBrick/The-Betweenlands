@@ -1,7 +1,5 @@
 package thebetweenlands.client.model.item;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -13,11 +11,8 @@ import net.minecraft.client.renderer.RenderType;
 
 public class DentrothystShieldModel extends Model {
 
-	private final ModelPart root;
-
 	public DentrothystShieldModel(ModelPart root) {
-		super(RenderType::entityTranslucent);
-		this.root = root;
+		super(root, RenderType::entityTranslucent);
 	}
 
 	public static LayerDefinition create() {
@@ -94,10 +89,5 @@ public class DentrothystShieldModel extends Model {
 			PartPose.offsetAndRotation(0.0F, -2.0F, 0.0F, 0.0F, 0.0F, -1.1383037381507017F));
 
 		return LayerDefinition.create(definition, 64, 64);
-	}
-
-	@Override
-	public void renderToBuffer(PoseStack stack, VertexConsumer consumer, int light, int overlay, int color) {
-		this.root.render(stack, consumer, light, overlay, color);
 	}
 }

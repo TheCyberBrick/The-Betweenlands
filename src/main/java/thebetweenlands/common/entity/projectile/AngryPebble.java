@@ -26,7 +26,8 @@ public class AngryPebble extends ThrowableItemProjectile {
 	}
 
 	public AngryPebble(LivingEntity shooter, Level level, ItemStack displayStack, float explosionRadius) {
-		super(EntityRegistry.ANGRY_PEBBLE.get(), shooter, level);
+		super(EntityRegistry.ANGRY_PEBBLE.get(), level);
+		this.setOwner(shooter);
 		this.stack = displayStack;
 		this.explosionRadius = explosionRadius;
 		this.setItem(this.stack);

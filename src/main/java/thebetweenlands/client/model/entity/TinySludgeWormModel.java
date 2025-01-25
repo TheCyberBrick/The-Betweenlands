@@ -3,24 +3,23 @@ package thebetweenlands.client.model.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
-import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.util.Mth;
-import thebetweenlands.common.entity.monster.TinySludgeWorm;
+import thebetweenlands.client.model.MowzieModelBase;
+import thebetweenlands.client.state.SludgeWormRenderState;
 
-public class TinySludgeWormModel extends HierarchicalModel<TinySludgeWorm> {
-	public ModelPart root;
-	public ModelPart head;
-	public ModelPart beak_right;
-	public ModelPart beak_left;
-	public ModelPart dat_detailed_hot_bod;
-	public ModelPart cute_lil_butt;
-	public ModelPart spoopy_stinger;
+public class TinySludgeWormModel extends MowzieModelBase<SludgeWormRenderState> {
+	public final ModelPart head;
+	public final ModelPart beak_right;
+	public final ModelPart beak_left;
+	public final ModelPart dat_detailed_hot_bod;
+	public final ModelPart cute_lil_butt;
+	public final ModelPart spoopy_stinger;
 
 	public TinySludgeWormModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.head = root.getChild("head");
 		this.beak_right = head.getChild("beak_right");
 		this.beak_left = head.getChild("beak_left");
@@ -64,38 +63,26 @@ public class TinySludgeWormModel extends HierarchicalModel<TinySludgeWorm> {
 		return LayerDefinition.create(definition, 32, 32);
 	}
 
-	public void renderHead(PoseStack stack, VertexConsumer consumer, int light, int overlay, int colour, TinySludgeWorm worm, int frame, float wibbleStrength, float partialTicks) {
-		float smoothedTicks = worm.tickCount + frame + (worm.tickCount + frame - (worm.tickCount + frame - 1)) * partialTicks;
-		float wibble = (float) (Math.sin(1F + (smoothedTicks) * 0.25F) * 0.125F * wibbleStrength);
-		float jaw_wibble = (float) (Math.sin(1F + (smoothedTicks) * 0.5F) * 0.5F);
-		stack.translate(0F, -0.0625F - wibble * 0.5F, 0F + wibble * 2F);
-		this.head.xRot = worm.getXRot() / Mth.RAD_TO_DEG;
-		this.beak_left.yRot = 0F - jaw_wibble;
-		this.beak_right.yRot = 0F + jaw_wibble;
-		this.head.render(stack, consumer, light, overlay, colour);
+	public void renderHead(SludgeWormRenderState.WormPartInfo state, PoseStack stack, VertexConsumer consumer, int light, int overlay, int color, float xRot, float wibbleStrength) {
+		float wibble = (float) (Math.sin(1F + state.smoothedFrame() * 0.25F) * 0.125F * wibbleStrength);
+		float jaw_wibble = (float) (Math.sin(1F + state.smoothedFrame() * 0.5F) * 0.5F);
+		stack.translate(0.0F, -0.0625F - wibble * 0.5F, 0.0F + wibble * 2.0F);
+		this.head.xRot = xRot / Mth.RAD_TO_DEG;
+		this.beak_left.yRot = -jaw_wibble;
+		this.beak_right.yRot = jaw_wibble;
+		this.head.render(stack, consumer, light, overlay, color);
 	}
 
-	public void renderBody(PoseStack stack, VertexConsumer consumer, int light, int overlay, int colour, TinySludgeWorm worm, int frame, float wibbleStrength, float partialTicks) {
-		float smoothedTicks = worm.tickCount + frame + (worm.tickCount + frame - (worm.tickCount + frame - 1)) * partialTicks;
-		float wibble = (float) (Math.sin(1F + (smoothedTicks) * 0.25F) * 0.125F * wibbleStrength);
-		stack.translate(0F, -0.125F - wibble, -0.125F - wibble * 2F);
-		stack.scale(1F + wibble * 2F, 1F + wibble, 1.25F - wibble * 1.5F);
-		this.dat_detailed_hot_bod.render(stack, consumer, light, overlay, colour);
+	public void renderBody(SludgeWormRenderState.WormPartInfo state, PoseStack stack, VertexConsumer consumer, int light, int overlay, int color, float wibbleStrength) {
+		float wibble = (float) (Math.sin(1.0F + state.smoothedFrame() * 0.25F) * 0.125F * wibbleStrength);
+		stack.translate(0F, -0.125F - wibble, -0.125F - wibble * 2.0F);
+		stack.scale(1F + wibble * 2.0F, 1.0F + wibble, 1.25F - wibble * 1.5F);
+		this.dat_detailed_hot_bod.render(stack, consumer, light, overlay, color);
 	}
 
-	public void renderTail(PoseStack stack, VertexConsumer consumer, int light, int overlay, int colour, TinySludgeWorm worm, int frame, float wibbleStrength, float partialTicks) {
-		float smoothedTicks = worm.tickCount + frame + (worm.tickCount + frame - (worm.tickCount + frame - 1)) * partialTicks;
-		float wibble = (float) (Math.sin(1F + (smoothedTicks) * 0.25F) * 0.125F * wibbleStrength);
-		stack.translate(0F, -0.0625F - wibble * 0.5F, -0.0625F + wibble * 2F);
-		this.cute_lil_butt.render(stack, consumer, light, overlay, colour);
-	}
-
-	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void setupAnim(TinySludgeWorm entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+	public void renderTail(SludgeWormRenderState.WormPartInfo state, PoseStack stack, VertexConsumer consumer, int light, int overlay, int color, float wibbleStrength) {
+		float wibble = (float) (Math.sin(1F + state.smoothedFrame() * 0.25F) * 0.125F * wibbleStrength);
+		stack.translate(0.0F, -0.0625F - wibble * 0.5F, -0.0625F + wibble * 2.0F);
+		this.cute_lil_butt.render(stack, consumer, light, overlay, color);
 	}
 }

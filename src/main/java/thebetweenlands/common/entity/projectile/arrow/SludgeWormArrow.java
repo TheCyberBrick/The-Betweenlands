@@ -2,6 +2,7 @@ package thebetweenlands.common.entity.projectile.arrow;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -35,8 +36,7 @@ public class SludgeWormArrow extends AbstractArrow {
 		if (!this.level().isClientSide()) {
 			if (result.getEntity() instanceof LivingEntity)
 				spawnWorm((LivingEntity) result.getEntity());
-			else if (result.getEntity() instanceof PartEntity) {
-				PartEntity part = (PartEntity) result.getEntity();
+			else if (result.getEntity() instanceof PartEntity part) {
 				if (part.getParent() instanceof LivingEntity)
 					spawnWorm((LivingEntity) part.getParent());
 			}
@@ -44,7 +44,7 @@ public class SludgeWormArrow extends AbstractArrow {
 	}
 
 	private void spawnWorm(LivingEntity target) {
-		TinySludgeWormHelper worm = EntityRegistry.TINY_SLUDGE_WORM_HELPER.get().create(this.level());
+		TinySludgeWormHelper worm = EntityRegistry.TINY_SLUDGE_WORM_HELPER.get().create(this.level(), EntitySpawnReason.EVENT);
 		worm.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
 		worm.setTarget(target);
 		if (this.getOwner() instanceof Player player)

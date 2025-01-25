@@ -5,6 +5,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
@@ -22,7 +23,7 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import thebetweenlands.api.recipes.SteepingPotRecipe;
-import thebetweenlands.common.item.recipe.FluidRecipeInput;
+import thebetweenlands.common.recipe.input.FluidRecipeInput;
 import thebetweenlands.common.registries.*;
 
 import java.util.Optional;
@@ -61,7 +62,7 @@ public class SteepingPotBlockEntity extends NoMenuContainerBlockEntity implement
 			if (entity.getTankFluidAmount() >= FluidType.BUCKET_VOLUME && !entity.hasCraftResult) {
 				if (entity.hasBundle()) {
 					FluidRecipeInput input = new FluidRecipeInput(entity.tank.getFluid(), entity.getBundleItems());
-					Optional<RecipeHolder<SteepingPotRecipe>> recipe = level.getRecipeManager().getRecipeFor(RecipeRegistry.STEEPING_POT_RECIPE.get(), input, level);
+					Optional<RecipeHolder<SteepingPotRecipe>> recipe = ((ServerLevel)level).recipeAccess().getRecipeFor(RecipeRegistry.STEEPING_POT_RECIPE.get(), input, level);
 					if (recipe.isPresent()) {
 						FluidStack outputFluid = recipe.get().value().getResultFluid(level.registryAccess());
 						if (!outputFluid.isEmpty()) {
@@ -100,7 +101,7 @@ public class SteepingPotBlockEntity extends NoMenuContainerBlockEntity implement
 
 			if (entity.getTankFluidAmount() >= FluidType.BUCKET_VOLUME && entity.getHeatProgress() >= 100 && entity.hasBundle()) {
 				FluidRecipeInput input = new FluidRecipeInput(entity.tank.getFluid(), entity.getBundleItems());
-				Optional<RecipeHolder<SteepingPotRecipe>> recipe = level.getRecipeManager().getRecipeFor(RecipeRegistry.STEEPING_POT_RECIPE.get(), input, level);
+				Optional<RecipeHolder<SteepingPotRecipe>> recipe = ((ServerLevel)level).recipeAccess().getRecipeFor(RecipeRegistry.STEEPING_POT_RECIPE.get(), input, level);
 
 				if (recipe.isEmpty()) {
 					entity.setHeatProgress(0);
@@ -109,7 +110,7 @@ public class SteepingPotBlockEntity extends NoMenuContainerBlockEntity implement
 					level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.3F, 0.9F + level.getRandom().nextFloat() * 0.3F);
 					entity.drain(FluidType.BUCKET_VOLUME, FluidAction.EXECUTE);
 				} else {
-					ItemStack output = recipe.get().value().getResultItem(level.registryAccess());
+					ItemStack output = recipe.get().value().assemble(input, level.registryAccess());
 					FluidStack outputFluid = recipe.get().value().getResultFluid(level.registryAccess());
 
 					if (!entity.getItem(0).isEmpty())

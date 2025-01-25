@@ -6,6 +6,7 @@ import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -41,8 +42,8 @@ public class ShockwaveKillTrigger extends SimpleCriterionTrigger<ShockwaveKillTr
 			return AdvancementCriteriaRegistry.SHOCKWAVE_KILL.get().createCriterion(new ShockwaveKillTrigger.TriggerInstance(Optional.empty(), Optional.of(EntityPredicate.wrap(victim))));
 		}
 
-		public static Criterion<ShockwaveKillTrigger.TriggerInstance> killWithShockwave(EntityType<?> victim) {
-			return killWithShockwave(EntityPredicate.Builder.entity().of(victim).build());
+		public static Criterion<ShockwaveKillTrigger.TriggerInstance> killWithShockwave(HolderGetter<EntityType<?>> getter, EntityType<?> victim) {
+			return killWithShockwave(EntityPredicate.Builder.entity().of(getter, victim).build());
 		}
 	}
 }

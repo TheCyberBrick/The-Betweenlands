@@ -1,20 +1,18 @@
 package thebetweenlands.client.model.entity;
 
-import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import thebetweenlands.common.entity.projectile.arrow.SludgeWormArrow;
+import net.minecraft.client.renderer.entity.state.ArrowRenderState;
+import thebetweenlands.client.model.MowzieModelBase;
 
-public class SludgeWormArrowModel extends HierarchicalModel<SludgeWormArrow> {
-
-	private final ModelPart root;
+public class SludgeWormArrowModel extends MowzieModelBase<ArrowRenderState> {
 
 	public SludgeWormArrowModel(ModelPart root) {
-		this.root = root;
+		super(root);
 	}
 
 	public static LayerDefinition create() {
@@ -62,15 +60,5 @@ public class SludgeWormArrowModel extends HierarchicalModel<SludgeWormArrow> {
 			PartPose.offsetAndRotation(0.0F, -1.5F, 1.0F, -0.18203784098300857F, 0.0F, 0.0F));
 
 		return LayerDefinition.create(definition, 32, 32);
-	}
-
-	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void setupAnim(SludgeWormArrow entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
 	}
 }

@@ -6,7 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -33,29 +33,29 @@ public class SlingshotItem extends ProjectileWeaponItem {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		ItemStack itemstack = player.getItemInHand(hand);
 		boolean flag = !player.getProjectile(itemstack).isEmpty();
 
-		InteractionResultHolder<ItemStack> ret = EventHooks.onArrowNock(itemstack, level, player, hand, flag);
+		InteractionResult ret = EventHooks.onArrowNock(itemstack, level, player, hand, flag);
 		if (ret != null) return ret;
 
 		if (!player.hasInfiniteMaterials() && !flag) {
-			return InteractionResultHolder.fail(itemstack);
+			return InteractionResult.FAIL;
 		} else {
 			player.startUsingItem(hand);
-			return InteractionResultHolder.consume(itemstack);
+			return InteractionResult.CONSUME;
 		}
 	}
 
 	@Override
-	public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeCharged) {
+	public boolean releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeCharged) {
 		if (entity instanceof Player player) {
 			ItemStack itemstack = player.getProjectile(stack);
 			if (!itemstack.isEmpty()) {
 				int i = this.getUseDuration(stack, entity) - timeCharged;
 				i = EventHooks.onArrowLoose(stack, level, player, i, !itemstack.isEmpty());
-				if (i < 0) return;
+				if (i < 0) return false;
 				float f = this.getPowerForTime(i);
 				f *= CorrosionHelper.getModifier(stack);
 				if (f >= 0.1D) {
@@ -66,9 +66,11 @@ public class SlingshotItem extends ProjectileWeaponItem {
 
 					level.playSound(null, player.blockPosition(), SoundRegistry.SLINGSHOT_SHOOT.get(), SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F);
 					player.awardStat(Stats.ITEM_USED.get(this));
+					return true;
 				}
 			}
 		}
+		return false;
 	}
 
 	@Override
@@ -117,8 +119,8 @@ public class SlingshotItem extends ProjectileWeaponItem {
 	}
 
 	@Override
-	public UseAnim getUseAnimation(ItemStack stack) {
-		return UseAnim.BOW;
+	public ItemUseAnimation getUseAnimation(ItemStack stack) {
+		return ItemUseAnimation.BOW;
 	}
 
 	@Override

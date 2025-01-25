@@ -2,6 +2,7 @@ package thebetweenlands.client.gui.screen;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -37,13 +38,13 @@ public class CrabPotFilterScreen extends AbstractContainerScreen<CrabPotFilterMe
 	protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
 		int i = this.leftPos;
 		int j = this.topPos;
-		graphics.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight);
+		graphics.blit(RenderType::guiTextured, TEXTURE, i, j, 0.0F, 0.0F, 0, 0, this.imageWidth, this.imageHeight);
 		if (this.getMenu().isBaited()) {
 			int l = Mth.ceil(this.getMenu().getBaitProgress() * 10.0F) + 1;
-			graphics.blitSprite(ANADIA, 17, 11, 0, 11 - l, i + 43, j + 46 + 11 - l, 17, l);
+			graphics.blitSprite(RenderType::guiTextured, ANADIA, 17, 11, 0, 11 - l, i + 43, j + 46 + 11 - l, 17, l);
 		}
 
 		int j1 = Mth.ceil(this.getMenu().getFilterProgress() * 24.0F);
-		graphics.blitSprite(ARROW, 24, 16, 0, 0, i + 72, j + 42, j1, 16);
+		graphics.blitSprite(RenderType::guiTextured, ARROW, 24, 16, 0, 0, i + 72, j + 42, j1, 16);
 	}
 }

@@ -7,7 +7,7 @@ import net.minecraft.core.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -16,7 +16,7 @@ import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.StackedContents;
+import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.RecipeCraftingHolder;
 import net.minecraft.world.inventory.StackedContentsCompatible;
@@ -24,8 +24,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.ArrayUtils;
@@ -54,7 +54,7 @@ public class SulfurFurnaceBlockEntity extends BaseContainerBlockEntity implement
 	private final int[] outputSlots;
 	private final int[] fuelSlots;
 	private final int[] fluxSlots;
-	private final Object2IntOpenHashMap<ResourceLocation> recipesUsed = new Object2IntOpenHashMap<>();
+	private final Object2IntOpenHashMap<ResourceKey<Recipe<?>>> recipesUsed = new Object2IntOpenHashMap<>();
 	private final RecipeManager.CachedCheck<SingleRecipeInput, SmeltingRecipe> quickCheck = RecipeManager.createCheck(RecipeType.SMELTING);
 
 	public SulfurFurnaceBlockEntity(BlockPos pos, BlockState state) {
@@ -97,23 +97,24 @@ public class SulfurFurnaceBlockEntity extends BaseContainerBlockEntity implement
 			if (data.getFurnaceBurnTime() != 0 || flag3 && flag2) {
 				RecipeHolder<SmeltingRecipe> recipeholder;
 				if (flag2) {
-					recipeholder = entity.quickCheck.getRecipeFor(new SingleRecipeInput(inputStack), level).orElse(null);
+					recipeholder = entity.quickCheck.getRecipeFor(new SingleRecipeInput(inputStack), (ServerLevel) level).orElse(null);
 				} else {
 					recipeholder = null;
 				}
 
 				if (data.getFurnaceBurnTime() == 0 && entity.canBurn(level.registryAccess(), recipeholder, data)) {
-					data.currentItemBurnTime = data.furnaceBurnTime = entity.getBurnDuration(fuelStack);
+					data.currentItemBurnTime = data.furnaceBurnTime = entity.getBurnDuration(level.fuelValues(), fuelStack);
 
 					if (data.getFurnaceBurnTime() > 0) {
 						isDirty = true;
 
-						if (fuelStack.hasCraftingRemainingItem()) {
-							entity.getItems().set(data.getFuelSlot(), fuelStack.getCraftingRemainingItem());
-						} else if (flag3) {
+						var remainder = fuelStack.getCraftingRemainder();
+						if (!remainder.isEmpty())
+							entity.getItems().set(data.getFuelSlot(), remainder);
+						else if (flag3) {
 							fuelStack.shrink(1);
 							if (fuelStack.isEmpty()) {
-								entity.getItems().set(data.getFuelSlot(), fuelStack.getCraftingRemainingItem());
+								entity.getItems().set(data.getFuelSlot(), fuelStack.getCraftingRemainder());
 							}
 						}
 					}
@@ -122,7 +123,7 @@ public class SulfurFurnaceBlockEntity extends BaseContainerBlockEntity implement
 				if (entity.isBurning(data.index) && entity.canBurn(level.registryAccess(), recipeholder, data)) {
 					++data.furnaceCookTime;
 
-					if (data.getFurnaceCookTime() == recipeholder.value().getCookingTime()) {
+					if (data.getFurnaceCookTime() == recipeholder.value().cookingTime()) {
 						data.setFurnaceCookTime(0);
 						if (entity.burn(level, recipeholder, data)) {
 							entity.setRecipeUsed(recipeholder);
@@ -205,11 +206,11 @@ public class SulfurFurnaceBlockEntity extends BaseContainerBlockEntity implement
 		}
 	}
 
-	protected int getBurnDuration(ItemStack fuel) {
+	protected int getBurnDuration(FuelValues values, ItemStack fuel) {
 		if (fuel.isEmpty()) {
 			return 0;
 		} else {
-			return fuel.getBurnTime(RecipeType.SMELTING);
+			return fuel.getBurnTime(RecipeType.SMELTING, values);
 		}
 	}
 
@@ -244,7 +245,7 @@ public class SulfurFurnaceBlockEntity extends BaseContainerBlockEntity implement
 				data.furnaceBurnTime = tag.getShort(NBT_BURN_TIME + data.index);
 				data.furnaceCookTime = tag.getShort(NBT_COOK_TIME + data.index);
 			}
-			data.currentItemBurnTime = this.getBurnDuration(this.getItem(data.getFuelSlot()));
+			data.currentItemBurnTime = this.getBurnDuration(this.getLevel().fuelValues(), this.getItem(data.getFuelSlot()));
 		}
 	}
 
@@ -311,7 +312,7 @@ public class SulfurFurnaceBlockEntity extends BaseContainerBlockEntity implement
 	@Override
 	public boolean canPlaceItem(int index, ItemStack stack) {
 		return this.getOutputSlots().noneMatch(this.slotMatch(index)) &&
-			(this.getFuelSlots().anyMatch(this.slotMatch(index)) ? AbstractFurnaceBlockEntity.isFuel(stack) :
+			(this.getFuelSlots().anyMatch(this.slotMatch(index)) ? stack.getBurnTime(RecipeType.SMELTING, this.getLevel().fuelValues()) > 0 :
 				this.getFluxSlots().noneMatch(this.slotMatch(index)) || stack.is(ItemRegistry.LIMESTONE_FLUX));
 	}
 
@@ -334,8 +335,8 @@ public class SulfurFurnaceBlockEntity extends BaseContainerBlockEntity implement
 	@Override
 	public void setRecipeUsed(@Nullable RecipeHolder<?> recipe) {
 		if (recipe != null) {
-			ResourceLocation resourcelocation = recipe.id();
-			this.recipesUsed.addTo(resourcelocation, 1);
+			ResourceKey<Recipe<?>> resourcekey = recipe.id();
+			this.recipesUsed.addTo(resourcekey, 1);
 		}
 	}
 
@@ -365,10 +366,10 @@ public class SulfurFurnaceBlockEntity extends BaseContainerBlockEntity implement
 	public List<RecipeHolder<?>> getRecipesToAwardAndPopExperience(ServerLevel level, Vec3 popVec) {
 		List<RecipeHolder<?>> list = Lists.newArrayList();
 
-		for (Object2IntMap.Entry<ResourceLocation> entry : this.recipesUsed.object2IntEntrySet()) {
-			level.getRecipeManager().byKey(entry.getKey()).ifPresent(holder -> {
+		for (Object2IntMap.Entry<ResourceKey<Recipe<?>>> entry : this.recipesUsed.object2IntEntrySet()) {
+			level.recipeAccess().byKey(entry.getKey()).ifPresent(holder -> {
 				list.add(holder);
-				createExperience(level, popVec, entry.getIntValue(), ((SmeltingRecipe) holder.value()).getExperience());
+				createExperience(level, popVec, entry.getIntValue(), ((SmeltingRecipe) holder.value()).experience());
 			});
 		}
 
@@ -386,7 +387,7 @@ public class SulfurFurnaceBlockEntity extends BaseContainerBlockEntity implement
 	}
 
 	@Override
-	public void fillStackedContents(StackedContents helper) {
+	public void fillStackedContents(StackedItemContents helper) {
 		for (ItemStack itemstack : this.items) {
 			helper.accountStack(itemstack);
 		}

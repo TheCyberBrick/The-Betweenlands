@@ -15,7 +15,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomFlyingGoal;
-import net.minecraft.world.entity.ambient.AmbientCreature;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.pathfinder.PathType;
@@ -28,12 +27,11 @@ public class Firefly extends PathfinderMob implements BLEntity {
 
 	private static final EntityDataAccessor<Float> GLOW_STRENGTH = SynchedEntityData.defineId(Firefly.class, EntityDataSerializers.FLOAT);
 
-	protected int glowTicks = 0;
-	protected int prevGlowTicks = 0;
+	public int glowTicks = 0;
+	public int prevGlowTicks = 0;
 
 	public Firefly(EntityType<? extends PathfinderMob> type, Level level) {
 		super(type, level);
-		this.noCulling = true;
 		this.moveControl = new FlightMoveHelper(this);
 		this.setPathfindingMalus(PathType.WATER, -1.0F);
 		this.setPathfindingMalus(PathType.BLOCKED, -1.0F);
@@ -130,10 +128,6 @@ public class Firefly extends PathfinderMob implements BLEntity {
 
 	public void setGlowStrength(double strength) {
 		this.getEntityData().set(GLOW_STRENGTH, (float) strength);
-	}
-
-	public float getGlowTicks(float partialTicks) {
-		return this.prevGlowTicks + (this.glowTicks - this.prevGlowTicks) * partialTicks;
 	}
 
 //	@Override

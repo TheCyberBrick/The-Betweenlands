@@ -6,9 +6,9 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.Tags;
@@ -25,11 +25,14 @@ import thebetweenlands.common.registries.EntityRegistry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import static thebetweenlands.common.item.armor.amphibious.AmphibiousArmorItem.NBT_ELECTRIC_COOLDOWN;
 import static thebetweenlands.common.item.armor.amphibious.AmphibiousArmorItem.NBT_URCHIN_AOE_COOLDOWN;
 
 public class ArmorEffectHelper {
+
+	public static final Function<ItemStack, EquipmentSlot> EQUIPPABLE = stack -> stack.getOrDefault(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.MAINHAND).build()).slot();
 
 	public static AABB proximityBox(Player player, double xSize, double ySize, double zSize) {
 		return new AABB(player.blockPosition()).inflate(xSize, ySize, zSize);
@@ -105,22 +108,36 @@ public class ArmorEffectHelper {
 		return list.getFirst();
 	}
 
-	public static Holder<AmphibiousArmorUpgrade> getUpgrade(EquipmentSlot armorType, ItemStack stack) {
-		for (Holder<AmphibiousArmorUpgrade> upgrade : BLRegistries.AMPHIBIOUS_ARMOR_UPGRADES.holders().toList()) {
-			if (upgrade.value().matches(armorType, stack)) {
-				return upgrade;
+	public static Holder<AmphibiousArmorUpgrade> getUpgrade(ItemStack stack) {
+		if (EQUIPPABLE.apply(stack).isArmor()) {
+			var slot = EQUIPPABLE.apply(stack);
+			for (Holder<AmphibiousArmorUpgrade> upgrade : BLRegistries.AMPHIBIOUS_ARMOR_UPGRADES.listElements().toList()) {
+				if (upgrade.value().matches(slot, stack)) {
+					return upgrade;
+				}
+			}
+		}
+		return AmphibiousArmorUpgradeRegistry.NONE;
+	}
+
+	public static Holder<AmphibiousArmorUpgrade> getUpgrade(EquipmentSlot slot, ItemStack stack) {
+		if (slot.isArmor()) {
+			for (Holder<AmphibiousArmorUpgrade> upgrade : BLRegistries.AMPHIBIOUS_ARMOR_UPGRADES.listElements().toList()) {
+				if (upgrade.value().matches(slot, stack)) {
+					return upgrade;
+				}
 			}
 		}
 		return AmphibiousArmorUpgradeRegistry.NONE;
 	}
 
 	public static void updateAttributes(ItemStack stack) {
-		if (stack.getItem() instanceof ArmorItem armor) {
+		if (EQUIPPABLE.apply(stack).isArmor()) {
 			ItemAttributeModifiers oldMods = stack.getAttributeModifiers();
 			AmphibiousUpgrades upgrades = stack.getOrDefault(DataComponentRegistry.AMPHIBIOUS_UPGRADES, AmphibiousUpgrades.EMPTY);
 			ArrayList<ItemAttributeModifiers.Entry> modifiers = new ArrayList<>(oldMods.modifiers().stream().filter(entry -> !entry.modifier().id().getPath().contains("amphibious")).toList());
 			for (var entry : upgrades.getAllUniqueUpgradesWithCounts().object2IntEntrySet()) {
-				entry.getKey().value().applyAttributeModifiers(armor.getType(), stack, entry.getIntValue(), modifiers);
+				entry.getKey().value().applyAttributeModifiers(EQUIPPABLE.apply(stack), stack, entry.getIntValue(), modifiers);
 			}
 			stack.set(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(modifiers, oldMods.showInTooltip()));
 		}

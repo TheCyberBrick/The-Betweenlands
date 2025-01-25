@@ -1,5 +1,6 @@
 package thebetweenlands.common.entity.monster;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -9,7 +10,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.LeapAtTargetGoal;
@@ -59,7 +59,7 @@ public class TinySludgeWorm extends SludgeWorm {
 		this.goalSelector.addGoal(2, new RandomStrollGoal(this, 0.8D, 1));
 		this.targetSelector.addGoal(0, new HurtByTargetGoal(this));
 		this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
-		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false, entity -> !(entity instanceof Enemy)));
+		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false, (entity, level) -> !(entity instanceof Enemy)));
 	}
 
 	public static AttributeSupplier.Builder registerAttributes() {
@@ -76,9 +76,9 @@ public class TinySludgeWorm extends SludgeWorm {
 	}
 
 	@Override
-	public boolean doHurtTarget(Entity entity) {
+	public boolean doHurtTarget(ServerLevel level, Entity entity) {
 		if (this.hasLineOfSight(entity) && entity.onGround())
-			return super.doHurtTarget(entity);
+			return super.doHurtTarget(level, entity);
 		return false;
 	}
 

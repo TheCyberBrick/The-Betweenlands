@@ -16,6 +16,7 @@ import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -121,7 +122,7 @@ public class ExtendedReachHandler {
 
                 int j = guiGraphics.guiHeight() / 2 - 7 + 16;
                 int k = guiGraphics.guiWidth() / 2 - 8;
-                guiGraphics.blitSprite(CROSSHAIR_ATTACK_INDICATOR_FULL_SPRITE, k, j, 16, 16);
+                guiGraphics.blitSprite(RenderType::guiTextured, CROSSHAIR_ATTACK_INDICATOR_FULL_SPRITE, k, j, 16, 16);
 
                 RenderSystem.defaultBlendFunc();
 

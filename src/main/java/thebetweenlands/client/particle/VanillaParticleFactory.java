@@ -15,7 +15,6 @@ public class VanillaParticleFactory<T extends ParticleOptions> extends ParticleF
 	/**
 	 * Creates a vanilla particle factory that builds particles from an {@link ParticleProvider}.
 	 * <p><b>Do note that the first value in the additional arguments must be the particle ID (default is 0)!</b>
-	 * @param factory
 	 */
 	public static <T extends ParticleOptions> VanillaParticleFactory<T> create(ParticleProvider<T> factory) {
 		return new VanillaParticleFactory<>(factory);

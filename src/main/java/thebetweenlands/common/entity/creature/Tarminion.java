@@ -28,7 +28,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import thebetweenlands.client.particle.ParticleFactory;
@@ -61,7 +61,7 @@ public class Tarminion extends TamableAnimal implements BLEntity {
 		this.targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
 		this.targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
 		this.targetSelector.addGoal(2, new HurtByTargetGoal(this, Tarminion.class));
-		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, false, false, entity ->
+		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, false, false, (entity, level) ->
 			entity instanceof Enemy && (!(entity instanceof OwnableEntity ownable) || ownable.getOwner() != Tarminion.this.getOwner())));
 	}
 
@@ -176,54 +176,49 @@ public class Tarminion extends TamableAnimal implements BLEntity {
 	}
 
 	@Override
-	public boolean doHurtTarget(Entity entity) {
-		super.doHurtTarget(entity);
-		return this.attack(entity);
+	public boolean doHurtTarget(ServerLevel level, Entity entity) {
+		super.doHurtTarget(level, entity);
+		return this.attack(level, entity);
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		if (source.is(DamageTypes.DROWN) && this.isEyeInFluidType(FluidTypeRegistry.TAR.get())) {
 			return false;
 		}
 		if (source.getEntity() instanceof Mob) {
-			this.attack(source.getEntity());
+			this.attack(level, source.getEntity());
 		}
-		return super.hurt(source, amount);
+		return super.hurtServer(level, source, amount);
 	}
 
-	protected boolean attack(Entity entity) {
-		if (!this.level().isClientSide()) {
-			if (this.onGround()) {
-				double dx = entity.getX() - this.getX();
-				double dz = entity.getZ() - this.getZ();
-				double dist = Mth.sqrt((float) (dx * dx + dz * dz));
-				this.setDeltaMovement(dx / dist * 0.2D + this.getDeltaMovement().x() * 0.2D, 0.3D, dz / dist * 0.2D + this.getDeltaMovement().z() * 0.2D);
-			}
-
-			DamageSource damageSource;
-
-			LivingEntity owner = this.getOwner();
-			if (owner != null) {
-				damageSource = this.damageSources().source(DamageTypes.MOB_ATTACK, this, owner);
-			} else {
-				damageSource = this.damageSources().mobAttack(this);
-			}
-
-			entity.hurt(damageSource, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE));
-
-			if (entity instanceof LivingEntity living && this.level().getRandom().nextInt(4) == 0) {
-				//Set revenge target to tarminion so it can be attacked by the mob
-				living.setLastHurtByMob(this);
-				living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, this.level().getDifficulty().getId() * 50, 0));
-			}
-
-			this.playSound(SoundRegistry.TAR_BEAST_STEP.get(), 1.0F, 2.0F);
-
-
-
-			return true;
+	protected boolean attack(ServerLevel level, Entity entity) {
+		if (this.onGround()) {
+			double dx = entity.getX() - this.getX();
+			double dz = entity.getZ() - this.getZ();
+			double dist = Mth.sqrt((float) (dx * dx + dz * dz));
+			this.setDeltaMovement(dx / dist * 0.2D + this.getDeltaMovement().x() * 0.2D, 0.3D, dz / dist * 0.2D + this.getDeltaMovement().z() * 0.2D);
 		}
+
+		DamageSource damageSource;
+
+		LivingEntity owner = this.getOwner();
+		if (owner != null) {
+			damageSource = this.damageSources().source(DamageTypes.MOB_ATTACK, this, owner);
+		} else {
+			damageSource = this.damageSources().mobAttack(this);
+		}
+
+		entity.hurtServer(level, damageSource, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE));
+
+		if (entity instanceof LivingEntity living && this.level().getRandom().nextInt(4) == 0) {
+			//Set revenge target to tarminion so it can be attacked by the mob
+			living.setLastHurtByMob(this);
+			living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, this.level().getDifficulty().getId() * 50, 0));
+		}
+
+		this.playSound(SoundRegistry.TAR_BEAST_STEP.get(), 1.0F, 2.0F);
+
 		return true;
 	}
 
@@ -243,9 +238,9 @@ public class Tarminion extends TamableAnimal implements BLEntity {
 
 	@Nullable
 	@Override
-	public Entity changeDimension(DimensionTransition transition) {
+	public Entity teleport(TeleportTransition transition) {
 		this.dropContentsWhenDead = false;
-		return super.changeDimension(transition);
+		return super.teleport(transition);
 	}
 
 	@Override

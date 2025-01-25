@@ -3,16 +3,16 @@ package thebetweenlands.api.recipes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import thebetweenlands.common.item.recipe.MultiStackInput;
+import thebetweenlands.common.recipe.input.MultiStackInput;
 import thebetweenlands.common.registries.BlockRegistry;
+import thebetweenlands.common.registries.RecipeCategoryRegistry;
 import thebetweenlands.common.registries.RecipeRegistry;
 
 public interface DruidAltarRecipe extends Recipe<MultiStackInput> {
-
-	int processTime();
 
 	/**
 	 * Called when the recipe starts crafting
@@ -49,17 +49,12 @@ public interface DruidAltarRecipe extends Recipe<MultiStackInput> {
 	}
 
 	@Override
-	default boolean canCraftInDimensions(int width, int height) {
-		return true;
-	}
-
-	@Override
-	default RecipeType<?> getType() {
+	default RecipeType<DruidAltarRecipe> getType() {
 		return RecipeRegistry.DRUID_ALTAR_RECIPE.get();
 	}
 
 	@Override
-	default boolean isIncomplete() {
-		return true;
+	default RecipeBookCategory recipeBookCategory() {
+		return RecipeCategoryRegistry.DRUID_ALTAR.get();
 	}
 }

@@ -53,14 +53,14 @@ public class ObstructionAwareNodeEvaluator extends WalkNodeEvaluator {
 	protected boolean startFromGround = true;
 	protected boolean checkObstructions;
 	protected int pathingSizeOffsetX, pathingSizeOffsetY, pathingSizeOffsetZ;
-	protected EnumSet<Direction> pathableFacings = EnumSet.of(Direction.DOWN);
+	protected final EnumSet<Direction> pathableFacings = EnumSet.of(Direction.DOWN);
 	protected Direction[] pathableFacingsArray;
 
 	private final Long2LongMap pathNodeTypeCache = new Long2LongOpenHashMap();
 	private final Long2ObjectMap<PathType> rawPathNodeTypeCache = new Long2ObjectOpenHashMap<>();
 	private final Object2BooleanMap<AABB> aabbCollisionCache = new Object2BooleanOpenHashMap<>();
 
-	protected boolean alwaysAllowDiagonals = true;
+	protected final boolean alwaysAllowDiagonals = true;
 
 	public void setStartPathOnGround(boolean startFromGround) {
 		this.startFromGround = startFromGround;
@@ -242,7 +242,7 @@ public class ObstructionAwareNodeEvaluator extends WalkNodeEvaluator {
 	}
 
 	private boolean allowDiagonalPathOptions(Node[] options) {
-		return this.alwaysAllowDiagonals || options.length == 0 || (options[0] == null || options[0].type == PathType.OPEN || options[0].costMalus != 0.0F) && (options.length <= 1 || options[1] == null || options[1].type == PathType.OPEN || options[1].costMalus != 0.0F);
+		return this.alwaysAllowDiagonals || options.length == 0 || (options[0] == null || options[0].type == PathType.OPEN || options[0].costMalus != 0.0F) && (options.length == 1 || options[1] == null || options[1].type == PathType.OPEN || options[1].costMalus != 0.0F);
 	}
 
 	@Override
@@ -676,7 +676,7 @@ public class ObstructionAwareNodeEvaluator extends WalkNodeEvaluator {
 
 						AABB enclosingAabb = new AABB(
 							offsetX - halfWidth,
-							getFloorLevel(this.currentContext.level(), BlockPos.containing(offsetX, (double) (y + 1), offsetZ)) + 0.001D,
+							getFloorLevel(this.currentContext.level(), BlockPos.containing(offsetX, y + 1, offsetZ)) + 0.001D,
 							offsetZ - halfWidth,
 							offsetX + halfWidth,
 							(double) this.mob.getBbHeight() + getFloorLevel(this.currentContext.level(), new BlockPos(directPathPoint.x, directPathPoint.y, directPathPoint.z)) - 0.002D,
@@ -690,7 +690,7 @@ public class ObstructionAwareNodeEvaluator extends WalkNodeEvaluator {
 				if (nodeType == PathType.OPEN) {
 					directPathPoint = null;
 
-					AABB checkAabb = new AABB((double) x - halfWidth + 0.5D, (double) y + 0.001D, (double) z - halfWidth + 0.5D, (double) x + halfWidth + 0.5D, (double) ((float) y + this.mob.getBbHeight()), (double) z + halfWidth + 0.5D);
+					AABB checkAabb = new AABB((double) x - halfWidth + 0.5D, (double) y + 0.001D, (double) z - halfWidth + 0.5D, (double) x + halfWidth + 0.5D, (float) y + this.mob.getBbHeight(), (double) z + halfWidth + 0.5D);
 
 					if (this.checkAabbCollision(checkAabb)) {
 						result[0] = null;
@@ -719,7 +719,7 @@ public class ObstructionAwareNodeEvaluator extends WalkNodeEvaluator {
 					int fallDistance = 0;
 					int preFallY = y;
 
-					while (y > this.currentContext.level().getMinBuildHeight() && nodeType == PathType.OPEN) {
+					while (y > this.currentContext.level().getMinY() && nodeType == PathType.OPEN) {
 						--y;
 
 						if (fallDistance++ >= Math.max(1, this.mob.getMaxFallDistance()) /*at least one chance is required for swimming*/ || y == 0) {
@@ -939,10 +939,8 @@ public class ObstructionAwareNodeEvaluator extends WalkNodeEvaluator {
 		PathType nodeType = getRawPathNodeTypeCached(rawPathNodeTypeCache, context, pos.set(x, y, z));
 		boolean isWalkable = false;
 
-		if (nodeType == PathType.OPEN && y >= context.level().getMinBuildHeight() + 1) {
-			for (int i = 0; i < pathableFacings.length; i++) {
-				Direction pathableFacing = pathableFacings[i];
-
+		if (nodeType == PathType.OPEN && y >= context.level().getMinY() + 1) {
+			for (Direction pathableFacing : pathableFacings) {
 				int checkHeight = pathableFacing.getAxis() != Direction.Axis.Y ? Math.min(4, pathingSizeOffsetY - 1) : 0;
 
 				int cx = x + pathableFacing.getStepX() * pathingSizeOffsetX;

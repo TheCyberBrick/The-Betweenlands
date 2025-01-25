@@ -17,7 +17,7 @@ public class MossyCragrockBlock extends Block {
 	protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
 		if (!level.isClientSide()) {
 			BlockPos newPos = pos.offset(random.nextInt(3) - 1, random.nextInt(3) - 1, random.nextInt(3) - 1);
-			if (newPos.getY() >= level.getMinBuildHeight() && newPos.getY() < level.getMaxBuildHeight() && level.isLoaded(newPos)) {
+			if (newPos.getY() >= level.getMinY() && newPos.getY() < level.getMaxY() && level.isLoaded(newPos)) {
 				BlockState blockState = level.getBlockState(newPos);
 				if (blockState.is(BlockRegistry.CRAGROCK)) {
 					if ((level.getBlockState(newPos.above()).is(BlockRegistry.CRAGROCK) || level.getBlockState(newPos.above()).is(BlockRegistry.MOSSY_CRAGROCK_TOP))

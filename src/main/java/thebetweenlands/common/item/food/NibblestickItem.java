@@ -12,6 +12,7 @@ import thebetweenlands.common.registries.AttachmentRegistry;
 import thebetweenlands.util.FoodSickness;
 
 public class NibblestickItem extends Item {
+
 	public NibblestickItem(Properties properties) {
 		super(properties);
 	}

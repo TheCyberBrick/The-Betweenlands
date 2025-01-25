@@ -158,20 +158,11 @@ public abstract class ClimbingMob extends PathfinderMob implements BLEntity, Pat
 			double closestDst = Double.MAX_VALUE;
 
 			for (AABB collisionBox : collisionBoxes) {
-				switch (facing) {
-					case EAST:
-					case WEST:
-						closestDst = Math.min(closestDst, Math.abs(AABBUtil.calculateXOffset(entityBox, collisionBox, -facing.getStepX() * stickingDistance)));
-						break;
-					case UP:
-					case DOWN:
-						closestDst = Math.min(closestDst, Math.abs(AABBUtil.calculateYOffset(entityBox, collisionBox, -facing.getStepY() * stickingDistance)));
-						break;
-					case NORTH:
-					case SOUTH:
-						closestDst = Math.min(closestDst, Math.abs(AABBUtil.calculateZOffset(entityBox, collisionBox, -facing.getStepZ() * stickingDistance)));
-						break;
-				}
+				closestDst = switch (facing) {
+					case EAST, WEST -> Math.min(closestDst, Math.abs(AABBUtil.calculateXOffset(entityBox, collisionBox, -facing.getStepX() * stickingDistance)));
+					case UP, DOWN -> Math.min(closestDst, Math.abs(AABBUtil.calculateYOffset(entityBox, collisionBox, -facing.getStepY() * stickingDistance)));
+					case NORTH, SOUTH -> Math.min(closestDst, Math.abs(AABBUtil.calculateZOffset(entityBox, collisionBox, -facing.getStepZ() * stickingDistance)));
+				};
 			}
 
 			if (closestDst < closestFacingDst) {
@@ -227,7 +218,7 @@ public abstract class ClimbingMob extends PathfinderMob implements BLEntity, Pat
 		Vec3 orientationNormal = this.prevAttachmentNormal.add(this.attachmentNormal.subtract(this.prevAttachmentNormal).scale(partialTicks));
 
 		Vec3 localZ = new Vec3(0, 0, 1);
-		Vec3 localY = new Vec3(0, 1, 0);
+		Vec3 localY;
 		Vec3 localX = new Vec3(1, 0, 0);
 
 		float componentZ = (float) localZ.dot(orientationNormal);
@@ -494,8 +485,8 @@ public abstract class ClimbingMob extends PathfinderMob implements BLEntity, Pat
 			}
 
 			@Override
-			public int getMinBuildHeight() {
-				return ClimbingMob.this.level().getMinBuildHeight();
+			public int getMinY() {
+				return ClimbingMob.this.level().getMinY();
 			}
 
 			@Override

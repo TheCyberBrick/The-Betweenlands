@@ -1,7 +1,7 @@
 package thebetweenlands.common.item.misc;
 
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.player.Player;
@@ -25,11 +25,11 @@ public class WeedwoodRowboatItem extends Item {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		ItemStack itemstack = player.getItemInHand(hand);
 		HitResult hitresult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.ANY);
 		if (hitresult.getType() == HitResult.Type.MISS) {
-			return InteractionResultHolder.pass(itemstack);
+			return InteractionResult.PASS;
 		} else {
 			Vec3 vec3 = player.getViewVector(1.0F);
 			double d0 = 5.0;
@@ -40,7 +40,7 @@ public class WeedwoodRowboatItem extends Item {
 				for (Entity entity : list) {
 					AABB aabb = entity.getBoundingBox().inflate(entity.getPickRadius());
 					if (aabb.contains(vec31)) {
-						return InteractionResultHolder.pass(itemstack);
+						return InteractionResult.PASS;
 					}
 				}
 			}
@@ -63,10 +63,10 @@ public class WeedwoodRowboatItem extends Item {
 //					}
 //
 //					player.awardStat(Stats.ITEM_USED.get(this));
-//					return InteractionResultHolder.sidedSuccess(itemstack, level.isClientSide());
+//					return InteractionResult.SUCCESS;
 //				}
 			}
-			return InteractionResultHolder.pass(itemstack);
+			return InteractionResult.PASS;
 		}
 	}
 }

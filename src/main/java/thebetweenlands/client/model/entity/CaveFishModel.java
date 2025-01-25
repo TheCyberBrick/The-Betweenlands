@@ -7,11 +7,10 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.creature.CaveFish;
+import thebetweenlands.client.state.CaveFishRenderState;
 
-public class CaveFishModel extends MowzieModelBase<CaveFish> {
+public class CaveFishModel extends MowzieModelBase<CaveFishRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart leftVentralFin;
 	private final ModelPart rightVentralFin;
@@ -21,7 +20,7 @@ public class CaveFishModel extends MowzieModelBase<CaveFish> {
 	private final ModelPart tailFin;
 
 	public CaveFishModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.head = root.getChild("head_1").getChild("head_2");
 		this.leftVentralFin = root.getChild("body_1").getChild("left_ventral_fin");
 		this.rightVentralFin = root.getChild("body_1").getChild("right_ventral_fin");
@@ -103,28 +102,23 @@ public class CaveFishModel extends MowzieModelBase<CaveFish> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
+	public void setupAnim(CaveFishRenderState state) {
+		super.setupAnim(state);
+		this.walk(this.head, 0.25F, 0.35F, false, 0.0F, 0.0F, state.ageInTicks, 1.0F - state.walkAnimationSpeed);
 
-	@Override
-	public void setupAnim(CaveFish entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		this.setInitPose();
-		this.walk(this.head, 0.25F, 0.35F, false, 0.0F, 0.0F, ageInTicks, 1.0F - limbSwingAmount);
+		this.flap(this.tail, 0.75F, 0.5F, false, 0.0F, 0.0F, state.ageInTicks, 0.0625F + state.walkAnimationSpeed);
+		this.flap(this.tailFin, 0.75F, 0.5F, false, 1.0F, 0.0F, state.ageInTicks, 0.0625F + state.walkAnimationSpeed);
 
-		this.flap(this.tail, 0.75F, 0.5F, false, 0.0F, 0.0F, ageInTicks, 0.0625F + limbSwingAmount);
-		this.flap(this.tailFin, 0.75F, 0.5F, false, 1.0F, 0.0F, ageInTicks, 0.0625F + limbSwingAmount);
+		this.swing(this.leftVentralFin, 0.75F, 0.5F, false, 2.0F, 0.0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
+		this.swing(this.rightVentralFin, 0.75F, 0.5F, true, 2.0F, 0.0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
 
-		this.swing(this.leftVentralFin, 0.75F, 0.5F, false, 2.0F, 0.0F, ageInTicks, 0.125F + limbSwingAmount);
-		this.swing(this.rightVentralFin, 0.75F, 0.5F, true, 2.0F, 0.0F, ageInTicks, 0.125F + limbSwingAmount);
+		this.swing(this.leftPectoralFin, 0.5F, 0.75F, true, 1.0F, 0.0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
+		this.swing(this.rightPectoralFin, 0.5F, 0.75F, false, 1.0F, 0.0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
 
-		this.swing(this.leftPectoralFin, 0.5F, 0.75F, true, 1.0F, 0.0F, ageInTicks, 0.125F + limbSwingAmount);
-		this.swing(this.rightPectoralFin, 0.5F, 0.75F, false, 1.0F, 0.0F, ageInTicks, 0.125F + limbSwingAmount);
+		this.walk(this.leftPectoralFin, 0.5F, 0.75F, false, 0.0F, 0.0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
+		this.walk(this.rightPectoralFin, 0.5F, 0.75F, false, 0.0F, 0.0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
 
-		this.walk(this.leftPectoralFin, 0.5F, 0.75F, false, 0.0F, 0.0F, ageInTicks, 0.125F + limbSwingAmount);
-		this.walk(this.rightPectoralFin, 0.5F, 0.75F, false, 0.0F, 0.0F, ageInTicks, 0.125F + limbSwingAmount);
-
-		this.flap(this.leftPectoralFin, 0.5F, 0.75F, false, 0.0F, 0.0F, ageInTicks, 0.125F + limbSwingAmount);
-		this.flap(this.rightPectoralFin, 0.5F, 0.75F, true, 0.0F, 0.0F, ageInTicks, 0.125F + limbSwingAmount);
+		this.flap(this.leftPectoralFin, 0.5F, 0.75F, false, 0.0F, 0.0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
+		this.flap(this.rightPectoralFin, 0.5F, 0.75F, true, 0.0F, 0.0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
 	}
 }

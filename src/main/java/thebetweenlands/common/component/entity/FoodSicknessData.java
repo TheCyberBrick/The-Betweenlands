@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -63,7 +64,7 @@ public class FoodSicknessData {
 	}
 
 	public void increaseFoodHatred(Player player, Item food, int amount, int decreaseForOthers) {
-		if (!FoodSicknessHandler.isFoodSicknessEnabled(player.level()))
+		if (!(player.level() instanceof ServerLevel sl) || !FoodSicknessHandler.isFoodSicknessEnabled(sl))
 			return;
 		int finalMaxHatred = FoodSickness.values()[Math.max(FoodSickness.values().length - 1, 0)].maxHatred;
 		if (this.hatredMap.containsKey(food)) {

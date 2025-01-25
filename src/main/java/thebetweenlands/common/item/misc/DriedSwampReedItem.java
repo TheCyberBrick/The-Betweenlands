@@ -25,7 +25,7 @@ public class DriedSwampReedItem extends Item {
 				level.levelEvent(1505, blockpos, 15);
 			}
 
-			return InteractionResult.sidedSuccess(level.isClientSide);
+			return InteractionResult.SUCCESS;
 		} else {
 			BlockState blockstate = level.getBlockState(blockpos);
 			boolean flag = blockstate.isFaceSturdy(level, blockpos, context.getClickedFace());
@@ -35,7 +35,7 @@ public class DriedSwampReedItem extends Item {
 					level.levelEvent(1505, blockpos1, 15);
 				}
 
-				return InteractionResult.sidedSuccess(level.isClientSide);
+				return InteractionResult.SUCCESS;
 			} else {
 				return InteractionResult.PASS;
 			}

@@ -6,18 +6,20 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import thebetweenlands.client.BLModelLayers;
 import thebetweenlands.client.model.entity.JellyfishModel;
 import thebetweenlands.client.shader.LightSource;
 import thebetweenlands.client.shader.ShaderHelper;
+import thebetweenlands.client.state.JellyfishRenderState;
 import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.entity.creature.Jellyfish;
 
-public class JellyfishRenderer extends MobRenderer<Jellyfish, JellyfishModel> {
+public class JellyfishRenderer extends MobRenderer<Jellyfish, JellyfishRenderState, JellyfishModel> {
 
-	private static final ResourceLocation[] TEXTURE = new ResourceLocation[] {
+	private static final ResourceLocation[] TEXTURE = new ResourceLocation[]{
 		TheBetweenlands.prefix("textures/entity/jellyfish_1.png"),
 		TheBetweenlands.prefix("textures/entity/jellyfish_2.png"),
 		TheBetweenlands.prefix("textures/entity/jellyfish_3.png"),
@@ -25,74 +27,75 @@ public class JellyfishRenderer extends MobRenderer<Jellyfish, JellyfishModel> {
 		TheBetweenlands.prefix("textures/entity/jellyfish_5.png")
 	};
 
-	private static final float[][] GLOW_COLORS = {
-		{238 / 255.0f, 173 / 255.0f, 114 / 255.0f},
-		{180 / 255.0f, 42 / 255.0f, 42 / 255.0f},
-		{224 / 255.0f, 83 / 255.0f, 108 / 255.0f},
-		{90 / 255.0f, 170 / 255.0f, 145 / 255.0f},
-		{215 / 255.0f, 176 / 255.0f, 195 / 255.0f},
-	};
+	private static final int[] GLOW_COLORS = {15641970, 11807274, 14701420, 5941905, 14135491};
 
 	public JellyfishRenderer(EntityRendererProvider.Context context) {
 		super(context, new JellyfishModel(context.bakeLayer(BLModelLayers.JELLYFISH)), 0.5F);
 	}
 
 	@Override
-	public void render(Jellyfish entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-		super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
-		this.addLighting(entity, partialTicks);
+	public void render(JellyfishRenderState state, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+		super.render(state, poseStack, buffer, packedLight);
+		this.addLighting(state);
 	}
 
-	protected void addLighting(Jellyfish entity, float partialTicks) {
+	protected void addLighting(JellyfishRenderState state) {
 		if (ShaderHelper.INSTANCE.isWorldShaderActive()) {
-			double interpX = Mth.lerp(partialTicks, entity.xOld, entity.getX());
-			double interpY = Mth.lerp(partialTicks, entity.yOld, entity.getY());
-			double interpZ = Mth.lerp(partialTicks, entity.zOld, entity.getZ());
+			float str = 5.0f * state.jellyScale;
 
-			float str = 5.0f * entity.getScale();
-
-			float[] colors = GLOW_COLORS[entity.getJellyfishColor()];
+			int color = GLOW_COLORS[state.color];
 
 			ShaderHelper.INSTANCE.require();
-			ShaderHelper.INSTANCE.getWorldShader().addLight(new LightSource(interpX, interpY, interpZ, 3.0f, str * colors[0], str * colors[1], str * colors[2]));
+			ShaderHelper.INSTANCE.getWorldShader().addLight(new LightSource(state.x, state.y, state.z, 3.0f, str * ARGB.red(color), str * ARGB.green(color), str * ARGB.blue(color)));
 		}
 	}
 
 	@Override
-	protected void scale(Jellyfish entity, PoseStack stack, float partialTick) {
-		stack.scale(entity.getJellyfishSize(), entity.getJellyfishSize() * entity.getJellyfishLength(), entity.getJellyfishSize());
-
-		float limbSwingAmount = entity.walkAnimation.speed(partialTick);
-		float limbSwing = entity.walkAnimation.position(1.0F - partialTick);
+	protected void scale(JellyfishRenderState state, PoseStack stack) {
+		stack.scale(state.jellyScale, state.jellyScale * state.jellyLength, state.jellyScale);
 
 		stack.scale(
-			1.0F + Mth.sin(limbSwing * 0.75F) * Math.min(limbSwingAmount, 0.2F) * 2.0F,
-			1.0F - Mth.sin(limbSwing * 0.75F) * Math.min(limbSwingAmount, 0.2F),
-			1.0F + Mth.sin(limbSwing * 0.75F) * Math.min(limbSwingAmount, 0.2F) * 2.0F
+			1.0F + Mth.sin(state.swimAnimationPos * 0.75F) * Math.min(state.walkAnimationSpeed, 0.2F) * 2.0F,
+			1.0F - Mth.sin(state.swimAnimationPos * 0.75F) * Math.min(state.walkAnimationSpeed, 0.2F),
+			1.0F + Mth.sin(state.swimAnimationPos * 0.75F) * Math.min(state.walkAnimationSpeed, 0.2F) * 2.0F
 		);
 	}
 
 	@Override
-	protected void setupRotations(Jellyfish entity, PoseStack stack, float bob, float yBodyRot, float partialTick, float scale) {
-		Vec3 weightPos = entity.getOrientationPos(partialTick);
+	protected void setupRotations(JellyfishRenderState state, PoseStack stack, float yBodyRot, float scale) {
+		Vec3 weightPos = state.orientation;
 
-		double dx = Mth.lerp(partialTick, entity.xOld, entity.getX()) - weightPos.x;
-		double dy = Mth.lerp(partialTick, entity.yOld, entity.getY()) - weightPos.y;
-		double dz = Mth.lerp(partialTick, entity.zOld, entity.getZ()) - weightPos.z;
+		double dx = state.x - weightPos.x;
+		double dy = state.y - weightPos.y;
+		double dz = state.z - weightPos.z;
 
-		float yaw = -(float)Math.toDegrees(Mth.atan2(dz, dx));
-		float pitch = (float)Math.toDegrees(Mth.atan2(Math.sqrt(dx * dx + dz * dz), -dy)) - 180;
+		float yaw = -(float) Math.toDegrees(Mth.atan2(dz, dx));
+		float pitch = (float) Math.toDegrees(Mth.atan2(Math.sqrt(dx * dx + dz * dz), -dy)) - 180;
 
 		stack.translate(0.0D, 0.5D, 0.0D);
 		stack.mulPose(Axis.YP.rotationDegrees(yaw));
 		stack.mulPose(Axis.ZP.rotationDegrees(pitch));
 		stack.mulPose(Axis.YP.rotationDegrees(-yaw));
 		stack.translate(0.0D, -0.5D, 0.0D);
-
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(Jellyfish entity) {
-		return TEXTURE[entity.getJellyfishColor()];
+	public JellyfishRenderState createRenderState() {
+		return new JellyfishRenderState();
+	}
+
+	@Override
+	public void extractRenderState(Jellyfish entity, JellyfishRenderState state, float partialTick) {
+		super.extractRenderState(entity, state, partialTick);
+		state.color = entity.getJellyfishColor();
+		state.jellyLength = entity.getJellyfishLength();
+		state.jellyScale = entity.getJellyfishSize();
+		state.swimAnimationPos = entity.walkAnimation.position(1.0F - partialTick);
+		state.orientation = entity.getOrientationPos(partialTick);
+	}
+
+	@Override
+	public ResourceLocation getTextureLocation(JellyfishRenderState state) {
+		return TEXTURE[state.color];
 	}
 }

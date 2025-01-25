@@ -34,7 +34,7 @@ public class WeedwoodBushFeature extends Feature<NoneFeatureConfiguration> {
 				break;
 			}
 			--y;
-		} while (y > level.getMinBuildHeight());
+		} while (y > level.getMinY());
 		++y;
 		offset.setY(y);
 

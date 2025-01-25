@@ -3,14 +3,14 @@ package thebetweenlands.common.item.shield;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.TooltipFlag;
 
 import java.util.List;
 
 public class DentrothystShieldItem extends BaseShieldItem {
-	public DentrothystShieldItem(Tier tier, Properties properties) {
-		super(tier, properties);
+	public DentrothystShieldItem(ToolMaterial material, Properties properties) {
+		super(material, properties);
 	}
 
 	@Override

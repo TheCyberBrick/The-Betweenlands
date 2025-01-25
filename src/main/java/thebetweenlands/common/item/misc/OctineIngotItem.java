@@ -7,7 +7,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -33,7 +32,7 @@ public class OctineIngotItem extends HoverTextItem {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
 		BlockHitResult result = Item.getPlayerPOVHitResult(level, player, ClipContext.Fluid.ANY);
 		if (result.getType() == HitResult.Type.BLOCK) {
@@ -50,10 +49,10 @@ public class OctineIngotItem extends HoverTextItem {
 			}
 			if (hasTinder && !blockState.is(Blocks.FIRE)) {
 				player.startUsingItem(hand);
-				return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
+				return InteractionResult.SUCCESS;
 			}
 		}
-		return new InteractionResultHolder<>(InteractionResult.FAIL, stack);
+		return InteractionResult.FAIL;
 	}
 
 	@Override
@@ -125,8 +124,8 @@ public class OctineIngotItem extends HoverTextItem {
 	}
 
 	@Override
-	public UseAnim getUseAnimation(ItemStack stack) {
-		return UseAnim.BOW;
+	public ItemUseAnimation getUseAnimation(ItemStack stack) {
+		return ItemUseAnimation.BOW;
 	}
 
 	@Override

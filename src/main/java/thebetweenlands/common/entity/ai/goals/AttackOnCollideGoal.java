@@ -34,7 +34,7 @@ public class AttackOnCollideGoal extends Goal {
 		if (this.attacker.isWithinMeleeAttackRange(target) && this.attackTick <= 0) {
 			this.attackTick = 20;
 			this.attacker.swing(InteractionHand.MAIN_HAND);
-			this.attacker.doHurtTarget(target);
+			this.attacker.doHurtTarget(getServerLevel(target), target);
 		}
 	}
 }

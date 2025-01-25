@@ -6,20 +6,19 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.creature.RootSprite;
 
-public class RootSpriteModel extends MowzieModelBase<RootSprite> {
+public class RootSpriteModel extends MowzieModelBase<LivingEntityRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart bodyBase;
 	private final ModelPart leftFoot;
 	private final ModelPart rightFoot;
 	private final ModelPart head;
 
 	public RootSpriteModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.bodyBase = root.getChild("body_base");
 		this.leftFoot = this.bodyBase.getChild("left_foot");
 		this.rightFoot = this.bodyBase.getChild("right_foot");
@@ -58,19 +57,14 @@ public class RootSpriteModel extends MowzieModelBase<RootSprite> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
+	public void setupAnim(LivingEntityRenderState state) {
+		this.head.yRot = (float) Math.toRadians(state.yRot);
 
-	@Override
-	public void setupAnim(RootSprite entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		this.head.yRot = (float) Math.toRadians(netHeadYaw);
+		float wobbleX = Mth.cos(state.ageInTicks / 11.0F) * 0.08F;
+		float wobbleZ = Mth.cos(state.ageInTicks / 12.0F) * 0.08F;
 
-		float wobbleX = Mth.cos(ageInTicks / 11.0F) * 0.08F;
-		float wobbleZ = Mth.cos(ageInTicks / 12.0F) * 0.08F;
-
-		this.leftFoot.xRot = Mth.cos(limbSwing * 2F) * 1.4F * limbSwingAmount * 0.5F + 0.1F - wobbleX;
-		this.rightFoot.xRot = Mth.cos(limbSwing * 2F + Mth.PI) * 1.4F * limbSwingAmount * 0.5F + 0.1F - wobbleX;
+		this.leftFoot.xRot = Mth.cos(state.walkAnimationPos * 2F) * 1.4F * state.walkAnimationSpeed * 0.5F + 0.1F - wobbleX;
+		this.rightFoot.xRot = Mth.cos(state.walkAnimationPos * 2F + Mth.PI) * 1.4F * state.walkAnimationSpeed * 0.5F + 0.1F - wobbleX;
 
 		this.leftFoot.zRot = -wobbleZ;
 		this.rightFoot.zRot = -wobbleZ;

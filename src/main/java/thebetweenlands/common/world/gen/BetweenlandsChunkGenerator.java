@@ -74,10 +74,10 @@ public class BetweenlandsChunkGenerator extends NoiseBasedChunkGenerator {
 
 	@Override
 	public CompletableFuture<ChunkAccess> createBiomes(RandomState random, Blender blender, StructureManager manager, ChunkAccess access) {
-		return CompletableFuture.supplyAsync(Util.wrapThreadWithTaskName("init_biomes", () -> {
+		return CompletableFuture.supplyAsync(() -> {
 			access.fillBiomesFromNoise(this.getBiomeSource(), Climate.empty());
 			return access;
-		}), Util.backgroundExecutor());
+		}, Util.backgroundExecutor().forName("init_biomes"));
 	}
 
 	@Override

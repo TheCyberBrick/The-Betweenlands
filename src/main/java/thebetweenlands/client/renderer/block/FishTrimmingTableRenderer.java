@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -68,7 +67,7 @@ public class FishTrimmingTableRenderer implements BlockEntityRenderer<FishTrimmi
 
 			if (!entity.getItem(0).isEmpty()) {
 				if (this.shouldRenderAsEntity(entity, 0) && entity.getInputEntity(entity.getLevel()) != null)
-					this.renderMobInSlot(stack, source, entity.getItem(0), entity.getInputEntity(entity.getLevel()), new Vec3(0.0F, -0.8F, 0.0F), light);
+					this.renderMobInSlot(stack, source, entity.getItem(0), entity.getInputEntity(entity.getLevel()), new Vec3(0.0F, -0.8F, 0.0F), partialTicks, light);
 				else
 					this.renderItemInSlot(stack, source, entity.getItem(0), ITEM_OFFSETS[0], 0.5F, 0.0F, light, overlay);
 			}
@@ -87,7 +86,7 @@ public class FishTrimmingTableRenderer implements BlockEntityRenderer<FishTrimmi
 		return entity.getItem(slot).is(ItemRegistry.SILT_CRAB) || entity.getItem(slot).is(ItemRegistry.BUBBLER_CRAB);
 	}
 
-	public void renderMobInSlot(PoseStack stack, MultiBufferSource source, ItemStack item, @Nullable Entity renderEntity, Vec3 offset, int light) {
+	public void renderMobInSlot(PoseStack stack, MultiBufferSource source, ItemStack item, @Nullable Entity renderEntity, Vec3 offset, float partialTicks, int light) {
 		if (renderEntity != null) {
 			if (item.getItem() instanceof AnadiaMobItem anadia && anadia.isRotten(renderEntity.level(), item)) {
 				((Anadia) renderEntity).setFishColor(AnadiaParts.AnadiaColor.ROTTEN);
@@ -109,8 +108,7 @@ public class FishTrimmingTableRenderer implements BlockEntityRenderer<FishTrimmi
 				stack.mulPose(Axis.YN.rotationDegrees(90.0F));
 			}
 			stack.scale(scale2, scale2, scale2);
-			EntityRenderer<? super Entity> renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(renderEntity);
-			renderer.render(renderEntity, 90, 0, stack, source, light);
+			Minecraft.getInstance().getEntityRenderDispatcher().render(renderEntity, 0, 0, 0, partialTicks, stack, source, light);
 			stack.popPose();
 		}
 	}

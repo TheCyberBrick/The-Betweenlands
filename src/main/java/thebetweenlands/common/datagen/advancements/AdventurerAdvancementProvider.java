@@ -162,42 +162,42 @@ public class AdventurerAdvancementProvider implements AdvancementGenerator {
 				Component.translatable("advancement.thebetweenlands.adventurer.pothead"),
 				Component.translatable("advancement.thebetweenlands.adventurer.pothead.desc"),
 				null, AdvancementType.TASK, true, true, false)
-			.addCriterion("pot1", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
-			.addCriterion("pot2", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
-			.addCriterion("pot3", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
-			.addCriterion("pot4", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
-			.addCriterion("pot5", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
-			.addCriterion("pot6", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
-			.addCriterion("pot7", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
-			.addCriterion("pot8", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
-			.addCriterion("pot9", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
-			.addCriterion("pot10", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
+			.addCriterion("pot1", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
+			.addCriterion("pot2", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
+			.addCriterion("pot3", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
+			.addCriterion("pot4", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
+			.addCriterion("pot5", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
+			.addCriterion("pot6", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
+			.addCriterion("pot7", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
+			.addCriterion("pot8", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
+			.addCriterion("pot9", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
+			.addCriterion("pot10", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_POT_1.get(), BlockRegistry.LOOT_POT_2.get(), BlockRegistry.LOOT_POT_3.get()).build()))
 			.save(consumer, "thebetweenlands:adventurer/pothead");
 
 		var urn = Advancement.Builder.advancement().parent(pot).display(BlockRegistry.LOOT_URN_1,
 				Component.translatable("advancement.thebetweenlands.adventurer.disgracing_the_dead"),
 				Component.translatable("advancement.thebetweenlands.adventurer.disgracing_the_dead.desc"),
 				null, AdvancementType.TASK, true, true, false)
-			.addCriterion("urn1", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn2", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn3", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn4", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn5", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn6", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn7", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn8", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn9", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn10", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn11", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn12", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn13", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn14", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn15", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn16", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn17", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn18", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn19", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
-			.addCriterion("urn20", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn1", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn2", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn3", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn4", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn5", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn6", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn7", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn8", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn9", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn10", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn11", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn12", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn13", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn14", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn15", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn16", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn17", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn18", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn19", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
+			.addCriterion("urn20", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BlockRegistry.LOOT_URN_1.get(), BlockRegistry.LOOT_URN_2.get(), BlockRegistry.LOOT_URN_3.get()).build()))
 			.save(consumer, "thebetweenlands:adventurer/disgracing_the_dead");
 
 		Advancement.Builder.advancement().parent(urn).display(BlockRegistry.MUD_BRICK_ALCOVE,
@@ -237,21 +237,21 @@ public class AdventurerAdvancementProvider implements AdvancementGenerator {
 				Component.translatable("advancement.thebetweenlands.adventurer.gambling_addict"),
 				Component.translatable("advancement.thebetweenlands.adventurer.gambling_addict.desc"),
 				null, AdvancementType.TASK, true, true, false)
-			.addCriterion("animate1", AnimateTrigger.TriggerInstance.animateItem(ItemRegistry.ITEM_SCROLL))
-			.addCriterion("animate2", AnimateTrigger.TriggerInstance.animateItem(ItemRegistry.ITEM_SCROLL))
-			.addCriterion("animate3", AnimateTrigger.TriggerInstance.animateItem(ItemRegistry.ITEM_SCROLL))
-			.addCriterion("animate4", AnimateTrigger.TriggerInstance.animateItem(ItemRegistry.ITEM_SCROLL))
-			.addCriterion("animate5", AnimateTrigger.TriggerInstance.animateItem(ItemRegistry.ITEM_SCROLL))
-			.addCriterion("animate6", AnimateTrigger.TriggerInstance.animateItem(ItemRegistry.ITEM_SCROLL))
-			.addCriterion("animate7", AnimateTrigger.TriggerInstance.animateItem(ItemRegistry.ITEM_SCROLL))
-			.addCriterion("animate8", AnimateTrigger.TriggerInstance.animateItem(ItemRegistry.ITEM_SCROLL))
-			.addCriterion("animate9", AnimateTrigger.TriggerInstance.animateItem(ItemRegistry.ITEM_SCROLL))
-			.addCriterion("animate10", AnimateTrigger.TriggerInstance.animateItem(ItemRegistry.ITEM_SCROLL))
-			.addCriterion("animate11", AnimateTrigger.TriggerInstance.animateItem(ItemRegistry.ITEM_SCROLL))
-			.addCriterion("animate12", AnimateTrigger.TriggerInstance.animateItem(ItemRegistry.ITEM_SCROLL))
-			.addCriterion("animate13", AnimateTrigger.TriggerInstance.animateItem(ItemRegistry.ITEM_SCROLL))
-			.addCriterion("animate14", AnimateTrigger.TriggerInstance.animateItem(ItemRegistry.ITEM_SCROLL))
-			.addCriterion("animate15", AnimateTrigger.TriggerInstance.animateItem(ItemRegistry.ITEM_SCROLL))
+			.addCriterion("animate1", AnimateTrigger.TriggerInstance.animateItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.ITEM_SCROLL))
+			.addCriterion("animate2", AnimateTrigger.TriggerInstance.animateItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.ITEM_SCROLL))
+			.addCriterion("animate3", AnimateTrigger.TriggerInstance.animateItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.ITEM_SCROLL))
+			.addCriterion("animate4", AnimateTrigger.TriggerInstance.animateItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.ITEM_SCROLL))
+			.addCriterion("animate5", AnimateTrigger.TriggerInstance.animateItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.ITEM_SCROLL))
+			.addCriterion("animate6", AnimateTrigger.TriggerInstance.animateItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.ITEM_SCROLL))
+			.addCriterion("animate7", AnimateTrigger.TriggerInstance.animateItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.ITEM_SCROLL))
+			.addCriterion("animate8", AnimateTrigger.TriggerInstance.animateItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.ITEM_SCROLL))
+			.addCriterion("animate9", AnimateTrigger.TriggerInstance.animateItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.ITEM_SCROLL))
+			.addCriterion("animate10", AnimateTrigger.TriggerInstance.animateItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.ITEM_SCROLL))
+			.addCriterion("animate11", AnimateTrigger.TriggerInstance.animateItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.ITEM_SCROLL))
+			.addCriterion("animate12", AnimateTrigger.TriggerInstance.animateItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.ITEM_SCROLL))
+			.addCriterion("animate13", AnimateTrigger.TriggerInstance.animateItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.ITEM_SCROLL))
+			.addCriterion("animate14", AnimateTrigger.TriggerInstance.animateItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.ITEM_SCROLL))
+			.addCriterion("animate15", AnimateTrigger.TriggerInstance.animateItem(registries.lookupOrThrow(Registries.ITEM), ItemRegistry.ITEM_SCROLL))
 			.save(consumer, "thebetweenlands:adventurer/gambling_addict");
 
 		Advancement.Builder.advancement().parent(gambling).display(ItemRegistry.RECORD_WANDERING_WISPS,
@@ -314,7 +314,7 @@ public class AdventurerAdvancementProvider implements AdvancementGenerator {
 				Component.translatable("advancement.thebetweenlands.adventurer.santa_wight"),
 				Component.translatable("advancement.thebetweenlands.adventurer.santa_wight.desc"),
 				null, AdvancementType.TASK, true, false, true)
-			.addCriterion("present", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(BLBlockTagProvider.PRESENTS).build()))
+			.addCriterion("present", BreakBlockTrigger.TriggerInstance.breakBlock(BlockPredicate.Builder.block().of(registries.lookupOrThrow(Registries.BLOCK), BLBlockTagProvider.PRESENTS).build()))
 			.save(consumer, "thebetweenlands:adventurer/santa_wight");
 	}
 }

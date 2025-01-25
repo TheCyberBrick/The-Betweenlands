@@ -21,7 +21,6 @@ import thebetweenlands.common.herblore.elixir.effects.ElixirEffect;
 import thebetweenlands.common.registries.ItemRegistry;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -115,7 +114,7 @@ public class PageCreators {
 		List<Page> newPages = new ArrayList<>();
 		int height = 0;
 		ItemStack itemStack = new ItemStack(item.value().item());
-		List<Ingredient> pestleAndMortarInput = MortarRecipe.getInputs(BetweenlandsClient.getClientLevel(), itemStack);
+		List<Ingredient> pestleAndMortarInput = BetweenlandsClient.ClientRecipes.getMortarInputs(itemStack);
 		List<BookWidget> widgets = new ArrayList<>();
 		widgets.add(new ItemWidget(18, 12, itemStack, 1f));
 		if (!pestleAndMortarInput.isEmpty()) {
@@ -141,7 +140,7 @@ public class PageCreators {
 
 	private static List<ItemStack> getStacks(List<Ingredient> input) {
 		List<ItemStack> stacks = new ArrayList<>();
-		input.forEach(ingredient -> stacks.addAll(Arrays.stream(ingredient.getItems()).toList()));
+		input.forEach(ingredient -> stacks.addAll(ingredient.getValues().stream().map(ItemStack::new).toList()));
 		return stacks;
 	}
 

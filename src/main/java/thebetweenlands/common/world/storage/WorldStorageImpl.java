@@ -44,7 +44,7 @@ public abstract class WorldStorageImpl implements IWorldStorage {
 				}
 
 				//Makes sure that the default values are saved
-				chunk.setUnsaved(true);
+				chunk.markUnsaved();
 			} catch (Exception ex) {
 				TheBetweenlands.LOGGER.error(String.format("Failed creating chunk storage at %s", "[x=" + chunk.getPos().x + ", z=" + chunk.getPos().z + "]"), ex);
 			}

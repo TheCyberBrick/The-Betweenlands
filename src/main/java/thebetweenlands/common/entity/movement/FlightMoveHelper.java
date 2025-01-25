@@ -87,7 +87,6 @@ public class FlightMoveHelper extends MoveControl {
 	/**
 	 * Returns whether the path is currently blocked
 	 *
-	 * @return
 	 */
 
 	public boolean isBlocked() {
@@ -97,7 +96,6 @@ public class FlightMoveHelper extends MoveControl {
 	/**
 	 * Returns the amount of ticks before the course can be changed again
 	 *
-	 * @return
 	 */
 	protected int getCourseChangeCooldown() {
 		return this.mob.getRandom().nextInt(5) + 2;
@@ -106,11 +104,6 @@ public class FlightMoveHelper extends MoveControl {
 	/**
 	 * Returns whether the entity will collide on the current path
 	 *
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param step
-	 * @return
 	 */
 	protected boolean isNotColliding(double x, double y, double z, double step) {
 		if (!this.mob.noPhysics)
@@ -135,8 +128,6 @@ public class FlightMoveHelper extends MoveControl {
 	/**
 	 * Returns whether the entities path is blocked at the specified AABB
 	 *
-	 * @param aabb
-	 * @return
 	 */
 	protected boolean isBlocked(AABB aabb) {
 		return false;
@@ -145,7 +136,6 @@ public class FlightMoveHelper extends MoveControl {
 	/**
 	 * Returns the flight speed
 	 *
-	 * @return
 	 */
 	protected double getFlightSpeed() {
 		return this.getSpeedModifier();
@@ -154,11 +144,6 @@ public class FlightMoveHelper extends MoveControl {
 	/**
 	 * Returns the ground height at the specified block position
 	 *
-	 * @param world
-	 * @param pos
-	 * @param maxIter
-	 * @param fallback
-	 * @return
 	 */
 	public static BlockPos getGroundHeight(Level world, BlockPos pos, int maxIter, BlockPos fallback) {
 		if (world.canSeeSky(pos)) {

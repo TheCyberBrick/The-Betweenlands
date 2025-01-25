@@ -3,19 +3,17 @@ package thebetweenlands.client.model.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.util.Mth;
-import thebetweenlands.common.entity.fishing.SiltCrab;
+import thebetweenlands.client.model.MowzieModelBase;
 
-public class SiltCrabModel extends HierarchicalModel<SiltCrab> {
-
-	private final ModelPart root;
+public class SiltCrabModel extends MowzieModelBase<LivingEntityRenderState> {
 
 	private final ModelPart leftFrontLeg;
 	private final ModelPart leftMiddleLeg;
@@ -31,7 +29,7 @@ public class SiltCrabModel extends HierarchicalModel<SiltCrab> {
 	private final ModelPart rightClawBase;
 
 	public SiltCrabModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.rightArm = root.getChild("right_arm");
 		this.leftArm = root.getChild("left_arm");
 		this.rightClawBase = this.rightArm.getChild("right_claw_base");
@@ -187,19 +185,6 @@ public class SiltCrabModel extends HierarchicalModel<SiltCrab> {
 		return LayerDefinition.create(definition, 64, 32);
 	}
 
-	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void renderToBuffer(PoseStack stack, VertexConsumer consumer, int light, int overlay, int color) {
-		stack.pushPose();
-		stack.mulPose(Axis.YN.rotationDegrees(90.0F));
-		super.renderToBuffer(stack, consumer, light, overlay, color);
-		stack.popPose();
-	}
-
 	public void renderCrabEating(PoseStack stack, VertexConsumer consumer, int light, int overlay, float animationTick) {
 		this.playEatingAnimation(animationTick);
 		stack.pushPose();
@@ -220,8 +205,8 @@ public class SiltCrabModel extends HierarchicalModel<SiltCrab> {
 	}
 
 	@Override
-	public void setupAnim(SiltCrab entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		float movement = Mth.cos(limbSwing * 1.5F + Mth.PI) * 1.5F * limbSwingAmount * 0.5F;
+	public void setupAnim(LivingEntityRenderState state) {
+		float movement = Mth.cos(state.walkAnimationPos * 1.5F + Mth.PI) * 1.5F * state.walkAnimationSpeed * 0.5F;
 		this.rightArm.xRot = -movement * 0.2F - 1.5025539530419183F;
 		this.leftArm.xRot = movement * 0.2F - 1.5025539530419183F;
 		this.rightFrontLeg.zRot = movement;

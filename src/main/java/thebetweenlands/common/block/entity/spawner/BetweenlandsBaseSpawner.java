@@ -18,7 +18,6 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.event.EventHooks;
 
@@ -176,11 +175,11 @@ public abstract class BetweenlandsBaseSpawner extends BaseSpawner {
 							if (!spawndata$customspawnrules.isValidPosition(blockpos, serverLevel)) {
 								continue;
 							}
-						} else if (!SpawnPlacements.checkSpawnRules(optional.get(), serverLevel, MobSpawnType.SPAWNER, blockpos, serverLevel.getRandom())) {
+						} else if (!SpawnPlacements.checkSpawnRules(optional.get(), serverLevel, EntitySpawnReason.SPAWNER, blockpos, serverLevel.getRandom())) {
 							continue;
 						}
 
-						Entity entity = EntityType.loadEntityRecursive(compoundtag, serverLevel, p_151310_ -> {
+						Entity entity = EntityType.loadEntityRecursive(compoundtag, serverLevel, EntitySpawnReason.SPAWNER, p_151310_ -> {
 							p_151310_.moveTo(d0, d1, d2, p_151310_.getYRot(), p_151310_.getXRot());
 							return p_151310_;
 						});
@@ -219,12 +218,12 @@ public abstract class BetweenlandsBaseSpawner extends BaseSpawner {
 
 						if (canSpawn) {
 							if (entity instanceof Mob mob) {
-								if (!EventHooks.checkSpawnPositionSpawner(mob, serverLevel, MobSpawnType.SPAWNER, spawndata, this)) {
+								if (!EventHooks.checkSpawnPositionSpawner(mob, serverLevel, EntitySpawnReason.SPAWNER, spawndata, this)) {
 									continue;
 								}
 
 								boolean flag1 = spawndata.getEntityToSpawn().size() == 1 && spawndata.getEntityToSpawn().contains("id", 8);
-								EventHooks.finalizeMobSpawnSpawner(mob, serverLevel, serverLevel.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWNER, null, this, flag1);
+								EventHooks.finalizeMobSpawnSpawner(mob, serverLevel, serverLevel.getCurrentDifficultyAt(entity.blockPosition()), EntitySpawnReason.SPAWNER, null, this, flag1);
 
 								spawndata.getEquipment().ifPresent(mob::equip);
 							}

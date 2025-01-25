@@ -38,7 +38,7 @@ public class ClientEvents {
 
 	static void renderMobsOnFrame(RenderItemInFrameEvent event) {
 		if (!event.isCanceled() && event.getItemStack().getItem() instanceof MobItem<?> mob) {
-			Entity entity = mob.createCapturedEntity(event.getItemFrameEntity().level(), 0, 0, 0, event.getItemStack(), false);
+			Entity entity = mob.createCapturedEntity(Minecraft.getInstance().level, 0, 0, 0, event.getItemStack(), false);
 
 			event.getPoseStack().scale(-0.5F, 0.5F, 0.5F);
 			if (entity != null && !(entity instanceof PartEntity<?>)) {
@@ -53,7 +53,7 @@ public class ClientEvents {
 				event.getPoseStack().mulPose(Axis.YP.rotationDegrees(90));
 				entity.setXRot(0.0F);
 				entity.tickCount = 0;
-				Minecraft.getInstance().getEntityRenderDispatcher().render(entity, 0D, 0D, 0D, 0F, 0F, event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight());
+				Minecraft.getInstance().getEntityRenderDispatcher().render(entity, 0D, 0D, 0D, 0F, event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight());
 			}
 		}
 	}

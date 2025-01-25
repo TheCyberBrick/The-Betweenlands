@@ -4,7 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -51,7 +51,7 @@ public class InfestedWeedwoodBushBlock extends WeedwoodBushBlock {
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (!level.isClientSide() && stack.canPerformAction(ItemAbilities.SHEARS_HARVEST)) {
 			if (state.is(BlockRegistry.GRUB_INFESTED_WEEDWOOD_BUSH) || state.is(BlockRegistry.SILK_COCOONED_WEEDWOOD_BUSH)) {
 				ItemStack harvest = new ItemStack(state.is(BlockRegistry.GRUB_INFESTED_WEEDWOOD_BUSH) ? ItemRegistry.SILK_GRUB.get() : ItemRegistry.SILK_COCOON.get(), 2);
@@ -60,7 +60,7 @@ public class InfestedWeedwoodBushBlock extends WeedwoodBushBlock {
 				level.addFreshEntity(item);
 				level.setBlock(pos, BlockRegistry.WEEDWOOD_BUSH.get().defaultBlockState(), 2);
 				stack.consume(1, player);
-				return ItemInteractionResult.SUCCESS;
+				return InteractionResult.SUCCESS;
 			}
 		}
 

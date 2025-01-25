@@ -28,14 +28,15 @@ public class BossHandler {
 		}
 	}
 
-	private static void renderMiniBossbars(RenderLivingEvent.Post<?, ?> event) {
-		if (event.getEntity() instanceof BetweenlandsBossBar boss) {
-			if (boss.getBossType() == BetweenlandsBossBar.BossType.MINI_BOSS) {
-				BossEvent info = Minecraft.getInstance().gui.getBossOverlay().events.get(boss.getBar().getId());
-				if (info instanceof BetweenlandsClientBossBar bar) {
-					bar.renderMiniBossBar(boss, event.getPoseStack(), event.getPartialTick());
-				}
-			}
-		}
+	//TODO aaaaaaaaaaaaaaaaaaaaa
+	private static void renderMiniBossbars(RenderLivingEvent.Post<?, ?, ?> event) {
+//		if (event.getEntity() instanceof BetweenlandsBossBar boss) {
+//			if (boss.getBossType() == BetweenlandsBossBar.BossType.MINI_BOSS) {
+//				BossEvent info = Minecraft.getInstance().gui.getBossOverlay().events.get(boss.getBar().getId());
+//				if (info instanceof BetweenlandsClientBossBar bar) {
+//					bar.renderMiniBossBar(boss, event.getPoseStack(), event.getPartialTick());
+//				}
+//			}
+//		}
 	}
 }

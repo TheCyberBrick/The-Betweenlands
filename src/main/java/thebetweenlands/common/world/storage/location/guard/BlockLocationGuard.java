@@ -20,8 +20,6 @@ public class BlockLocationGuard implements ILocationGuard {
 
 	/**
 	 * Returns the chunk at the specified position
-	 * @param pos
-	 * @return
 	 */
 	@Nullable
 	public GuardChunk getChunk(BlockPos pos) {
@@ -33,8 +31,6 @@ public class BlockLocationGuard implements ILocationGuard {
 
 	/**
 	 * Returns the chunk section at the specified position
-	 * @param pos
-	 * @return
 	 */
 	@Nullable
 	public GuardChunkSection getSection(BlockPos pos) {
@@ -95,7 +91,7 @@ public class BlockLocationGuard implements ILocationGuard {
 				posIT.remove();
 			}
 		}*/
-		explosion.clearToBlow();
+		//explosion.clearToBlow();
 	}
 
 	@Override

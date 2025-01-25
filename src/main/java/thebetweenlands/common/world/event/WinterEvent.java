@@ -126,7 +126,7 @@ public class WinterEvent extends SeasonalEnvironmentEvent {
 							BlockState stateAbove = level.getBlockState(pos.above());
 							if (stateAbove.isFaceSturdy(level, pos, Direction.UP)) {
 								if (stateAbove.isAir() || (stateAbove.getBlock() instanceof BLSnowLayerBlock && stateAbove.getValue(BLSnowLayerBlock.LAYERS) <= 5)) {
-									level.setBlockAndUpdate(pos.above(), BuiltInRegistries.BLOCK.getOrCreateTag(BLBlockTagProvider.PRESENTS).getRandomElement(level.getRandom()).get().value().defaultBlockState());
+									level.setBlockAndUpdate(pos.above(), BuiltInRegistries.BLOCK.getRandomElementOf(BLBlockTagProvider.PRESENTS, level.getRandom()).orElseThrow().value().defaultBlockState());
 									BlockEntity tile = level.getBlockEntity(pos.above());
 									if (tile instanceof PresentBlockEntity present) {
 										present.setLootTable(LootTableRegistry.PRESENT, level.getRandom().nextLong());

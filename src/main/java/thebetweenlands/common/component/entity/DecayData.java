@@ -3,6 +3,7 @@ package thebetweenlands.common.component.entity;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
@@ -55,7 +56,6 @@ public class DecayData implements IDecayData {
 
 	/**
 	 * Updates the decay stats
-	 * @param player
 	 */
 	@Override
 	public void tick(Player player) {
@@ -78,7 +78,6 @@ public class DecayData implements IDecayData {
 
 	/**
 	 * Returns the decay level (0 = no decay, 20 = maximum decay)
-	 * @return
 	 */
 	@Override
 	public int getDecayLevel(Player player) {
@@ -87,7 +86,6 @@ public class DecayData implements IDecayData {
 
 	/**
 	 * Returns the decay level in the previous tick
-	 * @return
 	 */
 	@Override
 	public int getPrevDecayLevel() {
@@ -96,7 +94,6 @@ public class DecayData implements IDecayData {
 
 	/**
 	 * Returns the decay saturation level (higher = slower decay rate)
-	 * @return
 	 */
 	@Override
 	public float getSaturationLevel() {
@@ -105,7 +102,6 @@ public class DecayData implements IDecayData {
 
 	/**
 	 * Returns the decay acceleration level
-	 * @return
 	 */
 	@Override
 	public float getAccelerationLevel() {
@@ -114,7 +110,6 @@ public class DecayData implements IDecayData {
 
 	/**
 	 * Sets the decay level
-	 * @param decay
 	 */
 	@Override
 	public void setDecayLevel(Player player, int decay) {
@@ -124,7 +119,6 @@ public class DecayData implements IDecayData {
 
 	/**
 	 * Sets the decay saturation level (higher = slower decay rate)
-	 * @param saturation
 	 */
 	@Override
 	public void setDecaySaturationLevel(Player player, float saturation) {
@@ -134,7 +128,6 @@ public class DecayData implements IDecayData {
 
 	/**
 	 * Adds decay acceleration (once >= 4 is accumulated the decay level is increased by one)
-	 * @param acceleration
 	 */
 	@Override
 	public void addDecayAcceleration(Player player, float acceleration) {
@@ -150,8 +143,8 @@ public class DecayData implements IDecayData {
 
 	@Override
 	public boolean isDecayEnabled(Player player) {
-		return player.level().getDifficulty() != Difficulty.PEACEFUL &&
-			player.level().getGameRules().getBoolean(TheBetweenlands.DECAY_GAMERULE) && BetweenlandsConfig.useDecay &&
+		return player.level().getDifficulty() != Difficulty.PEACEFUL && player.level() instanceof ServerLevel level &&
+			level.getGameRules().getBoolean(TheBetweenlands.DECAY_GAMERULE) && BetweenlandsConfig.useDecay &&
 			(player.level().dimension() == DimensionRegistries.DIMENSION_KEY || BetweenlandsConfig.decayDimensionList.contains(player.level().dimension()) || player.level().dimensionTypeRegistration().is(BLDimensionTypeTagProvider.DECAYING_AURA)) &&
 			!player.isCreative() && !player.getAbilities().invulnerable;
 	}

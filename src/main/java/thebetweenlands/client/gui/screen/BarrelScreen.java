@@ -3,6 +3,7 @@ package thebetweenlands.client.gui.screen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -56,8 +57,8 @@ public class BarrelScreen extends AbstractContainerScreen<BarrelMenu> {
 	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
 		int i = this.leftPos;
 		int j = (this.height - this.imageHeight) / 2;
-		graphics.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight);
-		graphics.blitSprite(BUCKET_TEXTURE, i + 140, j + 16, 16, 16);
+		graphics.blit(RenderType::guiTextured, TEXTURE, i, j, 0.0F, 0.0F, 0, 0, this.imageWidth, this.imageHeight);
+		graphics.blitSprite(RenderType::guiTextured, BUCKET_TEXTURE, i + 140, j + 16, 16, 16);
 
 		if (!this.getMenu().getTank().isEmpty()) {
 			FluidStack stack = this.getMenu().getTank().getFluid();
@@ -68,8 +69,8 @@ public class BarrelScreen extends AbstractContainerScreen<BarrelMenu> {
 			this.renderTank(graphics, i + 64, j + 71, sprite, 47, 57, barHeight, color);
 			this.renderTank(graphics, i + 140, j + 32, sprite, 16, 16, 16, color);
 
-			graphics.blitSprite(BARREL_COVER_TEXTURE, i + 64, j + 12, 47, 62);
-			graphics.blitSprite(BUCKET_COVER_TEXTURE, i + 140, j + 16, 16, 16);
+			graphics.blitSprite(RenderType::guiTextured, BARREL_COVER_TEXTURE, i + 64, j + 12, 47, 62);
+			graphics.blitSprite(RenderType::guiTextured, BUCKET_COVER_TEXTURE, i + 140, j + 16, 16, 16);
 			graphics.drawString(this.font, this.numberFormat.format(stack.getAmount() / 1000.0F), i + 127, j + 26, 0xFFFFFFFF, false);
 		}
 	}
@@ -84,12 +85,8 @@ public class BarrelScreen extends AbstractContainerScreen<BarrelMenu> {
 			int segmentHeight = Math.min(yStart + height, fullHeight) - yStart;
 			float fraction = segmentHeight / (float) height;
 			int yOff = -yStart - (int) (height * fraction);
-			float r = ((color >> 16) & 0xFF) / 255.0f;
-			float g = ((color >> 8) & 0xFF) / 255.0f;
-			float b = ((color) & 0xFF) / 255.0f;
-			float a = ((color >> 24) & 0xFF) / 255.0f;
 
-			graphics.blit(x, yOff + y, 0, width, (int)(height * fraction), sprite, r, g, b, a);
+			graphics.blitSprite(RenderType::guiTextured, sprite, x, yOff + y, width, (int) (height * fraction), color);
 			yStart += height;
 		}
 	}

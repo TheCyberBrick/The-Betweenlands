@@ -11,11 +11,13 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import thebetweenlands.client.BLModelLayers;
+import thebetweenlands.client.state.LurkerSkinRaftRenderState;
 import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.entity.LurkerSkinRaft;
 
-public class LurkerSkinRaftRenderer extends EntityRenderer<LurkerSkinRaft> {
+public class LurkerSkinRaftRenderer extends EntityRenderer<LurkerSkinRaft, LurkerSkinRaftRenderState> {
 
+	public static final ResourceLocation TEXTURE = TheBetweenlands.prefix("textures/entity/shield/lurker_skin_shield.png");
 	private final ModelPart model;
 
 	public LurkerSkinRaftRenderer(EntityRendererProvider.Context context) {
@@ -24,21 +26,27 @@ public class LurkerSkinRaftRenderer extends EntityRenderer<LurkerSkinRaft> {
 	}
 
 	@Override
-	public void render(LurkerSkinRaft entity, float entityYaw, float partialTick, PoseStack stack, MultiBufferSource source, int light) {
+	public void render(LurkerSkinRaftRenderState state, PoseStack stack, MultiBufferSource source, int light) {
 		stack.pushPose();
 		stack.translate(0.0F, 0.4F, 0.0F);
-		stack.mulPose(Axis.YP.rotationDegrees(180.0F - entityYaw));
+		stack.mulPose(Axis.YP.rotationDegrees(180.0F - state.yRot));
 		stack.scale(-1.0F, -1.0F, 1.0F);
 		stack.mulPose(Axis.XP.rotationDegrees(90.0F));
-		VertexConsumer vertexconsumer = source.getBuffer(RenderType.entityCutoutNoCull(this.getTextureLocation(entity)));
+		VertexConsumer vertexconsumer = source.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
 		this.model.render(stack, vertexconsumer, light, OverlayTexture.NO_OVERLAY);
 
 		stack.popPose();
-		super.render(entity, entityYaw, partialTick, stack, source, light);
+		super.render(state, stack, source, light);
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(LurkerSkinRaft entity) {
-		return TheBetweenlands.prefix("textures/entity/shield/lurker_skin_shield.png");
+	public LurkerSkinRaftRenderState createRenderState() {
+		return new LurkerSkinRaftRenderState();
+	}
+
+	@Override
+	public void extractRenderState(LurkerSkinRaft entity, LurkerSkinRaftRenderState state, float partialTick) {
+		super.extractRenderState(entity, state, partialTick);
+		state.yRot = entity.getYRot(partialTick);
 	}
 }

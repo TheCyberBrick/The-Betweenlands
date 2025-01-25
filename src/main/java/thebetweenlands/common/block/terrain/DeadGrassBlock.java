@@ -17,7 +17,7 @@ public class DeadGrassBlock extends Block implements BonemealableBlock {
 
 	@Override
 	protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-		if (level.getBlockState(pos.above()).getLightBlock(level, pos.above()) > 2) {
+		if (level.getBlockState(pos.above()).getLightBlock() > 2) {
 			level.setBlockAndUpdate(pos, BlockRegistry.SWAMP_DIRT.get().defaultBlockState());
 		}
 	}

@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
@@ -74,8 +75,8 @@ public class FishTrimmingTableBlockEntity extends BaseContainerBlockEntity {
 	@Override
 	public void setItem(int slot, ItemStack stack) {
 		super.setItem(slot, stack);
-		if (slot == 0 && this.getLevel() != null) {
-			this.recipe = this.getLevel().getRecipeManager().getRecipeFor(RecipeRegistry.TRIMMING_TABLE_RECIPE.get(), new SingleRecipeInput(stack), this.getLevel()).map(RecipeHolder::value).orElse(null);
+		if (slot == 0 && this.getLevel() instanceof ServerLevel sl) {
+			this.recipe = sl.recipeAccess().getRecipeFor(RecipeRegistry.TRIMMING_TABLE_RECIPE.get(), new SingleRecipeInput(stack), this.getLevel()).map(RecipeHolder::value).orElse(null);
 		}
 	}
 

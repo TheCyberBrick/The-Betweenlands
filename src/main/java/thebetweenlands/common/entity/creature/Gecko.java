@@ -137,8 +137,8 @@ public class Gecko extends Animal implements BLEntity, WeedwoodBushPassableEntit
 	}
 
 	@Override
-	protected void customServerAiStep() {
-		super.customServerAiStep();
+	protected void customServerAiStep(ServerLevel level) {
+		super.customServerAiStep(level);
 
 		if (this.isHiding()) {
 			if (this.hasValidHiding()) {

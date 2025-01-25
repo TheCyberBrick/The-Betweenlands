@@ -74,7 +74,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 	 * @param g Green
 	 * @param b Blue
 	 * @param a Alpha
-	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	public final T setBackgroundColor(float r, float g, float b, float a) {
@@ -108,8 +107,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 
 	/**
 	 * Returns the effect builder
-	 * @param dst
-	 * @return
 	 */
 	public EffectBuilder<T> create(RenderTarget dst) {
 		return new EffectBuilder<>(this, dst);
@@ -138,8 +135,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 		/**
 		 * Sets the source texture the effect should read from.
 		 * <p><b>Note:</b> If the source is the same as the destination a blit buffer is required
-		 * @param src
-		 * @return
 		 */
 		public EffectBuilder<T> setSource(int src) {
 			this.src = src;
@@ -148,8 +143,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 
 		/**
 		 * Sets the blit FBO if this effect requires one
-		 * @param blitFramebuffer
-		 * @return
 		 */
 		public EffectBuilder<T> setBlitFramebuffer(RenderTarget blitFramebuffer) {
 			this.blitFrfamebuffer = blitFramebuffer;
@@ -158,8 +151,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 
 		/**
 		 * Sets which FBO should be bound after applying the effect
-		 * @param prevFramebuffer
-		 * @return
 		 */
 		public EffectBuilder<T> setPreviousFramebuffer(RenderTarget prevFramebuffer) {
 			this.prevFramebuffer = prevFramebuffer;
@@ -169,9 +160,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 		/**
 		 * Sets the render dimensions for this effect.
 		 * Uses the destination FBO dimensions by default
-		 * @param renderWidth
-		 * @param renderHeight
-		 * @return
 		 */
 		public EffectBuilder<T> setRenderDimensions(double renderWidth, double renderHeight) {
 			this.renderWidth = renderWidth;
@@ -182,8 +170,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 		/**
 		 * Sets whether the GL states should be restored after applying the effect.
 		 * True by default
-		 * @param restore
-		 * @return
 		 */
 		public EffectBuilder<T> setRestoreGlState(boolean restore) {
 			this.restore = restore;
@@ -192,8 +178,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 
 		/**
 		 * Sets the renderer to mirror the X axis
-		 * @param mirror
-		 * @return
 		 */
 		public EffectBuilder<T> setMirrorX(boolean mirror) {
 			this.mirrorX = mirror;
@@ -202,8 +186,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 
 		/**
 		 * Sets the renderer to mirror the Y axis
-		 * @param mirror
-		 * @return
 		 */
 		public EffectBuilder<T> setMirrorY(boolean mirror) {
 			this.mirrorY = mirror;
@@ -212,8 +194,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 
 		/**
 		 * Sets whether the destination FBO depth buffer should be cleared
-		 * @param clearDepth
-		 * @return
 		 */
 		public EffectBuilder<T> setClearDepth(boolean clearDepth) {
 			this.clearDepth = clearDepth;
@@ -222,8 +202,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 
 		/**
 		 * Sets whether the destination FBO color buffer should be cleared
-		 * @param clearColor
-		 * @return
 		 */
 		public EffectBuilder<T> setClearColor(boolean clearColor) {
 			this.clearColor = clearColor;
@@ -285,11 +263,11 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 
 		//Clear buffers
 		if(clearDepth) {
-			RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
+			RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT);
 		}
 		if(clearColor) {
 			RenderSystem.clearColor(this.cr, this.cg, this.cb, this.ca);
-			RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT, Minecraft.ON_OSX);
+			RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT);
 		}
 
 		//Use shader
@@ -472,10 +450,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 
 	/**
 	 * Compiles and creates a shader from the shader code.
-	 * @param shaderCode
-	 * @param shaderType
-	 * @return
-	 * @throws Exception
 	 */
 	private static int createShader(String shaderCode, int shaderType) throws Exception {
 		int shader = 0;
@@ -509,7 +483,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 
 	/**
 	 * Returns the shader code. [0] = vertex shader, [1] = fragment shader
-	 * @return
 	 */
 	protected abstract ResourceLocation[] getShaders();
 
@@ -521,7 +494,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 	/**
 	 * Returns additional stages.
 	 * <p><b>Note:</b> If additional stages are used a blit buffer is required
-	 * @return
 	 */
 	protected PostProcessingEffect<?>[] getStages() { return null; }
 
@@ -543,8 +515,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 
 	/**
 	 * Uploads up to 4 floats
-	 * @param values
-	 * @return
 	 */
 	protected final void uploadFloat(int uniform, float... values) {
 		if(uniform >= 0) {
@@ -580,8 +550,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 
 	/**
 	 * Uploads up to 4 integers
-	 * @param values
-	 * @return
 	 */
 	protected final void uploadInt(int uniform, int... values) {
 		if(uniform >= 0) {
@@ -617,8 +585,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 
 	/**
 	 * Uploads an int buffer
-	 * @param buffer
-	 * @return
 	 */
 	protected final void uploadIntArray(int uniform, IntBuffer buffer) {
 		if(uniform >= 0) {
@@ -628,8 +594,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 
 	/**
 	 * Uploads a float buffer
-	 * @param buffer
-	 * @return
 	 */
 	protected final void uploadFloatArray(int uniform, FloatBuffer buffer) {
 		if(uniform >= 0) {
@@ -640,9 +604,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 	/**
 	 * Uploads a sampler.
 	 * Texture unit 0 is reserved for the default diffuse sampler
-	 * @param uniform
-	 * @param texture
-	 * @param textureUnit
 	 */
 	protected final void uploadSampler(int uniform, int texture, int textureUnit) {
 		if(uniform >= 0 && textureUnit >= 0) {
@@ -656,9 +617,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 	/**
 	 * Uploads a sampler.
 	 * Texture unit 0 is reserved for the default diffuse sampler
-	 * @param uniform
-	 * @param texture
-	 * @param textureUnit
 	 */
 	protected final void uploadSampler(int uniform, ResourceLocation texture, int textureUnit) {
 		if(uniform >= 0 && textureUnit >= 0) {
@@ -671,8 +629,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 
 	/**
 	 * Uploads a matrix
-	 * @param uniform
-	 * @param matrix
 	 */
 	protected final void uploadMatrix4f(int uniform, Matrix4f matrix) {
 		if(uniform >= 0) {
@@ -699,8 +655,6 @@ public abstract class PostProcessingEffect<T extends PostProcessingEffect<?>> {
 
 	/**
 	 * Returns the uniform location
-	 * @param name
-	 * @return
 	 */
 	protected final int getUniform(String name) {
 		return GlStateManager._glGetUniformLocation(this.getShaderProgram(), name);

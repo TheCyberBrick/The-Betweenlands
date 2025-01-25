@@ -1,12 +1,12 @@
 package thebetweenlands.common.item.food;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Unit;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -14,7 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.level.Level;
 import thebetweenlands.common.registries.DataComponentRegistry;
 
@@ -24,13 +24,12 @@ public class GlueItem extends Item {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-		ItemStack itemStack = player.getItemInHand(hand);
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		if (player.canEat(true)) {
 			player.startUsingItem(hand);
-			return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStack);
+			return InteractionResult.SUCCESS;
 		} else {
-			return new InteractionResultHolder<>(InteractionResult.FAIL, itemStack);
+			return InteractionResult.FAIL;
 		}
 	}
 
@@ -63,8 +62,8 @@ public class GlueItem extends Item {
 	}
 
 	@Override
-	public UseAnim getUseAnimation(ItemStack stack) {
-		return UseAnim.EAT;
+	public ItemUseAnimation getUseAnimation(ItemStack stack) {
+		return ItemUseAnimation.EAT;
 	}
 
 	@Override
@@ -73,10 +72,10 @@ public class GlueItem extends Item {
 	}
 
 	@Override
-	public String getDescriptionId(ItemStack stack) {
+	public Component getName(ItemStack stack) {
 		if(stack.has(DataComponentRegistry.GLU)) {
-			return "Sniff.. sniff... Hmm, I like this stuff";
+			return Component.literal("Sniff.. sniff... Hmm, I like this stuff");
 		}
-		return super.getDescriptionId(stack);
+		return super.getName(stack);
 	}
 }

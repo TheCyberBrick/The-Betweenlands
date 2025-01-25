@@ -63,8 +63,8 @@ public class Frog extends PathfinderMob implements BLEntity, VariantHolder<Holde
 		super.defineSynchedData(builder);
 		builder.define(DW_SWIM_STROKE, (byte) 0);
 		RegistryAccess registryaccess = this.registryAccess();
-		Registry<FrogVariant> registry = registryaccess.registryOrThrow(BLRegistries.Keys.FROG_VARIANT);
-		builder.define(VARIANT, registry.getHolder(FrogVariantRegistry.GREEN).or(registry::getAny).orElseThrow());
+		Registry<FrogVariant> registry = registryaccess.lookupOrThrow(BLRegistries.Keys.FROG_VARIANT);
+		builder.define(VARIANT, registry.get(FrogVariantRegistry.GREEN).or(registry::getAny).orElseThrow());
 	}
 
 	@Override
@@ -194,7 +194,7 @@ public class Frog extends PathfinderMob implements BLEntity, VariantHolder<Holde
 	}
 
 	@Override
-	public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+	public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnGroupData) {
 		this.setVariant(FrogVariantRegistry.getSpawnVariant(this.registryAccess(), this.getRandom(), level.getBiome(this.blockPosition())));
 		return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
 	}

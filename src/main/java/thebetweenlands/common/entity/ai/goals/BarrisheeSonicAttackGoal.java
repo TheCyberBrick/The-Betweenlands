@@ -99,7 +99,7 @@ public class BarrisheeSonicAttackGoal extends Goal {
 		List<LivingEntity> list = level.getEntitiesOfClass(LivingEntity.class, hitBox);
 
 		for (LivingEntity entity : list) {
-			if(this.barrishee.doHurtTarget(entity)) {
+			if(this.barrishee.doHurtTarget(getServerLevel(level), entity)) {
 				entity.knockback(0.75F, Mth.sin(this.barrishee.getYRot() * Mth.DEG_TO_RAD), -Mth.cos(this.barrishee.getYRot() * Mth.DEG_TO_RAD));
 			}
 		}

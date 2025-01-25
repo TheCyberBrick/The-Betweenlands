@@ -3,8 +3,10 @@ package thebetweenlands.client.gui.book;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import thebetweenlands.common.TheBetweenlands;
 
 public class HerbloreTabButton extends Button {
@@ -27,17 +29,9 @@ public class HerbloreTabButton extends Button {
 
 	@Override
 	protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-		graphics.pose().pushPose();
-		graphics.setColor(1.0F, 1.0F, 1.0F, this.alpha);
 		RenderSystem.enableBlend();
-		graphics.blitSprite(this.left ? TAB_BASE_LEFT : TAB_BASE_RIGHT, this.getX(), this.getY(), this.getWidth(), this.getHeight());
-		float r = (float) (this.color >> 16 & 0xff) / 255F;
-		float g = (float) (this.color >> 8 & 0xff) / 255F;
-		float b = (float) (color & 0xff) / 255F;
-		graphics.setColor(r, g, b, this.alpha);
-		graphics.blitSprite(this.left ? TAB_COLOR_LEFT : TAB_COLOR_RIGHT, this.getX(), this.getY(), this.getWidth(), this.getHeight());
-		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-		graphics.pose().popPose();
+		graphics.blitSprite(RenderType::guiTextured, this.left ? TAB_BASE_LEFT : TAB_BASE_RIGHT, this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
+		graphics.blitSprite(RenderType::guiTextured, this.left ? TAB_COLOR_LEFT : TAB_COLOR_RIGHT, this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
 		this.drawIcon.draw(graphics, this.getX(), this.getY());
 	}
 

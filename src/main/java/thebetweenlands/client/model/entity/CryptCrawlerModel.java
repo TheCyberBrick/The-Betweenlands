@@ -8,11 +8,10 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.monster.CryptCrawler;
+import thebetweenlands.client.state.CryptCrawlerRenderState;
 
-public class CryptCrawlerModel extends MowzieModelBase<CryptCrawler> {
+public class CryptCrawlerModel extends MowzieModelBase<CryptCrawlerRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart body_main;
 	private final ModelPart body_lower;
 	private final ModelPart neck;
@@ -39,7 +38,7 @@ public class CryptCrawlerModel extends MowzieModelBase<CryptCrawler> {
 	private final ModelPart tinyurn3;
 
 	public CryptCrawlerModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.body_main = root.getChild("body_main");
 		this.body_lower = this.body_main.getChild("body_lower");
 		this.neck = this.body_main.getChild("neck");
@@ -179,23 +178,13 @@ public class CryptCrawlerModel extends MowzieModelBase<CryptCrawler> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
+	public void setupAnim(CryptCrawlerRenderState state) {
+		float animation = Mth.sin((state.walkAnimationPos * 1.1F + 2) * 0.5F) * 0.3F * state.walkAnimationSpeed * 0.3F;
+		float animation2 = Mth.sin((state.walkAnimationPos * 1.1F) * 0.5F) * 0.3F * state.walkAnimationSpeed * 0.3F;
+		float animation3 = Mth.sin((state.walkAnimationPos * 1.1F + 4) * 0.5F) * 0.3F * state.walkAnimationSpeed * 0.3F;
 
-	@Override
-	public void setupAnim(CryptCrawler entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
-	}
-
-	@Override
-	public void prepareMobModel(CryptCrawler entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		float animation = Mth.sin((limbSwing * 1.1F + 2) * 0.5F) * 0.3F * limbSwingAmount * 0.3F;
-		float animation2 = Mth.sin((limbSwing * 1.1F) * 0.5F) * 0.3F * limbSwingAmount * 0.3F;
-		float animation3 = Mth.sin((limbSwing * 1.1F + 4) * 0.5F) * 0.3F * limbSwingAmount * 0.3F;
-
-		float flap = Mth.sin((entity.tickCount + partialTick) * 0.3F) * 0.8F;
-		float standingAngle = entity.smoothedStandingAngle(partialTick);
+		float flap = Mth.sin(state.ageInTicks * 0.3F) * 0.8F;
+		float standingAngle = state.standingAngle;
 
 		this.tail1.xRot = -0.40980330836826856F + (standingAngle * 0.75F) - animation;
 		this.tail2.xRot = -0.22759093446006054F + (standingAngle * 0.75F) - animation * 3F;
@@ -206,7 +195,7 @@ public class CryptCrawlerModel extends MowzieModelBase<CryptCrawler> {
 		this.tinyurn2.xRot = 0.136659280431156F + (standingAngle);
 		this.tinyurn3.xRot = 0.136659280431156F + (standingAngle);
 
-		if (entity.standingAngle < 0.01f) {
+		if (standingAngle < 0.01f) {
 			this.leg_front_right1.xRot = 0.27314402793711257F + (animation2 * 8F) + flap * 0.05F;
 			this.leg_front_right2.xRot = -0.5918411493512771F + (animation2 * 6F) - flap * 0.025F;
 			this.leg_front_right3.xRot = 0.5918411493512771F - (standingAngle * 1.25F) - 0.17453292519943295F - animation2 * 18F + flap * 0.05F;
@@ -269,7 +258,7 @@ public class CryptCrawlerModel extends MowzieModelBase<CryptCrawler> {
 
 			this.body_main.y = 12.0f - standingAngle * 5.8f;
 		}
-		if (!entity.onGround()) {
+		if (!state.onGround) {
 			this.jaw.xRot = -0.091106186954104F;
 		} else {
 			if (standingAngle > 0) {

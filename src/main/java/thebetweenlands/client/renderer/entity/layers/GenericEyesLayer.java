@@ -4,14 +4,14 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.EyesLayer;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 
-public class GenericEyesLayer<T extends Entity, M extends EntityModel<T>> extends EyesLayer<T, M> {
+public class GenericEyesLayer<S extends LivingEntityRenderState, M extends EntityModel<S>> extends EyesLayer<S, M> {
 
 	private final ResourceLocation eyes;
 
-	public GenericEyesLayer(RenderLayerParent<T, M> parent, ResourceLocation eyeType) {
+	public GenericEyesLayer(RenderLayerParent<S, M> parent, ResourceLocation eyeType) {
 		super(parent);
 		this.eyes = eyeType;
 	}

@@ -1,5 +1,7 @@
 package thebetweenlands.common.handler;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -34,7 +36,7 @@ public class FoodSicknessHandler {
 		NeoForge.EVENT_BUS.addListener(FoodSicknessHandler::modifyEatingStart);
 	}
 
-	public static boolean isFoodSicknessEnabled(Level level) {
+	public static boolean isFoodSicknessEnabled(ServerLevel level) {
 		if (level.getGameRules().getBoolean(TheBetweenlands.FOOD_SICKNESS_GAMERULE)) {
 			if (level.dimension() == DimensionRegistries.DIMENSION_KEY && BetweenlandsConfig.useFoodSicknessInBetweenlands) {
 				return true;
@@ -66,22 +68,24 @@ public class FoodSicknessHandler {
 		Player player = event.getEntity() instanceof Player ? (Player) event.getEntity() : null;
 		ItemStack itemStack = event.getItem();
 
-		if (player != null && !itemStack.isEmpty() && FoodSicknessHandler.isFoodSicknessEnabled(event.getEntity().level()) && itemStack.is(BLItemTagProvider.GIVES_FOOD_SICKNESS)) {
-			FoodSickness sickness = player.getData(AttachmentRegistry.FOOD_SICKNESS).getSickness(itemStack.getItem());
+		if (event.getEntity().level() instanceof ServerLevel level) {
+			if (player != null && !itemStack.isEmpty() && FoodSicknessHandler.isFoodSicknessEnabled(level) && itemStack.is(BLItemTagProvider.GIVES_FOOD_SICKNESS)) {
+				FoodSickness sickness = player.getData(AttachmentRegistry.FOOD_SICKNESS).getSickness(itemStack.getItem());
 
-			if (player.level().isClientSide() && sickness == FoodSickness.SICK) {
-				addSicknessMessage(player, itemStack, sickness);
+				if (sickness == FoodSickness.SICK) {
+					addSicknessMessage(player, itemStack, sickness);
+				}
 			}
 		}
 	}
 
 	private static void modifyEatingSpeed(LivingEntityUseItemEvent.Tick event) {
 		//Check if item will be consumed this tick
-		if (!event.getEntity().level().isClientSide() && event.getDuration() <= 1) {
+		if (event.getEntity().level() instanceof ServerLevel level && event.getDuration() <= 1) {
 			Player player = event.getEntity() instanceof Player ? (Player) event.getEntity() : null;
 			ItemStack itemStack = event.getItem();
 
-			if (player != null && !itemStack.isEmpty() && FoodSicknessHandler.isFoodSicknessEnabled(event.getEntity().level()) && itemStack.is(BLItemTagProvider.GIVES_FOOD_SICKNESS)) {
+			if (player != null && !itemStack.isEmpty() && FoodSicknessHandler.isFoodSicknessEnabled(level) && itemStack.is(BLItemTagProvider.GIVES_FOOD_SICKNESS)) {
 				FoodSicknessData data = player.getData(AttachmentRegistry.FOOD_SICKNESS);
 				Item item = itemStack.getItem();
 
@@ -99,8 +103,8 @@ public class FoodSicknessHandler {
 				int sicknessIncrease = 5;
 
 				if (currentSickness == FoodSickness.SICK) {
-					if (item.getFoodProperties(itemStack, player) != null) {
-						int foodLevel = item.getFoodProperties(itemStack, player).nutrition();
+					if (itemStack.has(DataComponents.FOOD)) {
+						int foodLevel = itemStack.get(DataComponents.FOOD).nutrition();
 						double foodLoss = 1.0D / 3.0D * 2.0;
 
 						if (player.level().isClientSide()) {

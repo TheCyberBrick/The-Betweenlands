@@ -19,14 +19,12 @@ public abstract class SeasonalEnvironmentEvent extends BLEnvironmentEvent {
 	/**
 	 * Returns the start time in milliseconds since January 1, 1970, 00:00:00 GMT
 	 *
-	 * @return
 	 */
 	public abstract long getStartDateInMs();
 
 	/**
 	 * Returns the event's duration in days
 	 *
-	 * @return
 	 */
 	public abstract int getDurationInDays();
 

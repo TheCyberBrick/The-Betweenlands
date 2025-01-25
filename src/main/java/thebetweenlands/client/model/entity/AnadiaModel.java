@@ -10,20 +10,18 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.world.phys.Vec2;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.fishing.anadia.Anadia;
-import thebetweenlands.common.entity.fishing.anadia.AnadiaParts;
+import thebetweenlands.client.state.AnadiaRenderState;
 
-public class AnadiaModel extends MowzieModelBase<Anadia> {
+public class AnadiaModel extends MowzieModelBase<AnadiaRenderState> {
 
 	private static final Vec2[] TAIL_ANIMS = new Vec2[]{
 		new Vec2(0.5F, 0.5F),
 		new Vec2(0.75F, 0.35F),
 		new Vec2(1.0F, 0.25F)
 	};
-	private final ModelPart root;
 
 	public AnadiaModel(ModelPart root) {
-		this.root = root;
+		super(root);
 	}
 
 	public static LayerDefinition create() {
@@ -423,60 +421,36 @@ public class AnadiaModel extends MowzieModelBase<Anadia> {
 			PartPose.offsetAndRotation(0.0F, 3.0F, 1.0F, -0.136659280431156F, 0.0F, 0.0F));
 	}
 
-	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void renderToBuffer(PoseStack stack, VertexConsumer consumer, int light, int overlay, int color) {
-		//render default fishe
-		this.getPartForType(AnadiaParts.AnadiaHeadParts.HEAD_1, "head").render(stack, consumer, light, overlay, color);
-		this.getPartForType(AnadiaParts.AnadiaBodyParts.BODY_1, "body").render(stack, consumer, light, overlay, color);
-		this.getPartForType(AnadiaParts.AnadiaTailParts.TAIL_1, "tail").render(stack, consumer, light, overlay, color);
-	}
-
 	public void renderPart(Enum<?> partType, String name, PoseStack stack, VertexConsumer consumer, int light, int overlay, int color) {
 		this.getPartForType(partType, name).render(stack, consumer, light, overlay, color);
 	}
 
 	@Override
-	public void prepareMobModel(Anadia entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		this.setInitPose();
-		float frame = entity.tickCount + partialTick;
+	public void setupAnim(AnadiaRenderState state) {
+		super.setupAnim(state);
 
-//		if (entity.isNoAi()) {
-//			limbSwingAmount = 0;
-//			frame = 0;
-//		}
+		this.walk(this.getPartForType(state.headType, "head", "jaw"), (1.5F - state.fishSize) * 0.25F, 0.35F, false, 0.0F, 0F, state.ageInTicks, 1F - state.walkAnimationSpeed);
 
-		this.walk(this.getPartForType(entity.getHeadType(), "head", "jaw"), (1.5F - entity.getFishSize()) * 0.25F, 0.35F, false, 0.0F, 0F, frame, 1F - limbSwingAmount);
+		Vec2 tailAnims = TAIL_ANIMS[state.tailType.ordinal()];
+		this.swing(this.getPartForType(state.tailType, "tail"), tailAnims.x, tailAnims.y, false, 0.0F, 0F, state.ageInTicks, 0.0625F + state.walkAnimationSpeed);
+		this.swing(this.getPartForType(state.tailType, "tail", "back"), tailAnims.x, tailAnims.y, false, 1.0F, 0F, state.ageInTicks, 0.0625F + state.walkAnimationSpeed);
+		this.swing(this.getPartForType(state.tailType, "tail", "back", "caudal_fin"), tailAnims.x, tailAnims.y, false, 2.0F, 0F, state.ageInTicks, 0.0625F + state.walkAnimationSpeed);
 
-		Vec2 tailAnims = TAIL_ANIMS[entity.getTailType().ordinal()];
-		this.swing(this.getPartForType(entity.getTailType(), "tail"), tailAnims.x, tailAnims.y, false, 0.0F, 0F, frame, 0.0625F + limbSwingAmount);
-		this.swing(this.getPartForType(entity.getTailType(), "tail", "back"), tailAnims.x, tailAnims.y, false, 1.0F, 0F, frame, 0.0625F + limbSwingAmount);
-		this.swing(this.getPartForType(entity.getTailType(), "tail", "back", "caudal_fin"), tailAnims.x, tailAnims.y, false, 2.0F, 0F, frame, 0.0625F + limbSwingAmount);
+		float bodySpeed = state.bodyType.ordinal() == 0 ? 0.25F : 0.5F;
+		this.swing(this.getPartForType(state.bodyType, "body", "back", "left_pelvic_fin"), bodySpeed, 0.5F, false, 2.0F, 0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
+		this.swing(this.getPartForType(state.bodyType, "body", "back", "right_pelvic_fin"), bodySpeed, 0.5F, true, 2.0F, 0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
 
-		float bodySpeed = entity.getBodyType().ordinal() == 0 ? 0.25F : 0.5F;
-		this.swing(this.getPartForType(entity.getBodyType(), "body", "back", "left_pelvic_fin"), bodySpeed, 0.5F, false, 2.0F, 0F, frame, 0.125F + limbSwingAmount);
-		this.swing(this.getPartForType(entity.getBodyType(), "body", "back", "right_pelvic_fin"), bodySpeed, 0.5F, true, 2.0F, 0F, frame, 0.125F + limbSwingAmount);
+		this.swing(this.getPartForType(state.bodyType, "body", "left_pectoral_fin"), bodySpeed, 0.5F, true, 1.0F, 0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
+		this.swing(this.getPartForType(state.bodyType, "body", "left_pectoral_fin", "left_pectoral_fin_2"), bodySpeed, 0.5F, true, 2.0F, 0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
 
-		this.swing(this.getPartForType(entity.getBodyType(), "body", "left_pectoral_fin"), bodySpeed, 0.5F, true, 1.0F, 0F, frame, 0.125F + limbSwingAmount);
-		this.swing(this.getPartForType(entity.getBodyType(), "body", "left_pectoral_fin", "left_pectoral_fin_2"), bodySpeed, 0.5F, true, 2.0F, 0F, frame, 0.125F + limbSwingAmount);
+		this.swing(this.getPartForType(state.bodyType, "body", "right_pectoral_fin"), bodySpeed, 0.5F, false, 1.0F, 0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
+		this.swing(this.getPartForType(state.bodyType, "body", "right_pectoral_fin", "right_pectoral_fin_2"), bodySpeed, 0.5F, false, 2.0F, 0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
 
-		this.swing(this.getPartForType(entity.getBodyType(), "body", "right_pectoral_fin"), bodySpeed, 0.5F, false, 1.0F, 0F, frame, 0.125F + limbSwingAmount);
-		this.swing(this.getPartForType(entity.getBodyType(), "body", "right_pectoral_fin", "right_pectoral_fin_2"), bodySpeed, 0.5F, false, 2.0F, 0F, frame, 0.125F + limbSwingAmount);
+		this.walk(this.getPartForType(state.bodyType, "body", "left_pectoral_fin"), bodySpeed, 0.5F, false, 0.0F, 0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
+		this.walk(this.getPartForType(state.bodyType, "body", "right_pectoral_fin"), bodySpeed, 0.5F, false, 0.0F, 0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
 
-		this.walk(this.getPartForType(entity.getBodyType(), "body", "left_pectoral_fin"), bodySpeed, 0.5F, false, 0.0F, 0F, frame, 0.125F + limbSwingAmount);
-		this.walk(this.getPartForType(entity.getBodyType(), "body", "right_pectoral_fin"), bodySpeed, 0.5F, false, 0.0F, 0F, frame, 0.125F + limbSwingAmount);
-
-		this.flap(this.getPartForType(entity.getBodyType(), "body", "left_pectoral_fin"), bodySpeed, 0.5F, false, 0.0F, 0F, frame, 0.125F + limbSwingAmount);
-		this.flap(this.getPartForType(entity.getBodyType(), "body", "right_pectoral_fin"), bodySpeed, 0.5F, true, 0.0F, 0F, frame, 0.125F + limbSwingAmount);
-	}
-
-	@Override
-	public void setupAnim(Anadia entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
+		this.flap(this.getPartForType(state.bodyType, "body", "left_pectoral_fin"), bodySpeed, 0.5F, false, 0.0F, 0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
+		this.flap(this.getPartForType(state.bodyType, "body", "right_pectoral_fin"), bodySpeed, 0.5F, true, 0.0F, 0F, state.ageInTicks, 0.125F + state.walkAnimationSpeed);
 	}
 
 	private ModelPart getPartForType(Enum<?> en, String partName, String... childParts) {

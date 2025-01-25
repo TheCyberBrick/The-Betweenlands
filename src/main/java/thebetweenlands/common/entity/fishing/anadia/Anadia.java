@@ -161,7 +161,7 @@ public class Anadia extends PathfinderMob implements BLEntity {
 
 	@Nullable
 	@Override
-	public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+	public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnGroupData) {
 		this.randomizeAnadiaProperties();
 		this.randomiseObstructionOrder();
 		return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);

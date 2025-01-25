@@ -4,7 +4,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -32,7 +31,6 @@ public class BLFishHook extends FishingHook implements IEntityWithComplexSpawn {
 
 	public BLFishHook(EntityType<? extends FishingHook> type, Level level) {
 		super(type, level);
-		this.noCulling = true;
 	}
 
 	public BLFishHook(Player player, Level level) {

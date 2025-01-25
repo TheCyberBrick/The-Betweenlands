@@ -2,12 +2,13 @@ package thebetweenlands.common.item.herblore;
 
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Unit;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -16,7 +17,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import thebetweenlands.common.component.item.ElixirContents;
 import thebetweenlands.common.entity.projectile.ThrownElixir;
-import thebetweenlands.common.herblore.elixir.effects.ElixirEffect;
 import thebetweenlands.common.registries.DataComponentRegistry;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class ElixirItem extends Item {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		if (player.isShiftKeyDown()) {
 			player.getItemInHand(hand).set(DataComponentRegistry.THROWING, Unit.INSTANCE);
 		}
@@ -35,7 +35,7 @@ public class ElixirItem extends Item {
 	}
 
 	@Override
-	public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeCharged) {
+	public boolean releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeCharged) {
 		if (stack.has(DataComponentRegistry.THROWING)) {
 			entity.playSound(SoundEvents.ARROW_SHOOT, 0.5F, 0.4F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
 			if (!level.isClientSide()) {
@@ -50,8 +50,10 @@ public class ElixirItem extends Item {
 				if (entity instanceof Player player && !player.hasInfiniteMaterials()) {
 					stack.shrink(1);
 				}
+				return true;
 			}
 		}
+		return false;
 	}
 
 	@Override
@@ -62,12 +64,12 @@ public class ElixirItem extends Item {
 				CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayer) player, stack);
 			}
 
-			if (!level.isClientSide()) {
+			if (level instanceof ServerLevel serverLevel) {
 				ElixirContents contents = stack.getOrDefault(DataComponentRegistry.ELIXIR_CONTENTS, ElixirContents.EMPTY);
 				if (contents.elixir().isPresent()) {
 					MobEffectInstance effect = contents.elixir().get().value().createEffect(contents.duration(), contents.strength());
 					if (effect.getEffect().value().isInstantenous()) {
-						effect.getEffect().value().applyInstantenousEffect(player, player, entity, contents.strength(), 1.0);
+						effect.getEffect().value().applyInstantenousEffect(serverLevel, player, player, entity, contents.strength(), 1.0);
 					} else {
 						entity.addEffect(effect);
 					}
@@ -81,11 +83,11 @@ public class ElixirItem extends Item {
 
 			if (player == null || !player.hasInfiniteMaterials()) {
 				if (stack.isEmpty()) {
-					return this.getCraftingRemainingItem(stack);
+					return this.getCraftingRemainder(stack);
 				}
 
 				if (player != null) {
-					player.getInventory().add(this.getCraftingRemainingItem(stack));
+					player.getInventory().add(this.getCraftingRemainder(stack));
 				}
 			}
 
@@ -100,13 +102,14 @@ public class ElixirItem extends Item {
 	}
 
 	@Override
-	public UseAnim getUseAnimation(ItemStack stack) {
-		return stack.has(DataComponentRegistry.THROWING) ? UseAnim.BOW : UseAnim.DRINK;
+	public ItemUseAnimation getUseAnimation(ItemStack stack) {
+		return stack.has(DataComponentRegistry.THROWING) ? ItemUseAnimation.BOW : ItemUseAnimation.DRINK;
 	}
 
 	@Override
-	public String getDescriptionId(ItemStack stack) {
-		return ElixirEffect.getName(stack.getOrDefault(DataComponentRegistry.ELIXIR_CONTENTS, ElixirContents.EMPTY).elixir(), this.getDescriptionId());
+	public Component getName(ItemStack stack) {
+		ElixirContents contents = stack.get(DataComponentRegistry.ELIXIR_CONTENTS);
+		return contents != null ? contents.getName(this.descriptionId + ".effect.") : super.getName(stack);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package thebetweenlands.common.item.shield;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -7,7 +8,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import thebetweenlands.common.registries.AdvancementCriteriaRegistry;
@@ -15,16 +16,13 @@ import thebetweenlands.common.registries.AdvancementCriteriaRegistry;
 import java.util.List;
 
 public class SwatShieldItem extends BaseShieldItem {
-	public SwatShieldItem(Tier tier, Properties properties) {
-		super(tier, properties);
+	public SwatShieldItem(ToolMaterial material, Properties properties) {
+		super(material, properties);
 	}
 
 	/**
 	 * Sets whether the specified user is preparing for a charge attack
 	 *
-	 * @param stack
-	 * @param user
-	 * @param charging
 	 */
 	public void setPreparingCharge(ItemStack stack, LivingEntity user, boolean charging) {
 		user.getPersistentData().putBoolean("thebetweenlands.shield.charging", charging);
@@ -33,9 +31,6 @@ public class SwatShieldItem extends BaseShieldItem {
 	/**
 	 * Returns whether the specified user is preparing for a charge attack
 	 *
-	 * @param stack
-	 * @param user
-	 * @return
 	 */
 	public static boolean isPreparingCharge(ItemStack stack, LivingEntity user) {
 		return user.getPersistentData().getBoolean("thebetweenlands.shield.charging");
@@ -44,9 +39,6 @@ public class SwatShieldItem extends BaseShieldItem {
 	/**
 	 * Sets how long the specified user has been preparing for a charge attack
 	 *
-	 * @param stack
-	 * @param user
-	 * @param ticks
 	 */
 	public void setPreparingChargeTicks(ItemStack stack, LivingEntity user, int ticks) {
 		user.getPersistentData().putInt("thebetweenlands.shield.chargingTicks", ticks);
@@ -55,9 +47,6 @@ public class SwatShieldItem extends BaseShieldItem {
 	/**
 	 * Returns how long the specified user has been preparing for a charge attack
 	 *
-	 * @param stack
-	 * @param user
-	 * @return
 	 */
 	public int getPreparingChargeTicks(ItemStack stack, LivingEntity user) {
 		return user.getPersistentData().getInt("thebetweenlands.shield.chargingTicks");
@@ -66,9 +55,6 @@ public class SwatShieldItem extends BaseShieldItem {
 	/**
 	 * Sets for how much longer the specified user can charge
 	 *
-	 * @param stack
-	 * @param user
-	 * @param ticks
 	 */
 	public void setRemainingChargeTicks(ItemStack stack, LivingEntity user, int ticks) {
 		user.getPersistentData().putInt("thebetweenlands.shield.remainingRunningTicks", ticks);
@@ -77,9 +63,6 @@ public class SwatShieldItem extends BaseShieldItem {
 	/**
 	 * Returns for how much longer the specified user can charge
 	 *
-	 * @param stack
-	 * @param user
-	 * @return
 	 */
 	public static int getRemainingChargeTicks(ItemStack stack, LivingEntity user) {
 		return user.getPersistentData().getInt("thebetweenlands.shield.remainingRunningTicks");
@@ -88,10 +71,6 @@ public class SwatShieldItem extends BaseShieldItem {
 	/**
 	 * Returns for how many ticks the user can charge for the specified preparation ticks
 	 *
-	 * @param stack
-	 * @param user
-	 * @param preparingTicks
-	 * @return
 	 */
 	public int getChargeTime(ItemStack stack, LivingEntity user, int preparingTicks) {
 		float strength = Mth.clamp(this.getPreparingChargeTicks(stack, user) / 20.0F - 0.2F, 0, 1);
@@ -101,9 +80,6 @@ public class SwatShieldItem extends BaseShieldItem {
 	/**
 	 * Returns the maximum charge ticks
 	 *
-	 * @param stack
-	 * @param user
-	 * @return
 	 */
 	public int getMaxChargeTime(ItemStack stack, LivingEntity user) {
 		return 80;
@@ -112,21 +88,17 @@ public class SwatShieldItem extends BaseShieldItem {
 	/**
 	 * Called when an enemy is rammed
 	 *
-	 * @param stack
-	 * @param user
-	 * @param enemy
-	 * @param rammingDir
 	 */
-	public void onEnemyRammed(ItemStack stack, LivingEntity user, LivingEntity enemy, Vec3 rammingDir) {
+	public void onEnemyRammed(ServerLevel level, ItemStack stack, LivingEntity user, LivingEntity enemy, Vec3 rammingDir) {
 		boolean attacked;
 
 		if (user instanceof Player player) {
-			attacked = enemy.hurt(user.damageSources().playerAttack(player), 10.0F);
+			attacked = enemy.hurtServer(level, user.damageSources().playerAttack(player), 10.0F);
 
 			if (user instanceof ServerPlayer sp)
 				AdvancementCriteriaRegistry.SWAT_SHIELD.get().trigger(sp, enemy);
 		} else {
-			attacked = enemy.hurt(user.damageSources().mobAttack(user), 10.0F);
+			attacked = enemy.hurtServer(level, user.damageSources().mobAttack(user), 10.0F);
 		}
 
 		if (attacked) {
@@ -137,8 +109,6 @@ public class SwatShieldItem extends BaseShieldItem {
 	/**
 	 * Called every tick when charging
 	 *
-	 * @param stack
-	 * @param user
 	 */
 	public void onChargingUpdate(ItemStack stack, LivingEntity user) {
 		if (user.onGround() && !user.isShiftKeyDown()) {
@@ -163,8 +133,8 @@ public class SwatShieldItem extends BaseShieldItem {
 				Vec3 dir = target.position().subtract(user.position()).normalize();
 
 				//45� angle range
-				if (target.isPickable() && Math.toDegrees(Math.acos(moveDir.dot(dir))) < 45) {
-					this.onEnemyRammed(stack, user, target, moveDir);
+				if (target.isPickable() && Math.toDegrees(Math.acos(moveDir.dot(dir))) < 45 && user.level() instanceof ServerLevel level) {
+					this.onEnemyRammed(level, stack, user, target, moveDir);
 				}
 			}
 		}
@@ -210,7 +180,7 @@ public class SwatShieldItem extends BaseShieldItem {
 
 	protected void onStoppedCharging(ItemStack stack, LivingEntity user) {
 		if (!user.level().isClientSide() && user instanceof Player player) {
-			player.getCooldowns().addCooldown(this, 8 * 20);
+			player.getCooldowns().addCooldown(stack, 8 * 20);
 		}
 	}
 

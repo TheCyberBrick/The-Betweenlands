@@ -6,9 +6,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.component.DataComponents;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -40,7 +41,7 @@ public class ItemRenameScreen extends Screen {
 		this.name.setFocused(false);
 		this.name.setTextColor(5635925);
 		ItemStack stack = Minecraft.getInstance().player.getInventory().getSelected();
-		this.name.setValue(stack.getOrDefault(DataComponents.CUSTOM_NAME, Component.translatable(stack.getDescriptionId())).getString());
+		this.name.setValue(stack.getHoverName().getString());
 		this.addRenderableWidget(this.name);
 	}
 
@@ -54,7 +55,7 @@ public class ItemRenameScreen extends Screen {
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		super.render(graphics, mouseX, mouseY, partialTick);
-		graphics.blit(BASE_TEXTURE, this.leftPos, this.topPos, 0, 0, 181, 55, 256, 64);
+		graphics.blit(RenderType::guiTextured, BASE_TEXTURE, this.leftPos, this.topPos, 0, 0, 181, 55, 256, 64);
 		this.name.render(graphics, mouseX, mouseY, partialTick);
 	}
 
@@ -72,11 +73,9 @@ public class ItemRenameScreen extends Screen {
 		@Override
 		protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 			Minecraft minecraft = Minecraft.getInstance();
-			guiGraphics.setColor(1.0F, 1.0F, 1.0F, this.alpha);
 			RenderSystem.enableBlend();
 			RenderSystem.enableDepthTest();
-			guiGraphics.blitSprite(BUTTON_TEXTURE[this.isHoveredOrFocused() ? 1 : 0], this.getX(), this.getY(), this.getWidth(), this.getHeight());
-			guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+			guiGraphics.blitSprite(RenderType::guiTextured, BUTTON_TEXTURE[this.isHoveredOrFocused() ? 1 : 0], this.getX(), this.getY(), this.getWidth(), this.getHeight(), ARGB.white(this.alpha));
 			int j = 14737632;
 
 			if (this.getFGColor() != 0) {

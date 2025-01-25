@@ -4,7 +4,6 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -50,7 +49,7 @@ public class AspectVialBlock extends BaseEntityBlock {
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (level.getBlockEntity(pos) instanceof AspectVialBlockEntity vial) {
 
 			if (stack.getItem() instanceof AspectVialItem vialItem && stack.has(DataComponentRegistry.ASPECT_CONTENTS)) {
@@ -66,11 +65,11 @@ public class AspectVialBlock extends BaseEntityBlock {
 									int leftAmount = contents.amount() - added;
 									stack.set(DataComponentRegistry.ASPECT_CONTENTS, new AspectContents(contents.aspect().get(), contents.amount() - added));
 									if (leftAmount <= 0) {
-										player.setItemInHand(hand, vialItem.getCraftingRemainingItem(stack));
+										player.setItemInHand(hand, vialItem.getCraftingRemainder(stack));
 									}
 								}
 							}
-							return ItemInteractionResult.sidedSuccess(level.isClientSide());
+							return InteractionResult.SUCCESS;
 						}
 					} else {
 						if (vial.getAspect() != null && vial.getAspect().type() == contents.aspect().get()) {
@@ -81,7 +80,7 @@ public class AspectVialBlock extends BaseEntityBlock {
 									stack.set(DataComponentRegistry.ASPECT_CONTENTS, new AspectContents(contents.aspect().get(), contents.amount() + removedAmount));
 								}
 							}
-							return ItemInteractionResult.sidedSuccess(level.isClientSide());
+							return InteractionResult.SUCCESS;
 						}
 					}
 				}
@@ -101,7 +100,7 @@ public class AspectVialBlock extends BaseEntityBlock {
 						if (itemEntity != null) itemEntity.setNoPickUpDelay();
 					}
 				}
-				return ItemInteractionResult.sidedSuccess(level.isClientSide());
+				return InteractionResult.SUCCESS;
 			}
 		}
 		return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
@@ -113,7 +112,7 @@ public class AspectVialBlock extends BaseEntityBlock {
 			if (!level.isClientSide()) {
 				level.setBlockAndUpdate(pos, state.setValue(RANDOM_POSITION, !state.getValue(RANDOM_POSITION)));
 			}
-			return InteractionResult.sidedSuccess(level.isClientSide());
+			return InteractionResult.SUCCESS;
 		}
 		return super.useWithoutItem(state, level, pos, player, hitResult);
 	}

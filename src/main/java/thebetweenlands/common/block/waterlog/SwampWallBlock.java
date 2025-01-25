@@ -4,10 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -145,17 +146,17 @@ public class SwampWallBlock extends Block implements SwampWaterLoggable {
 	}
 
 	@Override
-	protected BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
+	protected BlockState updateShape(BlockState state, LevelReader reader, ScheduledTickAccess access, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, RandomSource random) {
 		if (state.getValue(WATER_TYPE) != WaterType.NONE) {
-			level.scheduleTick(currentPos, state.getValue(WATER_TYPE).getFluid(), state.getValue(WATER_TYPE).getFluid().getTickDelay(level));
+			access.scheduleTick(pos, state.getValue(WATER_TYPE).getFluid(), state.getValue(WATER_TYPE).getFluid().getTickDelay(reader));
 		}
 
-		if (facing == Direction.DOWN) {
-			return super.updateShape(state, facing, facingState, level, currentPos, facingPos);
+		if (direction == Direction.DOWN) {
+			return super.updateShape(state, reader, access, pos, direction, neighborPos, neighborState, random);
 		} else {
-			return facing == Direction.UP
-				? this.topUpdate(level, state, facingPos, facingState)
-				: this.sideUpdate(level, currentPos, state, facingPos, facingState, facing);
+			return direction == Direction.UP
+				? this.topUpdate(reader, state, neighborPos, neighborState)
+				: this.sideUpdate(reader, pos, state, neighborPos, neighborState, direction);
 		}
 	}
 
@@ -244,7 +245,7 @@ public class SwampWallBlock extends Block implements SwampWaterLoggable {
 	}
 
 	@Override
-	protected boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
+	protected boolean propagatesSkylightDown(BlockState state) {
 		return state.getValue(WATER_TYPE) == WaterType.NONE;
 	}
 

@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-import static net.minecraft.client.renderer.LevelRenderer.DIRECTIONS;
+import static net.minecraft.world.level.SignalGetter.DIRECTIONS;
 
 @Mixin(ModelBlockRenderer.class)
 public abstract class ModelBlockRendererMixin {
@@ -47,9 +47,9 @@ public abstract class ModelBlockRendererMixin {
 			List<BakedQuad> list = model.getQuads(state, direction, random, modelData, renderType);
 			if (!list.isEmpty()) {
 				mutablePos.setWithOffset(pos, direction);
-				if (!checkSides || Block.shouldRenderFace(state, level, pos, direction, mutablePos)) {
-					List<BakedQuad> flatlist = new ArrayList<BakedQuad>();
-					List<BakedQuad> standardlist = new ArrayList<BakedQuad>();
+				if (!checkSides || Block.shouldRenderFace(level, pos, state, level.getBlockState(mutablePos), direction)) {
+					List<BakedQuad> flatlist = new ArrayList<>();
+					List<BakedQuad> standardlist = new ArrayList<>();
 
 					// Fetch quad shading flags
 					for (BakedQuad quad : list) {

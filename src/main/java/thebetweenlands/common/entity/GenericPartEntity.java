@@ -2,6 +2,7 @@ package thebetweenlands.common.entity;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -55,8 +56,8 @@ public class GenericPartEntity<T extends Entity> extends PartEntity<T> {
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount) {
-		return this.getParent().hurt(source, amount);
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+		return this.getParent().hurtServer(level, source, amount);
 	}
 
 	@Override

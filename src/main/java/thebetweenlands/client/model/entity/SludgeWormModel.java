@@ -3,7 +3,6 @@ package thebetweenlands.client.model.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
-import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -11,24 +10,24 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
-import thebetweenlands.common.entity.monster.SludgeWorm;
+import thebetweenlands.client.model.MowzieModelBase;
+import thebetweenlands.client.state.SludgeWormRenderState;
 
-public class SludgeWormModel extends HierarchicalModel<SludgeWorm> {
-	public ModelPart root;
-	public ModelPart head1;
-	public ModelPart mouth_left;
-	public ModelPart mouth_bottom;
-	public ModelPart jaw_bottom_left;
-	public ModelPart jaw_bottom_right;
-	public ModelPart butt;
-    public ModelPart pincer_thingy_i_guess_a;
-    public ModelPart pincer_thingy_i_guess_b;
+public class SludgeWormModel extends MowzieModelBase<SludgeWormRenderState> {
+	public final ModelPart head1;
+	public final ModelPart mouth_left;
+	public final ModelPart mouth_bottom;
+	public final ModelPart jaw_bottom_left;
+	public final ModelPart jaw_bottom_right;
+	public final ModelPart butt;
+	public final ModelPart pincer_thingy_i_guess_a;
+	public final ModelPart pincer_thingy_i_guess_b;
 
-	public ModelPart body1;
+	public final ModelPart body1;
 
 	public SludgeWormModel(ModelPart root) {
 
-		this.root = root;
+		super(root);
 		this.head1 = root.getChild("head1");
 		this.mouth_left = head1.getChild("mouth_left");
 		this.mouth_bottom = head1.getChild("mouth_bottom");
@@ -72,7 +71,7 @@ public class SludgeWormModel extends HierarchicalModel<SludgeWorm> {
 		var butt = partDefinition.addOrReplaceChild("butt", CubeListBuilder.create()
 				.texOffs(0, 0)
 				.addBox(-2.0F, -1.5F, -1.5F, 4, 4, 4),
-				PartPose.offset(0.0F, 21.5F, 0.0F));
+			PartPose.offset(0.0F, 21.5F, 0.0F));
 
 		var pincer_thingy_i_guess_a = butt.addOrReplaceChild("pincer_thingy_i_guess_a", CubeListBuilder.create()
 				.texOffs(0, 9)
@@ -84,49 +83,36 @@ public class SludgeWormModel extends HierarchicalModel<SludgeWorm> {
 				.addBox(-0.5F, -2.0F, 0.0F, 1, 2, 3),
 			PartPose.offsetAndRotation(0.0F, 2.0F, 2.0F, 0.18203784098300857F, 0.0F, 0.0F));
 
-		var body1 = partDefinition.addOrReplaceChild("body1", CubeListBuilder.create()
+		partDefinition.addOrReplaceChild("body1", CubeListBuilder.create()
 				.texOffs(0, 15)
 				.addBox(-2.5F, -2.5F, -2.5F, 5, 5, 5),
-				PartPose.offset(0.0F, 21.5F, 0.0F));
+			PartPose.offset(0.0F, 21.5F, 0.0F));
 
 		return LayerDefinition.create(definition, 32, 32);
 	}
 
-	public void renderHead(PoseStack stack, VertexConsumer consumer, int light, int overlay, int colour, SludgeWorm worm, int frame, float wibbleStrength, float partialTicks) {
-		float smoothedTicks = worm.tickCount + frame + (worm.tickCount + frame - (worm.tickCount + frame - 1)) * partialTicks;
-		float wibble = (float) (Math.sin(1F + (smoothedTicks) * 0.25F) * 0.125F * wibbleStrength);
-		float jaw_wibble = (float) (Math.sin(1F + (smoothedTicks) * 0.5F) * 0.5F);
-		stack.translate(0F, - 0.0625F - wibble * 0.5F, 0F + wibble * 2F);
-		this.head1.xRot = worm.getXRot() / Mth.RAD_TO_DEG;
-		this.jaw_bottom_left.yRot =  0F - jaw_wibble;
-		this.jaw_bottom_right.yRot = 0F + jaw_wibble;
-		this.mouth_bottom.yRot =  0F - jaw_wibble;
-		this.mouth_left.yRot = 0F + jaw_wibble;
-		this.head1.render(stack, consumer, light, overlay, colour);
+	public void renderHead(SludgeWormRenderState.WormPartInfo state, PoseStack stack, VertexConsumer consumer, int light, int overlay, int color, float xRot, float wibbleStrength) {
+		float wibble = Mth.sin(1.0F + state.smoothedFrame() * 0.25F) * 0.125F * wibbleStrength;
+		float jaw_wibble = Mth.sin(1.0F + state.smoothedFrame() * 0.5F) * 0.5F;
+		stack.translate(0F, -0.0625F - wibble * 0.5F, 0F + wibble * 2F);
+		this.head1.xRot = xRot / Mth.RAD_TO_DEG;
+		this.jaw_bottom_left.yRot = -jaw_wibble;
+		this.jaw_bottom_right.yRot = jaw_wibble;
+		this.mouth_bottom.yRot = -jaw_wibble;
+		this.mouth_left.yRot = jaw_wibble;
+		this.head1.render(stack, consumer, light, overlay, color);
 	}
 
-	public void renderBody(PoseStack stack, VertexConsumer consumer, int light, int overlay, int colour, SludgeWorm worm, int frame, float wibbleStrength, float partialTicks) {
-		float smoothedTicks = worm.tickCount + frame + (worm.tickCount + frame - (worm.tickCount + frame - 1)) * partialTicks;
-		float wibble = (float) (Math.sin(1F + (smoothedTicks) * 0.25F) * 0.125F * wibbleStrength);
-		stack.translate(0F, 0F - wibble, 0F - wibble * 2F);
-		stack.scale(1F + wibble * 2F, 1F + wibble, 1.25F - wibble * 1.5F);
-		this.body1.render(stack, consumer, light, overlay, colour);
+	public void renderBody(SludgeWormRenderState.WormPartInfo state, PoseStack stack, VertexConsumer consumer, int light, int overlay, int color, float wibbleStrength) {
+		float wibble = (float) (Math.sin(1F + state.smoothedFrame() * 0.25F) * 0.125F * wibbleStrength);
+		stack.translate(0.0F, -wibble, -wibble * 2.0F);
+		stack.scale(1.0F + wibble * 2.0F, 1.0F + wibble, 1.25F - wibble * 1.5F);
+		this.body1.render(stack, consumer, light, overlay, color);
 	}
 
-	public void renderTail(PoseStack stack, VertexConsumer consumer, int light, int overlay, int colour, SludgeWorm worm, int frame, float wibbleStrength, float partialTicks) {
-		float smoothedTicks = worm.tickCount + frame + (worm.tickCount + frame - (worm.tickCount + frame - 1)) * partialTicks;
-		float wibble = (float) (Math.sin(1F + (smoothedTicks) * 0.25F) * 0.125F * wibbleStrength);
-		stack.translate(0F, - 0.0625F - wibble * 0.5F, - 0.0625F + wibble * 2F);
-		this.butt.render(stack, consumer, light, overlay, colour);
+	public void renderTail(SludgeWormRenderState.WormPartInfo state, PoseStack stack, VertexConsumer consumer, int light, int overlay, int color, float wibbleStrength) {
+		float wibble = (float) (Math.sin(1.0F + state.smoothedFrame() * 0.25F) * 0.125F * wibbleStrength);
+		stack.translate(0.0F, -0.0625F - wibble * 0.5F, -0.0625F + wibble * 2.0F);
+		this.butt.render(stack, consumer, light, overlay, color);
 	}
-
-	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void setupAnim(SludgeWorm entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-	}
-
 }

@@ -8,18 +8,17 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.monster.SmolSludge;
+import thebetweenlands.client.state.SludgeRenderState;
 import thebetweenlands.common.world.event.SpoopyEvent;
 
-public class SmolSludgeModel extends MowzieModelBase<SmolSludge> {
+public class SmolSludgeModel extends MowzieModelBase<SludgeRenderState> {
 
-	private final ModelPart head;
 	private final ModelPart jaw;
 	private final ModelPart slime;
 
 	public SmolSludgeModel(ModelPart root) {
-		this.head = root.getChild("skullbase");
-		this.jaw = this.head.getChild("skull2").getChild("jaw");
+		super(root.getChild("skullbase"));
+		this.jaw = root.getChild("skullbase").getChild("skull2").getChild("jaw");
 		this.slime = root.getChild("sludge1");
 	}
 
@@ -50,37 +49,20 @@ public class SmolSludgeModel extends MowzieModelBase<SmolSludge> {
 		return LayerDefinition.create(definition, 64, 32);
 	}
 
-	@Override
-	public ModelPart root() {
-		return this.head;
-	}
-
-	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-		if (Minecraft.getInstance().level == null || !SpoopyEvent.isSpoooopy(Minecraft.getInstance().level)) {
-			super.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, color);
-		}
-	}
-
 	public void renderSlime(PoseStack stack, VertexConsumer consumer, int light, int overlay) {
 		this.slime.render(stack, consumer, light, overlay);
 	}
 
 	@Override
-	public void setupAnim(SmolSludge entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
-	}
-
-	@Override
-	public void prepareMobModel(SmolSludge entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		this.setInitPose();
-		float frame = entity.tickCount + partialTick;
-		float controller = (0.5F * Mth.sin(frame * 0.1F) * Mth.sin(frame * 0.1F)) + 0.5F;
-		this.head.y += 1.5F;
-		this.walk(this.jaw, 1.0F, 0.3f * controller, false, 0.0F, -0.2F * controller, frame, 1.0F);
-		this.bob(this.head, 0.25F, controller, false, frame, 1.0F);
-		this.head.x += 1.25F * Mth.sin(frame * 0.25F) * controller;
-		this.flap(this.head, 0.25F, 0.2F * controller, false, 0.0F, 0.0F, frame, 1.0F);
-		this.head.x += 0.15F;
+	public void setupAnim(SludgeRenderState state) {
+		super.setupAnim(state);
+		this.root.visible = !SpoopyEvent.isSpoooopy(Minecraft.getInstance().level);
+		float controller = (0.5F * Mth.sin(state.ageInTicks * 0.1F) * Mth.sin(state.ageInTicks * 0.1F)) + 0.5F;
+		this.root.y += 1.5F;
+		this.walk(this.jaw, 1.0F, 0.3f * controller, false, 0.0F, -0.2F * controller, state.ageInTicks, 1.0F);
+		this.bob(this.root, 0.25F, controller, false, state.ageInTicks, 1.0F);
+		this.root.x += 1.25F * Mth.sin(state.ageInTicks * 0.25F) * controller;
+		this.flap(this.root, 0.25F, 0.2F * controller, false, 0.0F, 0.0F, state.ageInTicks, 1.0F);
+		this.root.x += 0.15F;
 	}
 }

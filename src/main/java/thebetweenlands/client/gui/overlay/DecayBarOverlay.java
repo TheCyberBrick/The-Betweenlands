@@ -6,7 +6,9 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.entity.player.Player;
 import thebetweenlands.api.attachment.IDecayData;
 import thebetweenlands.common.TheBetweenlands;
@@ -30,7 +32,7 @@ public class DecayBarOverlay {
 			int posX = graphics.guiWidth() / 2 + 91;
 			int posY = graphics.guiHeight() - gui.rightHeight;
 
-			minecraft.getProfiler().push("decay");
+			Profiler.get().push("decay");
 			final int maxDecay = 20;
 			int currentDecay = data.getDecayLevel(player);
 			int decayBalls = maxDecay - currentDecay;
@@ -46,21 +48,21 @@ public class DecayBarOverlay {
 				if(shake)
 					ballY += gui.random.nextInt(3) - 1;
 
-				graphics.blitSprite(DECAY_EMPTY_SPRITE, ballX, ballY, 9, 9);
+				graphics.blitSprite(RenderType::guiTextured, DECAY_EMPTY_SPRITE, ballX, ballY, 9, 9);
 
 				if (i * 2 + 1 < decayBalls) {
-					graphics.blitSprite(DECAY_FULL_SPRITE, ballX, ballY, 9, 9);
+					graphics.blitSprite(RenderType::guiTextured, DECAY_FULL_SPRITE, ballX, ballY, 9, 9);
 				}
 
 				if (i * 2 + 1 == decayBalls) {
-					graphics.blitSprite(DECAY_HALF_SPRITE, ballX, ballY, 9, 9);
+					graphics.blitSprite(RenderType::guiTextured, DECAY_HALF_SPRITE, ballX, ballY, 9, 9);
 				}
 			}
 
 			RenderSystem.disableBlend();
 			gui.rightHeight += 10;
 
-			minecraft.getProfiler().pop();
+			Profiler.get().pop();
 		}
 	}
 }

@@ -6,13 +6,12 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.monster.AshSprite;
 
-public class AshSpriteModel extends MowzieModelBase<AshSprite> {
+public class AshSpriteModel extends MowzieModelBase<LivingEntityRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart cloth_left_front1;
 	private final ModelPart cloth_left_front2;
 	private final ModelPart cloth_right_front1;
@@ -26,7 +25,7 @@ public class AshSpriteModel extends MowzieModelBase<AshSprite> {
 	private final ModelPart cloth_left_back3;
 
 	public AshSpriteModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.jaw_lower = root.getChild("head_base").getChild("head_connection").getChild("jaw_lower");
 		this.cloth_left_front1 = root.getChild("head_base").getChild("cloth_left_front1");
 		this.cloth_left_front2 = this.cloth_left_front1.getChild("cloth_left_front2");
@@ -145,14 +144,9 @@ public class AshSpriteModel extends MowzieModelBase<AshSprite> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void setupAnim(AshSprite entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		float flap = Mth.sin(ageInTicks * 0.6F) * 0.8F;
-		float flapJaw = Mth.sin(ageInTicks * 0.4F) * 0.75F;
+	public void setupAnim(LivingEntityRenderState state) {
+		float flap = Mth.sin(state.ageInTicks * 0.6F) * 0.8F;
+		float flapJaw = Mth.sin(state.ageInTicks * 0.4F) * 0.75F;
 		jaw_lower.xRot = convertDegtoRad(26F) - flapJaw * 0.5F;
 		cloth_left_back1.zRot = convertDegtoRad(0F) - flap * 0.0625F;
 		cloth_left_back2.zRot = convertDegtoRad(-13F) + flap * 0.25F;
@@ -168,7 +162,7 @@ public class AshSpriteModel extends MowzieModelBase<AshSprite> {
 		cloth_right_front1.zRot = convertDegtoRad(16F) + flap * 0.0625F;
 		cloth_right_front2.zRot = convertDegtoRad(-16F) - flap * 0.25F;
 
-		if(entity.getDeltaMovement().y() < 0) {
+		if(state.getDeltaMovement().y() < 0) {
 			cloth_left_back1.zRot = (float) (convertDegtoRad(0F) - flap * 0.0625F + entity.getDeltaMovement().y() * 4F);
 			cloth_right_back1.zRot = (float) (convertDegtoRad(0F) + flap * 0.0625F - entity.getDeltaMovement().y() * 4F);
 			cloth_left_front1.zRot = (float) (convertDegtoRad(-16F) - flap * 0.0625F + entity.getDeltaMovement().y() * 4F);

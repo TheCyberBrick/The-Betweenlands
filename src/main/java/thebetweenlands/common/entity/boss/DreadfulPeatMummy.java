@@ -36,7 +36,6 @@ import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.PathfindingContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
@@ -70,7 +69,7 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 	private static final EntityDataAccessor<Integer> PREY = SynchedEntityData.defineId(DreadfulPeatMummy.class, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Float> Y_OFFSET = SynchedEntityData.defineId(DreadfulPeatMummy.class, EntityDataSerializers.FLOAT);
 
-	private int prevSpawningState;
+	public int prevSpawningState;
 
 	private int spewTicks = 0;
 
@@ -80,13 +79,11 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 	private int untilSpawnMummy = 0;
 	private static final int SPAWN_SLUDGE_COOLDOWN = 150;
 	private int untilSpawnSludge = 0;
-	private float prevYOffset;
+	public float prevYOffset;
 
 	private int eatPreyTimer = 60;
 	@Nullable
 	public LivingEntity currentEatPrey;
-
-	public int deathTicks = 0;
 
 	private int outOfRangeCounter = 0;
 	private int outOfRangeCycleCounter = 0;
@@ -180,20 +177,6 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 			return 1.0F;
 		}
 		return 1.0F / this.getSpawningLength() * this.getSpawningState();
-	}
-
-	public float getSpawningProgress(float delta) {
-		if (this.getSpawningLength() == 0) {
-			return 1.0F;
-		}
-		return 1.0F / this.getSpawningLength() * (this.prevSpawningState + (this.getSpawningState() - this.prevSpawningState) * delta);
-	}
-
-	/**
-	 * Returns the interpolated relative spawning progress
-	 */
-	public float getInterpolatedYOffsetProgress(float partialTicks) {
-		return this.prevYOffset + (((float) this.getYOffset()) - this.prevYOffset) * partialTicks;
 	}
 
 	public void updateSpawningState() {
@@ -290,7 +273,7 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 		return nodeType != PathType.BLOCKED && nodeType != PathType.WATER;
 	}
 
-	protected void placeBridge() {
+	protected void placeBridge(ServerLevel level) {
 		Path path = this.getNavigation().getPath();
 
 		if (path != null && path.getNextNodeIndex() < path.getNodeCount()) {
@@ -301,7 +284,7 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 				pos = pos.offset(0, nextPoint.y - pos.getY() - 1, 0);
 
 				if (this.distanceToSqr(Vec3.atCenterOf(pos)) <= 2 && this.isBridgableSpot(pos)) {
-					if (EventHooks.canEntityGrief(this.level(), this)) {
+					if (EventHooks.canEntityGrief(level, this)) {
 
 						int nx = -2;
 						int nz = -2;
@@ -392,7 +375,7 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 
 		this.updateSpawningState();
 
-		if (this.level().isClientSide()) {
+		if (!(this.level() instanceof ServerLevel level)) {
 			if (this.getSpawningProgress() < 1.0F) {
 				this.setYOffset(this.getCurrentOffset());
 				this.setDeltaMovement(Vec3.ZERO);
@@ -415,11 +398,11 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 						this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, state), px + ox, py, pz + oz, motionX, motionY, motionZ);
 					}
 				}
-			} else if (this.deathTicks == 0) {
+			} else if (this.deathTime == 0) {
 				this.setYOffset(0F);
-			} else if (this.deathTicks > 60) {
+			} else if (this.deathTime > 60) {
 				this.setDeltaMovement(Vec3.ZERO);
-				if (this.deathTicks % 5 == 0) {
+				if (this.deathTime % 5 == 0) {
 					BlockPos pos = this.blockPosition().below();
 					BlockState state = this.level().getBlockState(pos);
 					double px = this.getX() + this.getRandom().nextDouble() - 0.5F;
@@ -439,7 +422,7 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 			LivingEntity target = this.getTarget();
 
 			if (target != null && (this.blockBreakCounter == 0 || !this.breakBlocksBelow) && !this.jumping) {
-				this.placeBridge();
+				this.placeBridge(level);
 			}
 
 			double targetMotionX = 0.0D;
@@ -516,7 +499,7 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 			if (this.blockBreakCounter > 0) {
 				this.blockBreakCounter--;
 
-				if (EventHooks.canEntityGrief(this.level(), this)) {
+				if (EventHooks.canEntityGrief(level, this)) {
 					boolean broken = false;
 
 					for (int xo = -2; xo <= 2; xo++) {
@@ -605,8 +588,8 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 				this.spewTicks = 0;
 			}
 
-			if (this.deathTicks > 60) {
-				this.setYOffset(-(this.deathTicks - 60) * 0.05F);
+			if (this.deathTime > 60) {
+				this.setYOffset(-(this.deathTime - 60) * 0.05F);
 			}
 
 			if (this.getSpawningProgress() < 1.0F) {
@@ -629,7 +612,7 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 				if (this.getSpawningState() == this.getSpawningLength() - 1) {
 					this.setPos(this.position());
 				}
-			} else if (this.deathTicks < 60) {
+			} else if (this.deathTime < 60) {
 				this.setYOffset(0);
 				this.prevYOffset = 0;
 			}
@@ -720,12 +703,12 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 	}
 
 	@Override
-	public boolean doHurtTarget(Entity entity) {
+	public boolean doHurtTarget(ServerLevel level, Entity entity) {
 		if ((this.getSpawningProgress() < 0.95F && !this.getEntityData().get(SPEW)) || this.getHealth() <= 0.0F) {
 			return false;
 		}
 
-		boolean attacked = super.doHurtTarget(entity);
+		boolean attacked = super.doHurtTarget(level, entity);
 		if (attacked && this.isAlive() && this.getRandom().nextInt(6) == 0 && entity != this.currentEatPrey && entity instanceof LivingEntity living && !(entity instanceof Player player && player.isCreative()) && !this.level().isClientSide() && !this.getEntityData().get(SPEW)) {
 			this.setPrey(living);
 		}
@@ -771,9 +754,9 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
-			return super.hurt(source, amount);
+			return super.hurtServer(level, source, amount);
 		}
 
 		if (source.is(BLDamageTagProvider.DREADFUL_PEAT_MUMMY_IMMUNE)) {
@@ -788,14 +771,12 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 			return false;
 		}
 
-		if (super.hurt(source, this.getEntityData().get(SPEW) ? amount * 0.25f : amount)) {
-			if (!this.level().isClientSide()) {
-				if (source.getEntity() instanceof LivingEntity living) {
-					if (this.isTargetOutOfAttackRange(living)) {
-						this.outOfRangeCounter += 60;
-					} else if (this.isTargetInCloseRange(living)) {
-						this.outOfRangeCounter = Math.max(0, this.outOfRangeCounter - 40);
-					}
+		if (super.hurtServer(level, source, this.getEntityData().get(SPEW) ? amount * 0.25f : amount)) {
+			if (source.getEntity() instanceof LivingEntity living) {
+				if (this.isTargetOutOfAttackRange(living)) {
+					this.outOfRangeCounter += 60;
+				} else if (this.isTargetInCloseRange(living)) {
+					this.outOfRangeCounter = Math.max(0, this.outOfRangeCounter - 40);
 				}
 			}
 
@@ -812,20 +793,13 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 
 	@Override
 	protected void tickDeath() {
-		this.bossInfo.setProgress(0);
-		if (this.deathTicks == 0) {
-			if (!this.level().isClientSide()) {
-				this.playSound(this.getDeathSound());
-			}
-		}
-
-		++this.deathTicks;
+		this.deathTime++;
 
 		if (!this.level().isClientSide()) {
 			this.setPos(this.xo, this.yo, this.zo);
 			this.setDeltaMovement(Vec3.ZERO);
 
-			if (this.deathTicks > 40 && this.deathTicks % 5 == 0) {
+			if (this.deathTime > 40 && this.deathTime % 5 == 0) {
 				int xp = 100;
 				while (xp > 0) {
 					int dropXP = ExperienceOrb.getExperienceValue(xp);
@@ -834,7 +808,7 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 				}
 			}
 
-			if (this.deathTicks == 80) {
+			if (this.deathTime == 80) {
 				int xp = 1200;
 				while (xp > 0) {
 					int dropXP = ExperienceOrb.getExperienceValue(xp);
@@ -843,13 +817,13 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 				}
 			}
 
-			if (this.deathTicks > 120) {
+			if (this.deathTime > 120) {
 				this.discard();
 			}
 		}
 
-		if (this.deathTicks > 80) {
-			if (this.level().isClientSide() && this.deathTicks % 5 == 0) {
+		if (this.deathTime > 80) {
+			if (this.level().isClientSide() && this.deathTime % 5 == 0) {
 				for (int xo = -1; xo <= 1; xo++) {
 					for (int zo = -1; zo <= 1; zo++) {
 						int x = Mth.floor(this.getX()) + xo, y = Mth.floor(this.getY() - getYOffset() - 0.1D), z = Mth.floor(this.getZ()) + zo;
@@ -898,13 +872,13 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 
 	@Override
 	public float getShakeIntensity(Entity viewer) {
-		if (this.deathTicks > 0) {
+		if (this.deathTime > 0) {
 			float dist = this.distanceTo(viewer);
 			float screamMult = 1.0F - dist / 30.0F;
 			if (dist >= 30.0F) {
 				return 0.0F;
 			}
-			return (Mth.sin(this.deathTicks / 120.0F * Mth.PI) + 0.1F) * 0.15F * screamMult;
+			return (Mth.sin(this.deathTime / 120.0F * Mth.PI) + 0.1F) * 0.15F * screamMult;
 		} else {
 			return 0.0F;
 		}
@@ -926,14 +900,14 @@ public class DreadfulPeatMummy extends Monster implements BLEntity, Betweenlands
 	public void addAdditionalSaveData(CompoundTag tag) {
 		super.addAdditionalSaveData(tag);
 		tag.putInt("spawningState", this.getSpawningState());
-		tag.putInt("deathTicks", this.deathTicks);
+		tag.putInt("deathTime", this.deathTime);
 		tag.putFloat("previousYOffset", this.prevYOffset);
 	}
 
 	@Override
 	public void readAdditionalSaveData(CompoundTag tag) {
 		super.readAdditionalSaveData(tag);
-		this.deathTicks = tag.getInt("deathTicks");
+		this.deathTime = tag.getInt("deathTime");
 		this.setYOffset(tag.getFloat("previousYOffset"));
 		this.getEntityData().set(SPAWNING_STATE_DW, tag.getInt("spawningState"));
 		if (this.hasCustomName()) {

@@ -28,7 +28,6 @@ import thebetweenlands.client.shader.LightSource;
 import thebetweenlands.client.shader.ResizableFramebuffer;
 import thebetweenlands.client.shader.postprocessing.GroundFog.GroundFogVolume;
 import thebetweenlands.client.renderer.GLTextureObjectWrapper;
-import thebetweenlands.client.sky.BLSkyRenderer;
 import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.config.BetweenlandsConfig;
 import thebetweenlands.common.registries.AttachmentRegistry;
@@ -200,13 +199,13 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 		this.gasParticlesBuffer = new GeometryBuffer(textureManager, GAS_PARTICLES_DIFFUSE_TEXTURE, GAS_PARTICLES_DEPTH_TEXTURE, true);
 
 		//Initialize gas textures and effect
-		this.gasTextureFramebuffer = new TextureTarget(64, 64, false, Minecraft.ON_OSX);
+		this.gasTextureFramebuffer = new TextureTarget(64, 64, false);
 		Minecraft.getInstance().getTextureManager().register(GAS_PARTICLE_TEXTURE, new GLTextureObjectWrapper(this.gasTextureFramebuffer.getColorTextureId()));
-		this.gasTextureBaseFramebuffer = new TextureTarget(64, 64, false, Minecraft.ON_OSX);
+		this.gasTextureBaseFramebuffer = new TextureTarget(64, 64, false);
 		this.gasWarpEffect = new Warp().setTimeScale(0.00004F).setScale(40.0F).setMultiplier(3.55F).init();
 
 		//Initialize starfield texture and effect
-		this.starfieldTextureFramebuffer = new TextureTarget(BetweenlandsConfig.skyResolution, BetweenlandsConfig.skyResolution, false, Minecraft.ON_OSX);
+		this.starfieldTextureFramebuffer = new TextureTarget(BetweenlandsConfig.skyResolution, BetweenlandsConfig.skyResolution, false);
 		this.starfieldEffect = new Starfield(true).init();
 
 		//Initialize occlusion extractor and god's ray effect
@@ -289,7 +288,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Returns the main FBO
 	 *
-	 * @return
 	 */
 	protected final RenderTarget getMainFramebuffer() {
 		return Minecraft.getInstance().getMainRenderTarget();
@@ -298,7 +296,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Returns the depth buffer
 	 *
-	 * @return
 	 */
 	public DepthBuffer getDepthBuffer() {
 		return this.depthBuffer;
@@ -323,7 +320,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Returns the inverted MVP matrix
 	 *
-	 * @return
 	 */
 	public Matrix4f getInvertedModelviewProjectionMatrix() {
 		return this.invertedModelviewProjectionMatrix;
@@ -332,7 +328,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Returns the MVP matrix
 	 *
-	 * @return
 	 */
 	public Matrix4f getModelviewProjectionMatrix() {
 		return this.modelviewProjectionMatrix;
@@ -341,7 +336,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Returns the MV matrix
 	 *
-	 * @return
 	 */
 	public Matrix4f getModelviewMatrix() {
 		return this.modelviewMatrix;
@@ -350,7 +344,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Returns the modelview buffer
 	 *
-	 * @return
 	 */
 	public FloatBuffer getModelviewBuffer() {
 		return MODELVIEW;
@@ -359,7 +352,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Returns the projection matrix
 	 *
-	 * @return
 	 */
 	public Matrix4f getProjectionMatrix() {
 		return this.projectionMatrix;
@@ -368,7 +360,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Returns the projection buffer
 	 *
-	 * @return
 	 */
 	public FloatBuffer getProjectionBuffer() {
 		return PROJECTION;
@@ -376,7 +367,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 
 	/**
 	 * Returns the gas particle geometry buffer
-	 * @return
 	 */
 	public GeometryBuffer getGasParticleBuffer() {
 		return this.gasParticlesBuffer;
@@ -384,7 +374,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 
 	/**
 	 * Returns the repeller shield geometry buffer
-	 * @return
 	 */
 	public GeometryBuffer getRepellerShieldBuffer() {
 		return this.repellerShieldBuffer;
@@ -393,7 +382,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Adds a dynamic light source for this frame
 	 *
-	 * @param light
 	 */
 	public void addLight(LightSource light) {
 		this.lightSources.add(light);
@@ -409,7 +397,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Returns the amount of light sources
 	 *
-	 * @return
 	 */
 	public int getLightSourcesAmount() {
 		return this.lightSources.size();
@@ -418,7 +405,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Adds a ground fog volume for this frame
 	 *
-	 * @param volume
 	 */
 	public void addGroundFogVolume(GroundFogVolume volume) {
 		this.groundFogVolumes.add(volume);
@@ -434,7 +420,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Returns the amount of ground fog volumes
 	 *
-	 * @return
 	 */
 	public int getGroundFogVolumesAmount() {
 		return this.groundFogVolumes.size();
@@ -443,7 +428,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Sets the current render pass
 	 *
-	 * @param pass
 	 */
 	public void setRenderPass(int pass) {
 		this.currentRenderPass = pass;
@@ -452,7 +436,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Returns the gas texture
 	 *
-	 * @return
 	 */
 	public int getGasTexture() {
 		return this.gasTextureFramebuffer != null ? this.gasTextureFramebuffer.getColorTextureId() : -1;
@@ -461,7 +444,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Returns the starfield texture
 	 *
-	 * @return
 	 */
 	public int getStarfieldTexture() {
 		return this.starfieldTextureFramebuffer != null ? this.starfieldTextureFramebuffer.getColorTextureId() : -1;
@@ -470,7 +452,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Updates the shader textures
 	 *
-	 * @param partialTicks
 	 */
 	public void updateTextures(float partialTicks) {
 		ClientLevel level = Minecraft.getInstance().level;
@@ -486,7 +467,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Renders additional post processing effects such as god's rays, swirl etc.
 	 *
-	 * @param partialTicks
 	 */
 	public void renderPostEffects(float partialTicks) {
 		Window window = Minecraft.getInstance().getWindow();
@@ -581,7 +561,7 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 		}
 
 		int depthTexture = this.depthBuffer.getId();
-		int clipPlaneBuffer = BLSkyRenderer.clipPlaneBuffer.getDepthTexture();
+		int clipPlaneBuffer = 0; //BLSkyRenderer.clipPlaneBuffer.getDepthTexture();
 
 		if (depthTexture < 0 || clipPlaneBuffer < 0) return; //FBOs not yet ready
 
@@ -637,7 +617,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Sets the swirl effect angle
 	 *
-	 * @param swirlAngle
 	 */
 	public void setSwirlAngle(float swirlAngle) {
 		this.lastSwirlAngle = this.swirlAngle;
@@ -647,8 +626,6 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 	/**
 	 * Returns the swirl effect angle
 	 *
-	 * @param partialTicks
-	 * @return
 	 */
 	public float getSwirlAngle(float partialTicks) {
 		return this.lastSwirlAngle + (this.swirlAngle - this.lastSwirlAngle) * partialTicks;
@@ -692,11 +669,11 @@ public class WorldShader extends PostProcessingEffect<WorldShader> {
 
 			this.gasTextureFramebuffer.bindWrite(false);
 			RenderSystem.clearColor(1, 1, 1, 1);
-			RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT, Minecraft.ON_OSX);
+			RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT);
 
 			this.gasTextureBaseFramebuffer.bindWrite(false);
 			RenderSystem.clearColor(1, 1, 1, 1);
-			RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT, Minecraft.ON_OSX);
+			RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT);
 
 			this.gasWarpEffect.create(this.gasTextureFramebuffer)
 			.setSource(this.gasTextureBaseFramebuffer.getColorTextureId())

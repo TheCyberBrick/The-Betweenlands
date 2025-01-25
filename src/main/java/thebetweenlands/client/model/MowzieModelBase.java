@@ -1,26 +1,22 @@
 package thebetweenlands.client.model;
 
-import net.minecraft.client.model.HierarchicalModel;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 
 import java.util.function.Function;
 
-public abstract class MowzieModelBase<T extends Entity> extends HierarchicalModel<T> {
+public abstract class MowzieModelBase<S extends EntityRenderState> extends EntityModel<S> {
 
-	public MowzieModelBase() {
-		super();
+	public MowzieModelBase(ModelPart root) {
+		super(root);
 	}
 
-	public MowzieModelBase(Function<ResourceLocation, RenderType> renderType) {
-		super(renderType);
-	}
-
-	protected void setInitPose() {
-		this.root().getAllParts().forEach(ModelPart::resetPose);
+	public MowzieModelBase(ModelPart root, Function<ResourceLocation, RenderType> renderType) {
+		super(root, renderType);
 	}
 
 	/**

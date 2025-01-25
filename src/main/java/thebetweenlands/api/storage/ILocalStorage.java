@@ -16,14 +16,12 @@ public interface ILocalStorage {
 	/**
 	 * Returns the world storage
 	 *
-	 * @return
 	 */
 	IWorldStorage getWorldStorage();
 
 	/**
 	 * Returns the bounds of the local storage. May be null
 	 *
-	 * @return
 	 */
 	@Nullable
 	AABB getBoundingBox();
@@ -31,21 +29,18 @@ public interface ILocalStorage {
 	/**
 	 * Returns whether the local storage is loaded
 	 *
-	 * @return
 	 */
 	boolean isLoaded();
 
 	/**
 	 * Returns the storage ID
 	 *
-	 * @return
 	 */
 	StorageID getID();
 
 	/**
 	 * Returns the storage region
 	 *
-	 * @return
 	 */
 	@Nullable
 	LocalRegion getRegion();
@@ -54,7 +49,6 @@ public interface ILocalStorage {
 	 * Reads the local storage data from NBT.
 	 * {@link #getID()} and {@link #getRegion()} are already read automatically
 	 *
-	 * @param tag
 	 */
 	void readFromNBT(CompoundTag tag);
 
@@ -62,23 +56,18 @@ public interface ILocalStorage {
 	 * Writes the local storage data to NBT.
 	 * {@link #getID()} and {@link #getRegion()} are already written automatically
 	 *
-	 * @param tag
-	 * @return
 	 */
 	CompoundTag writeToNBT(CompoundTag tag);
 
 	/**
 	 * Reads the initial data that is sent the first time
 	 *
-	 * @param tag
 	 */
 	void readInitialPacket(CompoundTag tag);
 
 	/**
 	 * Writes the initial data that is sent the first time
 	 *
-	 * @param tag
-	 * @return
 	 */
 	CompoundTag writeInitialPacket(CompoundTag tag);
 
@@ -90,21 +79,18 @@ public interface ILocalStorage {
 	/**
 	 * Sets whether the local storage is dirty
 	 *
-	 * @param dirty
 	 */
 	void setDirty(boolean dirty);
 
 	/**
 	 * Returns whether the local storage data is dirty
 	 *
-	 * @return
 	 */
 	boolean isDirty();
 
 	/**
 	 * Returns an unmodifiable list of all linked chunks
 	 *
-	 * @return
 	 */
 	List<ChunkPos> getLinkedChunks();
 
@@ -147,14 +133,12 @@ public interface ILocalStorage {
 	/**
 	 * Returns a list of all currently loaded references
 	 *
-	 * @return
 	 */
 	Collection<LocalStorageReference> getLoadedReferences();
 
 	/**
 	 * Loads a reference
 	 *
-	 * @param reference
 	 * @return True if the reference wasn't loaded yet
 	 */
 	boolean loadReference(LocalStorageReference reference);
@@ -162,7 +146,6 @@ public interface ILocalStorage {
 	/**
 	 * Unloads a reference
 	 *
-	 * @param reference
 	 * @return True if the reference was loaded
 	 */
 	boolean unloadReference(LocalStorageReference reference);
@@ -172,8 +155,6 @@ public interface ILocalStorage {
 	 * May be called multiple times with the same player but from
 	 * a different chunk storage
 	 *
-	 * @param chunkStorage
-	 * @param player
 	 * @return True if the player wasn't watching yet
 	 */
 	boolean addWatcher(IChunkStorage chunkStorage, ServerPlayer player);
@@ -183,8 +164,6 @@ public interface ILocalStorage {
 	 * May be called multiple times with the same player but from
 	 * a different chunk storage
 	 *
-	 * @param chunkStorage
-	 * @param player
 	 * @return True if the player was watching
 	 */
 	boolean removeWatcher(IChunkStorage chunkStorage, ServerPlayer player);
@@ -192,7 +171,6 @@ public interface ILocalStorage {
 	/**
 	 * Returns an unmodifiable list of all current watching players
 	 *
-	 * @return
 	 */
 	Collection<ServerPlayer> getWatchers();
 
@@ -209,7 +187,6 @@ public interface ILocalStorage {
 	/**
 	 * Links the specified chunk to this local storage
 	 *
-	 * @param chunk
 	 * @return True if the chunk was linked successfully
 	 */
 	boolean linkChunk(ChunkAccess chunk);
@@ -218,7 +195,6 @@ public interface ILocalStorage {
 	 * Links the specified chunk to this local storage using a deferred
 	 * storage operation. The link will be completed once the chunk is loaded
 	 *
-	 * @param chunk
 	 */
 	default void linkChunkDeferred(ChunkPos chunk) {
 
@@ -230,7 +206,6 @@ public interface ILocalStorage {
 	 * and {@link #linkChunkDeferred(ChunkPos)} if the chunk does not yet exist
 	 * or is not loaded.
 	 *
-	 * @param chunk
 	 */
 	default void linkChunkSafely(Level level, ChunkPos chunk) {
 		ChunkAccess instance = level.getChunkSource().getChunkNow(chunk.x, chunk.z);
@@ -247,7 +222,6 @@ public interface ILocalStorage {
 	 * file won't be deleted. To remove a local storage
 	 * use {@link ILocalStorageHandler#removeLocalStorage(ILocalStorage)} instead
 	 *
-	 * @param chunk
 	 * @return True if the chunk was unlinked successfully
 	 */
 	boolean unlinkChunk(ChunkAccess chunk);
@@ -256,7 +230,6 @@ public interface ILocalStorage {
 	 * Returns the data manager used to sync data. <p><b>Only storages that implement {@link TickableStorage}
 	 * will automatically update the data manager!</b>
 	 *
-	 * @return
 	 */
 	@Nullable
 	GenericDataAccessorAccess getDataManager();

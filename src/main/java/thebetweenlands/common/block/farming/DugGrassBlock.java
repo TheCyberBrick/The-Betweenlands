@@ -28,7 +28,7 @@ public class DugGrassBlock extends DugSoilBlock {
 						level.setBlockAndUpdate(pos, BlockRegistry.SWAMP_GRASS.get().defaultBlockState());
 					}
 				} else {
-					if (level.getBlockState(pos.above()).getLightBlock(level, pos.above()) > 2) {
+					if (level.getBlockState(pos.above()).getLightBlock() > 2) {
 						level.setBlockAndUpdate(pos, BlockRegistry.DUG_SWAMP_DIRT.get().defaultBlockState());
 						DugSoilBlock.copy(level, pos, soil);
 					}

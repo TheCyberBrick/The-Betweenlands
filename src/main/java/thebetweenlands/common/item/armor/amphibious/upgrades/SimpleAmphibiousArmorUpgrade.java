@@ -3,7 +3,6 @@ package thebetweenlands.common.item.armor.amphibious.upgrades;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import thebetweenlands.api.item.amphibious.AmphibiousArmorAttributeUpgrade;
@@ -48,14 +47,14 @@ public class SimpleAmphibiousArmorUpgrade implements AmphibiousArmorUpgrade {
 	}
 
 	@Override
-	public Set<EquipmentSlot> getArmorTypes() {
+	public Set<EquipmentSlot> getSlots() {
 		return this.armorTypes;
 	}
 
 	@Override
-	public void applyAttributeModifiers(ArmorItem.Type armorType, ItemStack stack, int count, List<ItemAttributeModifiers.Entry> modifiers) {
+	public void applyAttributeModifiers(EquipmentSlot slot, ItemStack stack, int count, List<ItemAttributeModifiers.Entry> modifiers) {
 		if(this.attributeUpgrade != null) {
-			this.attributeUpgrade.applyAttributeModifiers(armorType, stack, count, modifiers);
+			this.attributeUpgrade.applyAttributeModifiers(slot, stack, count, modifiers);
 		}
 	}
 

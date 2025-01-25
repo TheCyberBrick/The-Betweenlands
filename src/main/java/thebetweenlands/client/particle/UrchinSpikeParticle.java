@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import thebetweenlands.client.renderer.SpikeRenderer;
 import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.registries.SoundRegistry;
@@ -101,7 +101,7 @@ public class UrchinSpikeParticle extends Particle {
 		stack.scale(this.scale, this.scale, this.scale);
 		MultiBufferSource.BufferSource source = Minecraft.getInstance().renderBuffers().bufferSource();
 		VertexConsumer vertexconsumer = source.getBuffer(this.renderType);
-		this.renderer.build(stack.last(), vertexconsumer, i, OverlayTexture.NO_OVERLAY, FastColor.ARGB32.colorFromFloat(alpha, 1.0F, 1.0F, 1.0F));
+		this.renderer.build(stack.last(), vertexconsumer, i, OverlayTexture.NO_OVERLAY, ARGB.white(alpha));
 		source.endBatch();
 	}
 

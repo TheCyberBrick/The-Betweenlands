@@ -4,7 +4,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.player.Player;
@@ -28,7 +28,7 @@ public class LurkerSkinShieldItem extends BaseShieldItem {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		ItemStack itemstack = player.getItemInHand(hand);
 		BlockHitResult hitresult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.ANY);
 		if (hitresult.getType() != HitResult.Type.MISS) {
@@ -40,7 +40,7 @@ public class LurkerSkinShieldItem extends BaseShieldItem {
 				for (Entity entity : list) {
 					AABB aabb = entity.getBoundingBox().inflate(entity.getPickRadius());
 					if (aabb.contains(vec31)) {
-						return InteractionResultHolder.pass(itemstack);
+						return InteractionResult.PASS;
 					}
 				}
 			}
@@ -50,7 +50,7 @@ public class LurkerSkinShieldItem extends BaseShieldItem {
 					LurkerSkinRaft raft = new LurkerSkinRaft(level, hitresult.getLocation().x(), hitresult.getLocation().y() - 0.12D, hitresult.getLocation().z(), itemstack);
 					raft.setYRot(player.getYRot());
 					if (!level.noCollision(raft, raft.getBoundingBox())) {
-						return InteractionResultHolder.fail(itemstack);
+						return InteractionResult.FAIL;
 					} else {
 						if (!level.isClientSide()) {
 							level.addFreshEntity(raft);
@@ -62,7 +62,7 @@ public class LurkerSkinShieldItem extends BaseShieldItem {
 						}
 
 						player.awardStat(Stats.ITEM_USED.get(this));
-						return InteractionResultHolder.sidedSuccess(itemstack, level.isClientSide());
+						return InteractionResult.SUCCESS;
 					}
 				}
 			}

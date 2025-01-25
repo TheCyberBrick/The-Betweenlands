@@ -5,9 +5,11 @@ import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.CoreShaders;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
@@ -74,12 +76,12 @@ public class AmphibiousArmorScreen extends AbstractContainerScreen<AmphibiousArm
 	protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
 		int i = this.leftPos;
 		int j = (this.height - this.imageHeight) / 2;
-		graphics.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight);
+		graphics.blit(RenderType::guiTextured, TEXTURE, i, j, 0.0F, 0.0F, 0, 0, this.imageWidth, this.imageHeight);
 		RenderSystem.enableBlend();
 		this.handlePulseAnimation(graphics, partialTick);
 		for (int slot = 0; slot < this.getMenu().getNumSlots(); slot++) {
 			if (this.getMenu().getSlot(slot).hasItem()) {
-				graphics.blitSprite(SLOT_PULSE_SPRITES[slot], i + ANIMATION_FRAMES_X, j + ANIMATION_FRAMES_Y, 124, 57);
+				graphics.blitSprite(RenderType::guiTextured, SLOT_PULSE_SPRITES[slot], i + ANIMATION_FRAMES_X, j + ANIMATION_FRAMES_Y, 124, 57);
 			} else if (Screen.hasShiftDown() && this.getMenu().getArmorItem().has(DataComponentRegistry.AMPHIBIOUS_ARMOR_FILTERS)) {
 				var filters = this.getMenu().getArmorItem().get(DataComponentRegistry.AMPHIBIOUS_ARMOR_FILTERS);
 				if (filters.getSlots() > slot && !filters.getStackInSlot(slot).isEmpty()) {
@@ -98,7 +100,7 @@ public class AmphibiousArmorScreen extends AbstractContainerScreen<AmphibiousArm
 			}
 		}
 		if (this.getMenu().getNumSlots() < 4) {
-			graphics.blitSprite(COVER, i + 67, j + 81, 68, 35);
+			graphics.blitSprite(RenderType::guiTextured, COVER, i + 67, j + 81, 68, 35);
 		}
 		RenderSystem.disableBlend();
 	}
@@ -140,13 +142,13 @@ public class AmphibiousArmorScreen extends AbstractContainerScreen<AmphibiousArm
 		float maxV = (vOffset + 57.0F) / 456.0F;
 
 		RenderSystem.setShaderTexture(0, PULSE);
-		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+		RenderSystem.setShader(CoreShaders.POSITION_TEX_COLOR);
 		Matrix4f matrix4f = graphics.pose().last().pose();
 		BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-		bufferbuilder.addVertex(matrix4f, x, y, 0).setUv(minU, minV).setColor(1.0F, 1.0F, 1.0F, alpha);
-		bufferbuilder.addVertex(matrix4f, x, y + 57, 0).setUv(minU, maxV).setColor(1.0F, 1.0F, 1.0F, alpha);
-		bufferbuilder.addVertex(matrix4f, x + 124, y + 57, 0).setUv(maxU, maxV).setColor(1.0F, 1.0F, 1.0F, alpha);
-		bufferbuilder.addVertex(matrix4f, x + 124, y, 0).setUv(maxU, minV).setColor(1.0F, 1.0F, 1.0F, alpha);
+		bufferbuilder.addVertex(matrix4f, x, y, 0).setUv(minU, minV).setColor(ARGB.white(alpha));
+		bufferbuilder.addVertex(matrix4f, x, y + 57, 0).setUv(minU, maxV).setColor(ARGB.white(alpha));
+		bufferbuilder.addVertex(matrix4f, x + 124, y + 57, 0).setUv(maxU, maxV).setColor(ARGB.white(alpha));
+		bufferbuilder.addVertex(matrix4f, x + 124, y, 0).setUv(maxU, minV).setColor(ARGB.white(alpha));
 		BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
 	}
 }

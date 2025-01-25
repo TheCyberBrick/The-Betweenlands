@@ -8,11 +8,10 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.creature.GreeblingCoracle;
+import thebetweenlands.client.state.GreeblingCoracleRenderState;
 
-public class GreeblingCoracleModel extends MowzieModelBase<GreeblingCoracle> {
+public class GreeblingCoracleModel extends MowzieModelBase<GreeblingCoracleRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart coracle_base;
 	private final ModelPart body_base;
 	private final ModelPart chest;
@@ -37,7 +36,7 @@ public class GreeblingCoracleModel extends MowzieModelBase<GreeblingCoracle> {
 	private final ModelPart[] netting;
 
 	public GreeblingCoracleModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.coracle_base = root.getChild("coracle_base");
 		this.body_base = this.coracle_base.getChild("body_base");
 		this.chest = this.body_base.getChild("chest");
@@ -273,102 +272,94 @@ public class GreeblingCoracleModel extends MowzieModelBase<GreeblingCoracle> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
+	public void setupAnim(GreeblingCoracleRenderState state) {
+		super.setupAnim(state);
 
-	@Override
-	public void setupAnim(GreeblingCoracle entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		this.faceTarget(this.head_connect, 1.0F, netHeadYaw, headPitch);
-	}
+		this.body_base.visible = state.sinkTicks <= 10;
 
-	@Override
-	public void prepareMobModel(GreeblingCoracle entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		this.setInitPose();
-		float frame = entity.tickCount + partialTick;
-
-		this.body_base.visible = entity.getSinkingTicks() <= 10;
-
-		if (entity.isGreeblingAboveWater()) {
+		if (state.aboveWater) {
 			// Boat idle
-			this.bob(this.coracle_base, 0.1f, 0.2f, false, frame, 1f);
-			this.walk(this.coracle_base, 0.06f, 0.05f, false, 0, 0, frame, 1f);
-			this.swing(this.coracle_base, 0.08f, 0.05f, false, 0.3f, 0, frame, 1f);
-			this.flap(this.coracle_base, 0.04f, 0.05f, false, 1.2f, 0, frame, 1f);
-			this.walk(this.netrope1a, 0.06f, 0.05f, true, 0, -0.025f, frame, 1f);
-			this.swing(this.netrope1a, 0.08f, 0.05f, true, 0.3f, 0, frame, 1f);
-			this.flap(this.netrope1a, 0.04f, 0.05f, true, 1.2f, 0, frame, 1f);
-			this.walk(this.body_base, 0.06f, 0.05f, true, 0, 0, frame, 1f);
-			this.swing(this.body_base, 0.08f, 0.05f, true, 0.3f, 0, frame, 1f);
-			this.flap(this.body_base, 0.04f, 0.05f, true, 1.2f, 0, frame, 1f);
+			this.bob(this.coracle_base, 0.1f, 0.2f, false, state.ageInTicks, 1f);
+			this.walk(this.coracle_base, 0.06f, 0.05f, false, 0, 0, state.ageInTicks, 1f);
+			this.swing(this.coracle_base, 0.08f, 0.05f, false, 0.3f, 0, state.ageInTicks, 1f);
+			this.flap(this.coracle_base, 0.04f, 0.05f, false, 1.2f, 0, state.ageInTicks, 1f);
+			this.walk(this.netrope1a, 0.06f, 0.05f, true, 0, -0.025f, state.ageInTicks, 1f);
+			this.swing(this.netrope1a, 0.08f, 0.05f, true, 0.3f, 0, state.ageInTicks, 1f);
+			this.flap(this.netrope1a, 0.04f, 0.05f, true, 1.2f, 0, state.ageInTicks, 1f);
+			this.walk(this.body_base, 0.06f, 0.05f, true, 0, 0, state.ageInTicks, 1f);
+			this.swing(this.body_base, 0.08f, 0.05f, true, 0.3f, 0, state.ageInTicks, 1f);
+			this.flap(this.body_base, 0.04f, 0.05f, true, 1.2f, 0, state.ageInTicks, 1f);
 
 			float offsetAmount = 1.2f;
 			for (int i = 0; i < this.netting.length; i++) {
-				this.walk(this.netting[i], 0.08f, 0.05f, false, 2 - offsetAmount * i, 0, frame, 1f);
-				this.swing(this.netting[i], 0.06f, 0.05f, false, 1.8f - offsetAmount * i, 0, frame, 1f);
-				this.flap(this.netting[i], 0.05f, 0.05f, false, 1.3f - offsetAmount * i, 0, frame, 1f);
+				this.walk(this.netting[i], 0.08f, 0.05f, false, 2 - offsetAmount * i, 0, state.ageInTicks, 1f);
+				this.swing(this.netting[i], 0.06f, 0.05f, false, 1.8f - offsetAmount * i, 0, state.ageInTicks, 1f);
+				this.flap(this.netting[i], 0.05f, 0.05f, false, 1.3f - offsetAmount * i, 0, state.ageInTicks, 1f);
 			}
-			this.walk(this.net_weightline, 0.08f, 0.15f, false, 2 - offsetAmount * 2, 0, frame, 1f);
-			this.swing(this.net_weightline, 0.06f, 0.15f, false, 1.8f - offsetAmount * 2, 0, frame, 1f);
-			this.flap(this.net_weightline, 0.05f, 0.15f, false, 1.3f - offsetAmount * 2, 0, frame, 1f);
+			this.walk(this.net_weightline, 0.08f, 0.15f, false, 2 - offsetAmount * 2, 0, state.ageInTicks, 1f);
+			this.swing(this.net_weightline, 0.06f, 0.15f, false, 1.8f - offsetAmount * 2, 0, state.ageInTicks, 1f);
+			this.flap(this.net_weightline, 0.05f, 0.15f, false, 1.3f - offsetAmount * 2, 0, state.ageInTicks, 1f);
 
-			this.walk(this.hook_front, 0.16f, 0.1f + (float) Math.sin(frame * 0.04f) * 0.1f, false, 0, 0, frame, 1f);
-			this.walk(this.hook_left, 0.16f, 0.1f + (float) Math.sin(frame * 0.04f + 0.6) * 0.1f, false, 1.7f, 0, frame, 1f);
-			this.flap(this.side_rope1, 0.08f, 0.15f, false, 2.3f, 0, frame, 1f);
+			this.walk(this.hook_front, 0.16f, 0.1f + (float) Math.sin(state.ageInTicks * 0.04f) * 0.1f, false, 0, 0, state.ageInTicks, 1f);
+			this.walk(this.hook_left, 0.16f, 0.1f + (float) Math.sin(state.ageInTicks * 0.04f + 0.6) * 0.1f, false, 1.7f, 0, state.ageInTicks, 1f);
+			this.flap(this.side_rope1, 0.08f, 0.15f, false, 2.3f, 0, state.ageInTicks, 1f);
 			// Greebling idle
-			this.walk(this.chest, 0.1f, 0.05f, false, 1, 0, frame, 1f);
-			this.walk(this.head_connect, 0.1f, 0.05f, true, 1, 0, frame, 1f);
-			this.walk(this.jaw, 0.1f, 0.05f, true, 1, -0.2f, frame, 1f);
-			this.walk(this.cloth1a, 0.1f, 0.05f, false, 1.5f, 0.025f, frame, 1f);
-			this.walk(this.cloth1b, 0.1f, 0.05f, false, 1f, 0.025f, frame, 1f);
+			this.walk(this.chest, 0.1f, 0.05f, false, 1, 0, state.ageInTicks, 1f);
+			this.walk(this.head_connect, 0.1f, 0.05f, true, 1, 0, state.ageInTicks, 1f);
+			this.walk(this.jaw, 0.1f, 0.05f, true, 1, -0.2f, state.ageInTicks, 1f);
+			this.walk(this.cloth1a, 0.1f, 0.05f, false, 1.5f, 0.025f, state.ageInTicks, 1f);
+			this.walk(this.cloth1b, 0.1f, 0.05f, false, 1f, 0.025f, state.ageInTicks, 1f);
 
 			// Paddling
 			float globalDegree = 0.6f;
 			float globalSpeed = 1.4f;
-			this.walk(this.body_base, 0.15f * globalSpeed, 0.3f * globalDegree, false, 0, 0.9f, limbSwing, limbSwingAmount);
-			this.walk(this.leg_left1a, 0.15f * globalSpeed, 0.3f * globalDegree, true, 0, -0.2f, limbSwing, limbSwingAmount);
-			this.walk(this.leg_right1a, 0.15f * globalSpeed, 0.3f * globalDegree, true, 0, -0.2f, limbSwing, limbSwingAmount);
-			this.walk(this.arm_left1a, 0.15f * globalSpeed, 0.3f * globalDegree, true, 0, -0.2f, limbSwing, limbSwingAmount);
-			this.walk(this.arm_right1a, 0.15f * globalSpeed, 0.3f * globalDegree, true, 0, -0.2f, limbSwing, limbSwingAmount);
-			this.walk(this.head_connect, 0.15f * globalSpeed, 0.25f * globalDegree, true, 0, -0.2f, limbSwing, limbSwingAmount);
-			this.walk(this.chest, 0.15f * globalSpeed, 0.3f * globalDegree, false, -1f, 0, limbSwing, limbSwingAmount);
-			this.walk(this.arm_right1a, 0.15f * globalSpeed, 0.3f * globalDegree, true, -1f, 0, limbSwing, limbSwingAmount);
-			this.walk(this.arm_left1a, 0.15f * globalSpeed, 0.3f * globalDegree, true, -1f, 0, limbSwing, limbSwingAmount);
-			this.walk(this.head_connect, 0.15f * globalSpeed, 0.25f * globalDegree, true, -1f, 0, limbSwing, limbSwingAmount);
+			this.walk(this.body_base, 0.15f * globalSpeed, 0.3f * globalDegree, false, 0, 0.9f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.walk(this.leg_left1a, 0.15f * globalSpeed, 0.3f * globalDegree, true, 0, -0.2f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.walk(this.leg_right1a, 0.15f * globalSpeed, 0.3f * globalDegree, true, 0, -0.2f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.walk(this.arm_left1a, 0.15f * globalSpeed, 0.3f * globalDegree, true, 0, -0.2f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.walk(this.arm_right1a, 0.15f * globalSpeed, 0.3f * globalDegree, true, 0, -0.2f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.walk(this.head_connect, 0.15f * globalSpeed, 0.25f * globalDegree, true, 0, -0.2f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.walk(this.chest, 0.15f * globalSpeed, 0.3f * globalDegree, false, -1f, 0, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.walk(this.arm_right1a, 0.15f * globalSpeed, 0.3f * globalDegree, true, -1f, 0, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.walk(this.arm_left1a, 0.15f * globalSpeed, 0.3f * globalDegree, true, -1f, 0, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.walk(this.head_connect, 0.15f * globalSpeed, 0.25f * globalDegree, true, -1f, 0, state.walkAnimationPos, state.walkAnimationSpeed);
 
-			this.walk(this.arm_left1a, 0.15f * globalSpeed, 0.8f * globalDegree, false, 2.5f, 0.4f, limbSwing, limbSwingAmount);
-			this.walk(this.arm_left1b, 0.15f * globalSpeed, 0.8f * globalDegree, true, 2.5f - 0.8f, 0.2f, limbSwing, limbSwingAmount);
+			this.walk(this.arm_left1a, 0.15f * globalSpeed, 0.8f * globalDegree, false, 2.5f, 0.4f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.walk(this.arm_left1b, 0.15f * globalSpeed, 0.8f * globalDegree, true, 2.5f - 0.8f, 0.2f, state.walkAnimationPos, state.walkAnimationSpeed);
 
 			float paddleDelay = -0.4f;
-			this.flap(this.paddle_main, 0.15f * globalSpeed, 0.45f * globalDegree, false, 2.5f - 0.8f + paddleDelay, -0.1f, limbSwing, limbSwingAmount);
-			this.flap(this.arm_left1a, 0.15f * globalSpeed, 0.4f * globalDegree, false, 2.5f - 0.8f + paddleDelay, 0.3f, limbSwing, limbSwingAmount);
-			this.flap(this.chest, 0.15f * globalSpeed, 0.4f * globalDegree, false, 2.5f - 1.3f + paddleDelay, 0f, limbSwing, limbSwingAmount);
-			this.flap(this.head_connect, 0.15f * globalSpeed, 0.4f * globalDegree, true, 2.5f - 1.3f + paddleDelay, 0f, limbSwing, limbSwingAmount);
-			this.swing(this.paddle_main, 0.15f * globalSpeed, 0.2f * globalDegree, true, -0.5f + paddleDelay, -0.2f, limbSwing, limbSwingAmount);
+			this.flap(this.paddle_main, 0.15f * globalSpeed, 0.45f * globalDegree, false, 2.5f - 0.8f + paddleDelay, -0.1f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.flap(this.arm_left1a, 0.15f * globalSpeed, 0.4f * globalDegree, false, 2.5f - 0.8f + paddleDelay, 0.3f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.flap(this.chest, 0.15f * globalSpeed, 0.4f * globalDegree, false, 2.5f - 1.3f + paddleDelay, 0f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.flap(this.head_connect, 0.15f * globalSpeed, 0.4f * globalDegree, true, 2.5f - 1.3f + paddleDelay, 0f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.swing(this.paddle_main, 0.15f * globalSpeed, 0.2f * globalDegree, true, -0.5f + paddleDelay, -0.2f, state.walkAnimationPos, state.walkAnimationSpeed);
 
-			swing(this.chest, 0.15f * globalSpeed, 0.6f * globalDegree, false, 2.5f + paddleDelay, -0.2f, limbSwing, limbSwingAmount);
-			swing(this.head_connect, 0.15f * globalSpeed, 0.6f * globalDegree, true, 2.5f + paddleDelay, -0.2f, limbSwing, limbSwingAmount);
+			swing(this.chest, 0.15f * globalSpeed, 0.6f * globalDegree, false, 2.5f + paddleDelay, -0.2f, state.walkAnimationPos, state.walkAnimationSpeed);
+			swing(this.head_connect, 0.15f * globalSpeed, 0.6f * globalDegree, true, 2.5f + paddleDelay, -0.2f, state.walkAnimationPos, state.walkAnimationSpeed);
 
-			this.flap(this.body_base, 0.15f * globalSpeed, 0.1f * globalDegree, false, 2.5f + paddleDelay, -0.7f, limbSwing, limbSwingAmount);
-			this.flap(this.chest, 0.15f * globalSpeed, 0.1f * globalDegree, false, 2.5f + paddleDelay, 0.4f, limbSwing, limbSwingAmount);
-			this.flap(this.leg_left1a, 0.15f * globalSpeed, 0.1f * globalDegree, true, 2.5f + paddleDelay, 0.4f, limbSwing, limbSwingAmount);
-			this.flap(this.leg_right1a, 0.15f * globalSpeed, 0.1f * globalDegree, true, 2.5f + paddleDelay, 0.4f, limbSwing, limbSwingAmount);
+			this.flap(this.body_base, 0.15f * globalSpeed, 0.1f * globalDegree, false, 2.5f + paddleDelay, -0.7f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.flap(this.chest, 0.15f * globalSpeed, 0.1f * globalDegree, false, 2.5f + paddleDelay, 0.4f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.flap(this.leg_left1a, 0.15f * globalSpeed, 0.1f * globalDegree, true, 2.5f + paddleDelay, 0.4f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.flap(this.leg_right1a, 0.15f * globalSpeed, 0.1f * globalDegree, true, 2.5f + paddleDelay, 0.4f, state.walkAnimationPos, state.walkAnimationSpeed);
 
-			this.walk(this.arm_right1a, 0.15f * globalSpeed, 0.7f * globalDegree, false, 2.5f + paddleDelay, 0.25f, limbSwing, limbSwingAmount);
-			this.walk(this.arm_right1b, 0.15f * globalSpeed, globalDegree, true, 2.5f - 0.9f + paddleDelay, -0.2f, limbSwing, limbSwingAmount);
-			this.walk(this.arm_right1b, 0.15f * globalSpeed, 0.3f * globalDegree, false, 2.5f + paddleDelay, 0f, limbSwing, limbSwingAmount);
-			this.swing(this.arm_right1a, 0.15f * globalSpeed, 0.5f * globalDegree, true, 2.5f + paddleDelay, 0.4f, limbSwing, limbSwingAmount);
-			this.flap(this.arm_right1a, 0.15f * globalSpeed, 0.6f * globalDegree, false, 2.5f - 0.8f + paddleDelay, 0f, limbSwing, limbSwingAmount);
-			this.flap(this.arm_right1b, 0.15f * globalSpeed, 0.4f * globalDegree, true, 2.5f + paddleDelay, -0.2f, limbSwing, limbSwingAmount);
-			this.arm_right1a.z += (float) Math.cos((limbSwing + 2.5f + 0.8f + paddleDelay) * 0.15 * globalSpeed) * globalDegree * limbSwingAmount + 0.2f;
+			this.walk(this.arm_right1a, 0.15f * globalSpeed, 0.7f * globalDegree, false, 2.5f + paddleDelay, 0.25f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.walk(this.arm_right1b, 0.15f * globalSpeed, globalDegree, true, 2.5f - 0.9f + paddleDelay, -0.2f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.walk(this.arm_right1b, 0.15f * globalSpeed, 0.3f * globalDegree, false, 2.5f + paddleDelay, 0f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.swing(this.arm_right1a, 0.15f * globalSpeed, 0.5f * globalDegree, true, 2.5f + paddleDelay, 0.4f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.flap(this.arm_right1a, 0.15f * globalSpeed, 0.6f * globalDegree, false, 2.5f - 0.8f + paddleDelay, 0f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.flap(this.arm_right1b, 0.15f * globalSpeed, 0.4f * globalDegree, true, 2.5f + paddleDelay, -0.2f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.arm_right1a.z += (float) Math.cos((state.walkAnimationPos + 2.5f + 0.8f + paddleDelay) * 0.15 * globalSpeed) * globalDegree * state.walkAnimationSpeed + 0.2f;
 
-			this.walk(this.cloth1a, 0.15f * globalSpeed, 0.3f * globalDegree, false, 2.5f + paddleDelay, 0.3f, limbSwing, limbSwingAmount);
-			this.walk(this.cloth1b, 0.15f * globalSpeed, 0.3f * globalDegree, false, 2.5f - 1f + paddleDelay, 0.25f, limbSwing, limbSwingAmount);
+			this.walk(this.cloth1a, 0.15f * globalSpeed, 0.3f * globalDegree, false, 2.5f + paddleDelay, 0.3f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.walk(this.cloth1b, 0.15f * globalSpeed, 0.3f * globalDegree, false, 2.5f - 1f + paddleDelay, 0.25f, state.walkAnimationPos, state.walkAnimationSpeed);
 
-			this.flap(this.ear_left, 0.3f * globalSpeed, 0.1f * globalDegree, false, 2.5f - 1f + paddleDelay, 0f, limbSwing, limbSwingAmount);
-			this.flap(this.ear_right, 0.3f * globalSpeed, 0.1f * globalDegree, true, 2.5f - 1f + paddleDelay, 0f, limbSwing, limbSwingAmount);
+			this.flap(this.ear_left, 0.3f * globalSpeed, 0.1f * globalDegree, false, 2.5f - 1f + paddleDelay, 0f, state.walkAnimationPos, state.walkAnimationSpeed);
+			this.flap(this.ear_right, 0.3f * globalSpeed, 0.1f * globalDegree, true, 2.5f - 1f + paddleDelay, 0f, state.walkAnimationPos, state.walkAnimationSpeed);
 
-			this.body_base.z -= 1 * limbSwingAmount;
+			this.body_base.z -= 1 * state.walkAnimationSpeed;
+
 		}
+
+		this.faceTarget(this.head_connect, 1.0F, state.yRot, state.xRot);
 	}
 }

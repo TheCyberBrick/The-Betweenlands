@@ -8,11 +8,10 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.creature.Emberling;
+import thebetweenlands.client.state.EmberlingRenderState;
 
-public class EmberlingModel extends MowzieModelBase<Emberling> {
+public class EmberlingModel extends MowzieModelBase<EmberlingRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart body2;
 	private final ModelPart body3;
 	private final ModelPart body4;
@@ -41,7 +40,7 @@ public class EmberlingModel extends MowzieModelBase<Emberling> {
 	private final ModelPart tail7;
 
 	public EmberlingModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.body3 = root.getChild("body_3");
 		this.body2 = this.body3.getChild("body_2");
 		this.body4 = this.body3.getChild("body_4");
@@ -195,28 +194,10 @@ public class EmberlingModel extends MowzieModelBase<Emberling> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void setupAnim(Emberling entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		float heady = Mth.sin((netHeadYaw / Mth.RAD_TO_DEG) * 0.5F);
-		float headx = Mth.sin((headPitch / Mth.RAD_TO_DEG) * 0.5F);
-		if (entity.isInSittingPose()) {
-			this.head.yRot = 0F;
-			this.head.xRot = 0F;
-		} else {
-			this.head.yRot = heady;
-			this.head.xRot = 0.045553093477052F + headx + entity.animationTicks;
-		}
-	}
-
-	@Override
-	public void prepareMobModel(Emberling entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		float animation = Mth.sin(limbSwing * 0.6F) * limbSwingAmount * 0.4F;
-		float flap = Mth.sin((entity.tickCount + partialTick) * 0.2F) * 0.8F;
-		float headFlap = Mth.sin((entity.tickCount + partialTick) * 0.6F) * 0.7F;
+	public void setupAnim(EmberlingRenderState state) {
+		float animation = Mth.sin(state.walkAnimationPos * 0.6F) * state.walkAnimationSpeed * 0.4F;
+		float flap = Mth.sin(state.ageInTicks * 0.2F) * 0.8F;
+		float headFlap = Mth.sin(state.ageInTicks * 0.6F) * 0.7F;
 		this.leftUpperGills1.yRot = 0.5918411493512771F - flap * 0.125F;
 		this.leftUpperGills2.yRot = 0.22759093446006054F - flap * 0.25F;
 
@@ -229,15 +210,15 @@ public class EmberlingModel extends MowzieModelBase<Emberling> {
 		this.rightLowerGills1.yRot = -0.8651597102135892F + flap * 0.125F;
 		this.rightLowerGills2.yRot = -0.31869712141416456F + flap * 0.25F;
 
-		if (entity.isShootingFlames()) {
+		if (state.shootingFlames) {
 			this.jaw.xRot = 1.0F;
 			this.head.zRot = 0.0F + headFlap;
 		} else {
-			this.jaw.xRot = (!entity.isInSittingPose() ? 0.40980330836826856F : 0.2F) + flap * (!entity.isInSittingPose() ? 0.5F : 0.125F);
+			this.jaw.xRot = (!state.sleeping ? 0.40980330836826856F : 0.2F) + flap * (!state.sleeping ? 0.5F : 0.125F);
 			this.head.zRot = 0.0F;
 		}
 
-		if (entity.isInSittingPose()) {
+		if (state.sleeping) {
 			this.body3.y = 20.5F;
 			this.leftLeg1.xRot = -1.4F;
 			this.rightLeg1.xRot = -1.4F;
@@ -253,10 +234,10 @@ public class EmberlingModel extends MowzieModelBase<Emberling> {
 			this.leftArm.yRot = -0.091106186954104F;
 			this.leftArm.zRot = -0.18203784098300857F;
 
-			this.body2.yRot = 0F;
+			this.body2.yRot = 0.0F;
 			this.body4.yRot = 0F;
 
-			this.body2.xRot = 0F + flap * 0.0125F;
+			this.body2.xRot = flap * 0.0125F;
 			this.body4.xRot = -0.18203784098300857F - flap * 0.025F;
 
 			this.tail1.yRot = 0.4F;
@@ -273,34 +254,44 @@ public class EmberlingModel extends MowzieModelBase<Emberling> {
 			this.tail5.zRot = 0.1F;
 		} else {
 			this.body3.y = 15.5F;
-			this.leftLeg1.xRot = -0.2617993877991494F + animation * 2F;
-			this.rightLeg1.xRot = -0.2617993877991494F - animation * 2F;
+			this.leftLeg1.xRot = -0.2617993877991494F + animation * 2.0F;
+			this.rightLeg1.xRot = -0.2617993877991494F - animation * 2.0F;
 
 			this.leftLeg2.xRot = 0.7740535232594852F;
 			this.rightLeg2.xRot = 0.7740535232594852F;
 
-			this.rightArm.xRot = 0.22759093446006054F + animation * 2F;
+			this.rightArm.xRot = 0.22759093446006054F + animation * 2.0F;
 			this.rightArm.yRot = 0.091106186954104F + animation;
-			this.rightArm.zRot = 0.18203784098300857F + entity.smoothedAngle(partialTick);
+			this.rightArm.zRot = 0.18203784098300857F + state.animationTicks;
 
-			this.leftArm.xRot = 0.22759093446006054F - animation * 2F;
+			this.leftArm.xRot = 0.22759093446006054F - animation * 2.0F;
 			this.leftArm.yRot = -0.091106186954104F + animation;
-			this.leftArm.zRot = -0.18203784098300857F - entity.smoothedAngle(partialTick);
+			this.leftArm.zRot = -0.18203784098300857F - state.animationTicks;
 
-			this.body2.yRot = 0F + animation * 0.8F + entity.smoothedAngle(partialTick) * 0.125F;
-			this.body4.yRot = 0F - animation * 0.8F - entity.smoothedAngle(partialTick) * 0.125F;
+			this.body2.yRot = 0.0F + animation * 0.8F + state.animationTicks * 0.125F;
+			this.body4.yRot = 0.0F - animation * 0.8F - state.animationTicks * 0.125F;
 
-			this.tail1.yRot = 0F + animation * 0.5F - flap * 0.25F + entity.smoothedAngle(partialTick) * 0.125F;
-			this.tail2.yRot = 0F + animation * 0.5F - flap * 0.25F + entity.smoothedAngle(partialTick) * 0.125F;
-			this.tail3.yRot = 0F - animation * 0.5F + flap * 0.25F - entity.smoothedAngle(partialTick) * 0.125F;
-			this.tail4.yRot = 0F - animation * 0.5F + flap * 0.25F - entity.smoothedAngle(partialTick) * 0.125F;
-			this.tail5.yRot = 0F - animation * 0.5F + flap * 0.25F - entity.smoothedAngle(partialTick) * 0.125F;
-			this.tail6.yRot = 0F - animation * 0.5F + flap * 0.25F - entity.smoothedAngle(partialTick) * 0.125F;
-			this.tail7.yRot = 0F - animation * 0.5F + flap * 0.25F - entity.smoothedAngle(partialTick) * 0.125F;
+			this.tail1.yRot = 0.0F + animation * 0.5F - flap * 0.25F + state.animationTicks * 0.125F;
+			this.tail2.yRot = 0.0F + animation * 0.5F - flap * 0.25F + state.animationTicks * 0.125F;
+			this.tail3.yRot = 0.0F - animation * 0.5F + flap * 0.25F - state.animationTicks * 0.125F;
+			this.tail4.yRot = 0.0F - animation * 0.5F + flap * 0.25F - state.animationTicks * 0.125F;
+			this.tail5.yRot = 0.0F - animation * 0.5F + flap * 0.25F - state.animationTicks * 0.125F;
+			this.tail6.yRot = 0.0F - animation * 0.5F + flap * 0.25F - state.animationTicks * 0.125F;
+			this.tail7.yRot = 0.0F - animation * 0.5F + flap * 0.25F - state.animationTicks * 0.125F;
 
-			this.tail2.zRot = 0F;
-			this.tail3.zRot = 0F;
-			this.tail4.zRot = 0F;
+			this.tail2.zRot = 0.0F;
+			this.tail3.zRot = 0.0F;
+			this.tail4.zRot = 0.0F;
+		}
+
+		float heady = Mth.sin((state.yRot / Mth.RAD_TO_DEG) * 0.5F);
+		float headx = Mth.sin((state.xRot / Mth.RAD_TO_DEG) * 0.5F);
+		if (state.sleeping) {
+			this.head.yRot = 0.0F;
+			this.head.xRot = 0.0F;
+		} else {
+			this.head.yRot = heady;
+			this.head.xRot = 0.045553093477052F + headx + state.animationTicks;
 		}
 	}
 }

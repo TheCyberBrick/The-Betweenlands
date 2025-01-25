@@ -8,11 +8,10 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.monster.PeatMummy;
+import thebetweenlands.client.state.PeatMummyRenderState;
 
-public class PeatMummyModel extends MowzieModelBase<PeatMummy> {
+public class PeatMummyModel extends MowzieModelBase<PeatMummyRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart bodyBase;
 	private final ModelPart butt;
 	private final ModelPart legleft;
@@ -30,7 +29,7 @@ public class PeatMummyModel extends MowzieModelBase<PeatMummy> {
 	private final ModelPart cheektissueleft;
 
 	public PeatMummyModel(ModelPart root) {
-		this.root = root;
+		super(root);
 		this.bodyBase = root.getChild("body_base");
 		this.butt = this.bodyBase.getChild("butt_joint").getChild("butt");
 		this.legleft = this.butt.getChild("left_leg_1");
@@ -147,58 +146,9 @@ public class PeatMummyModel extends MowzieModelBase<PeatMummy> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void setupAnim(PeatMummy entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		this.neck.yRot = Mth.sin((netHeadYaw / Mth.RAD_TO_DEG));
-		this.neck.xRot = 0.9105382707654417F + Mth.sin((headPitch / Mth.RAD_TO_DEG));
-		float newf1 = limbSwingAmount;
-		if (newf1 > 0.4) newf1 = 0.4f;
-		float newf12 = limbSwingAmount;
-		if (newf12 > 0.7) newf12 = 0.7f;
-
-		float globalDegree = 1.5f;
-		float wiggleDegree = 1.5f;
-		float globalSpeed = 0.6f;
-		float globalHeight = 1.5f;
-
-		//this.bodyBase.xRot -= wiggleDegree * globalDegree * newf1 * 3.0F * Mth.cos(globalSpeed * limbSwing);
-		this.swing(this.butt, globalSpeed, 0.2f * globalDegree * wiggleDegree, true, -1.6f, 0, limbSwing, newf1);
-		this.swing(this.bodyBase, globalSpeed, 0.3f * globalDegree * wiggleDegree, true, -0.8f, 0, limbSwing, newf1);
-		this.swing(this.shoulderBase, globalSpeed, 0.4f * globalDegree * wiggleDegree, true, 0, 0, limbSwing, newf1);
-		this.swing(this.neck, globalSpeed, 0.6f * globalDegree * wiggleDegree, false, -0.5f, 0, limbSwing, newf1);
-
-		this.walk(this.bodyBase, 2 * globalSpeed, 0.1f * globalHeight, true, -1.5f, 0.1f, limbSwing, limbSwingAmount);
-		this.walk(this.neck, 2 * globalSpeed, 0.1f * globalHeight, false, -1f, -0.1f, limbSwing, limbSwingAmount);
-		this.walk(this.jaw, 2 * globalSpeed, 0.1f * globalHeight, false, -0.7f, -0.1f, limbSwing, limbSwingAmount);
-		this.bob(this.bodyBase, 2 * globalSpeed, 0.5f * globalHeight, false, limbSwing, limbSwingAmount);
-
-		this.flap(this.legleft, globalSpeed, 0.3f * globalDegree, false, 0 - 0.8f, -0.3f, limbSwing, newf12);
-		this.walk(this.legleft, globalSpeed, 0.3f * globalDegree, false, 0 - 0.8f, -0.5f, limbSwing, newf12);
-		this.walk(this.legleft2, globalSpeed, 0.3f * globalDegree, false, -1.5f - 0.8f, 0.3f, limbSwing, newf12);
-		this.swing(this.legleft2, globalSpeed, 0.3f * globalDegree, false, -1.5f - 0.8f, 0.3f, limbSwing, newf12);
-
-		this.flap(this.legright, globalSpeed, 0.3f * globalDegree, false, 0 - 0.8f, 0.3f, limbSwing, newf12);
-		this.walk(this.legright, globalSpeed, 0.3f * globalDegree, true, 0 - 0.8f, -0.5f, limbSwing, newf12);
-		this.walk(this.legright2, globalSpeed, 0.3f * globalDegree, true, -1.5f - 0.8f, 0.3f, limbSwing, newf12);
-		this.swing(this.legright2, globalSpeed, 0.3f * globalDegree, false, -1.5f - 0.8f, -0.3f, limbSwing, newf12);
-
-		this.walk(this.armleft, globalSpeed, 0.5f * globalDegree, true, -1.6f - 0.4f, 0.3f, limbSwing, newf12);
-		this.walk(this.armleft2, globalSpeed, 0.3f * globalDegree, true, -0.1f - 0.4f, -0.4f, limbSwing, newf12);
-		this.swing(this.armleft2, globalSpeed, 0.3f * globalDegree, true, -0.1f - 0.4f, -0.4f, limbSwing, newf12);
-
-		this.walk(this.armright, globalSpeed, 0.5f * globalDegree, false, -1.6f - 0.4f, 0.3f, limbSwing, newf12);
-		this.walk(this.armright2, globalSpeed, 0.3f * globalDegree, false, -0.1f - 0.4f, -0.4f, limbSwing, newf12);
-		this.swing(this.armright2, globalSpeed, 0.3f * globalDegree, true, -0.1f - 0.4f, 0.4f, limbSwing, newf12);
-	}
-
-	@Override
-	public void prepareMobModel(PeatMummy entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		this.setInitPose();
-		float spawningProgress = entity.getInterpolatedSpawningProgress(partialTick);
+	public void setupAnim(PeatMummyRenderState state) {
+		super.setupAnim(state);
+		float spawningProgress = state.spawningProgress;
 		this.bodyBase.xRot -= 1.0F - spawningProgress;
 		this.armleft.xRot -= 1.5F * (1.0F - spawningProgress);
 		this.armright.xRot -= 1.5F * (1.0F - spawningProgress);
@@ -244,7 +194,7 @@ public class PeatMummyModel extends MowzieModelBase<PeatMummy> {
 			this.swing(this.armright2, globalSpeed, 0.3f * globalDegree, true, -0.1f - 0.4f, 0.4f, f, f1);
 		}
 
-		float screamProgress = entity.getScreamingProgress();
+		float screamProgress = state.screamingProgress;
 		if (screamProgress != 0.0F) {
 			if (screamProgress > 1.0F) screamProgress = 1.0F;
 			float controller = 40.0F * (-screamProgress * (screamProgress - 1.0F) * (screamProgress - 0.1F));
@@ -267,11 +217,49 @@ public class PeatMummyModel extends MowzieModelBase<PeatMummy> {
 			this.armright.zRot -= 0.5F * controller;
 			this.armleft2.xRot += controller;
 			this.armright2.xRot += controller;
-			this.jaw.xRot += 2.4F * controller + controller2 * 0.5F * Mth.cos(4.0F * (entity.tickCount + partialTick));
-			this.cheektissueleft.xRot -= 2.4F * controller + controller2 * 0.5F * Mth.cos(4.0F * (entity.tickCount + partialTick));
+			this.jaw.xRot += 2.4F * controller + controller2 * 0.5F * Mth.cos(4.0F * state.ageInTicks);
+			this.cheektissueleft.xRot -= 2.4F * controller + controller2 * 0.5F * Mth.cos(4.0F * state.ageInTicks);
 			this.cheektissueleft.y += 10.0F * controller;
-			this.cheektissueright.xRot -= 2.4F * controller + controller2 * 0.5F * Mth.cos(4.0F * (entity.tickCount + partialTick));
+			this.cheektissueright.xRot -= 2.4F * controller + controller2 * 0.5F * Mth.cos(4.0F * state.ageInTicks);
 			this.cheektissueright.y += 10.0F * controller;
 		}
+
+		this.neck.yRot = Mth.sin((state.yRot / Mth.RAD_TO_DEG));
+		this.neck.xRot = 0.9105382707654417F + Mth.sin((state.xRot / Mth.RAD_TO_DEG));
+		float newf1 = state.walkAnimationSpeed;
+		if (newf1 > 0.4) newf1 = 0.4f;
+		float newf12 = state.walkAnimationSpeed;
+		if (newf12 > 0.7) newf12 = 0.7f;
+
+		globalSpeed = 0.6f;
+
+		this.bodyBase.x -= wiggleDegree * globalDegree * newf1 * 3.0F * Mth.cos(globalSpeed * state.walkAnimationPos);
+		this.swing(this.butt, globalSpeed, 0.2f * globalDegree * wiggleDegree, true, -1.6f, 0, state.walkAnimationPos, newf1);
+		this.swing(this.bodyBase, globalSpeed, 0.3f * globalDegree * wiggleDegree, true, -0.8f, 0, state.walkAnimationPos, newf1);
+		this.swing(this.shoulderBase, globalSpeed, 0.4f * globalDegree * wiggleDegree, true, 0, 0, state.walkAnimationPos, newf1);
+		this.swing(this.neck, globalSpeed, 0.6f * globalDegree * wiggleDegree, false, -0.5f, 0, state.walkAnimationPos, newf1);
+
+		this.walk(this.bodyBase, 2 * globalSpeed, 0.1f * globalHeight, true, -1.5f, 0.1f, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.neck, 2 * globalSpeed, 0.1f * globalHeight, false, -1f, -0.1f, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.walk(this.jaw, 2 * globalSpeed, 0.1f * globalHeight, false, -0.7f, -0.1f, state.walkAnimationPos, state.walkAnimationSpeed);
+		this.bob(this.bodyBase, 2 * globalSpeed, 0.5f * globalHeight, false, state.walkAnimationPos, state.walkAnimationSpeed);
+
+		this.flap(this.legleft, globalSpeed, 0.3f * globalDegree, false, 0 - 0.8f, -0.3f, state.walkAnimationPos, newf12);
+		this.walk(this.legleft, globalSpeed, 0.3f * globalDegree, false, 0 - 0.8f, -0.5f, state.walkAnimationPos, newf12);
+		this.walk(this.legleft2, globalSpeed, 0.3f * globalDegree, false, -1.5f - 0.8f, 0.3f, state.walkAnimationPos, newf12);
+		this.swing(this.legleft2, globalSpeed, 0.3f * globalDegree, false, -1.5f - 0.8f, 0.3f, state.walkAnimationPos, newf12);
+
+		this.flap(this.legright, globalSpeed, 0.3f * globalDegree, false, 0 - 0.8f, 0.3f, state.walkAnimationPos, newf12);
+		this.walk(this.legright, globalSpeed, 0.3f * globalDegree, true, 0 - 0.8f, -0.5f, state.walkAnimationPos, newf12);
+		this.walk(this.legright2, globalSpeed, 0.3f * globalDegree, true, -1.5f - 0.8f, 0.3f, state.walkAnimationPos, newf12);
+		this.swing(this.legright2, globalSpeed, 0.3f * globalDegree, false, -1.5f - 0.8f, -0.3f, state.walkAnimationPos, newf12);
+
+		this.walk(this.armleft, globalSpeed, 0.5f * globalDegree, true, -1.6f - 0.4f, 0.3f, state.walkAnimationPos, newf12);
+		this.walk(this.armleft2, globalSpeed, 0.3f * globalDegree, true, -0.1f - 0.4f, -0.4f, state.walkAnimationPos, newf12);
+		this.swing(this.armleft2, globalSpeed, 0.3f * globalDegree, true, -0.1f - 0.4f, -0.4f, state.walkAnimationPos, newf12);
+
+		this.walk(this.armright, globalSpeed, 0.5f * globalDegree, false, -1.6f - 0.4f, 0.3f, state.walkAnimationPos, newf12);
+		this.walk(this.armright2, globalSpeed, 0.3f * globalDegree, false, -0.1f - 0.4f, -0.4f, state.walkAnimationPos, newf12);
+		this.swing(this.armright2, globalSpeed, 0.3f * globalDegree, true, -0.1f - 0.4f, 0.4f, state.walkAnimationPos, newf12);
 	}
 }

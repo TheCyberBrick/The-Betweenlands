@@ -5,11 +5,10 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.util.Mth;
 import thebetweenlands.client.model.MowzieModelBase;
-import thebetweenlands.common.entity.boss.Barrishee;
+import thebetweenlands.client.state.BarrisheeRenderState;
 
-public class BarrisheeModel extends MowzieModelBase<Barrishee> {
+public class BarrisheeModel extends MowzieModelBase<BarrisheeRenderState> {
 
-	private final ModelPart root;
 	private final ModelPart neck;
 	private final ModelPart belly_1;
 	private final ModelPart shoulder_right;
@@ -43,7 +42,7 @@ public class BarrisheeModel extends MowzieModelBase<Barrishee> {
 	private final ModelPart cogbeam;
 
 	public BarrisheeModel(ModelPart root) {
-		this.root = root.getChild("base_rotation_bit");
+		super(root.getChild("base_rotation_bit"));
 		this.neck = this.root.getChild("neck");
 		this.head_main = this.neck.getChild("head_main");
 		this.jaw_back = this.head_main.getChild("jaw_back");
@@ -373,37 +372,27 @@ public class BarrisheeModel extends MowzieModelBase<Barrishee> {
 	}
 
 	@Override
-	public ModelPart root() {
-		return this.root;
-	}
-
-	@Override
-	public void setupAnim(Barrishee entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
-	}
-
-	@Override
-	public void prepareMobModel(Barrishee entity, float limbSwing, float limbSwingAmount, float partialTick) {
-		this.setInitPose();
-		float animation = limbSwing * 0.1F;
-		float animation2 = Mth.sin((limbSwing) * 0.5F) * 0.4F * limbSwingAmount * 2.5F;
-		float animation3 = Mth.sin((limbSwing) * 0.5F) * 0.4F * limbSwingAmount * 0.15707963267948966F* 0.5F;
-		float standingAngle = entity.getSmoothedStandingAngle(partialTick);
-		float flap = Mth.sin((entity.tickCount + partialTick) * 0.6F) * 0.8F;
-		float flap2 = Mth.sin((entity.tickCount + partialTick) * 0.3F) * 0.8F;
+	public void setupAnim(BarrisheeRenderState state) {
+		super.setupAnim(state);
+		float animation = state.walkAnimationPos * 0.1F;
+		float animation2 = Mth.sin(state.walkAnimationPos * 0.5F) * 0.4F * state.walkAnimationSpeed * 2.5F;
+		float animation3 = Mth.sin(state.walkAnimationPos * 0.5F) * 0.4F * state.walkAnimationSpeed * 0.15707963267948966F* 0.5F;
+		float standingAngle = state.standingAngle;
+		float flap = Mth.sin(state.ageInTicks * 0.6F) * 0.8F;
+		float flap2 = Mth.sin(state.ageInTicks * 0.3F) * 0.8F;
 
 		this.cog1.zRot = 0F + animation;
 		this.cog1.xRot = 0 + animation3;
 
-		if ((entity.standingAngle > 0)) {
+		if ((state.standingAngle > 0)) {
 			this.root.xRot = this.convertDegtoRad(-65F) + (this.convertDegtoRad(65F) * standingAngle);
 			this.neck.xRot = this.convertDegtoRad(60F) - (this.convertDegtoRad(60F) * standingAngle);
 			this.head_main.xRot = this.convertDegtoRad(5F) - (this.convertDegtoRad(5F) * standingAngle);
 			this.belly_1.xRot = this.convertDegtoRad(30F) - (this.convertDegtoRad(70F) * standingAngle);
 		}
 
-		if (entity.isScreaming() && entity.getScreamTimer() >= 20 && entity.getScreamTimer() <= 30) {
-			float fudge = entity.getScreamTimer() - 20 + partialTick;
+		if (state.screaming && state.screamTimer >= 20 && state.screamTimer <= 30) {
+			float fudge = state.screamTimer - 20 + state.partialTick;
 
 			this.root.xRot = this.convertDegtoRad(0F) - (this.convertDegtoRad(10F) * fudge * 0.1F);
 			this.belly_1.xRot = this.convertDegtoRad(-40F) + (this.convertDegtoRad(10F) * fudge * 0.1F);
@@ -423,7 +412,7 @@ public class BarrisheeModel extends MowzieModelBase<Barrishee> {
 			this.hand_left.xRot = this.convertDegtoRad(25F) - (this.convertDegtoRad(20F) * fudge * 0.1F);
 		}
 
-		if (entity.isScreaming() && entity.getScreamTimer() > 30 && entity.getScreamTimer() < 40) {
+		if (state.screaming && state.screamTimer > 30 && state.screamTimer < 40) {
 			this.root.xRot = this.convertDegtoRad(-10F);
 			this.belly_1.xRot = this.convertDegtoRad(-30F);
 			this.neck.xRot = this.convertDegtoRad(-45F);
@@ -443,8 +432,8 @@ public class BarrisheeModel extends MowzieModelBase<Barrishee> {
 			this.head_main.zRot = 0F + animation2 * 0.25F + flap * 0.25F;
 		}
 
-		if (entity.isScreaming() && entity.getScreamTimer() >= 40) {
-			float fudge = entity.getScreamTimer() - 40 + partialTick;
+		if (state.screaming && state.screamTimer >= 40) {
+			float fudge = state.screamTimer - 40 + state.partialTick;
 
 			this.root.xRot = this.convertDegtoRad(-10F) + (this.convertDegtoRad(10F) * fudge * 0.1F);
 			this.belly_1.xRot = this.convertDegtoRad(-30F) - (this.convertDegtoRad(10F) * fudge * 0.1F);
@@ -464,7 +453,7 @@ public class BarrisheeModel extends MowzieModelBase<Barrishee> {
 			this.hand_left.xRot = this.convertDegtoRad(5F) + (this.convertDegtoRad(20F) * fudge * 0.1F);
 		}
 
-		if (!entity.isAmbushSpawn() && !entity.isScreaming() && !entity.isSlamming() || entity.isAmbushSpawn() && entity.standingAngle == 1 && !entity.isScreaming() && !entity.isSlamming()) {
+		if (!state.ambushSpawn && !state.screaming && !state.slamming || state.ambushSpawn && state.standingAngle == 1 && !state.screaming && !state.slamming) {
 			this.cogbeam.xRot = 0F + animation;
 			this.neck.xRot = 0F - flap2 * 0.0625F;
 			this.head_main.xRot = 0F + flap2 * 0.0625F;

@@ -6,12 +6,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.equipment.ArmorType;
 import thebetweenlands.common.registries.ArmorMaterialRegistry;
 
 import java.util.List;
 
 public class AncientArmorItem extends ArmorItem {
-	public AncientArmorItem(Type type, Properties properties) {
+	public AncientArmorItem(ArmorType type, Properties properties) {
 		super(ArmorMaterialRegistry.ANCIENT, type, properties);
 	}
 

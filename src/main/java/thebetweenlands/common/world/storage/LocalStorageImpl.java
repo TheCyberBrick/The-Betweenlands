@@ -103,8 +103,6 @@ public abstract class LocalStorageImpl implements ILocalStorage {
 	/**
 	 * Sets whether the data is dirty and needs to be saved to the file
 	 *
-	 * @param dirty
-	 * @return
 	 */
 	@Override
 	public void setDirty(boolean dirty) {
@@ -185,7 +183,6 @@ public abstract class LocalStorageImpl implements ILocalStorage {
 	/**
 	 * Called when a new watcher is added
 	 *
-	 * @param player
 	 */
 	protected void onWatched(ServerPlayer player) {
 		this.sendDataToPlayer(new AddLocalStoragePacket(this), player);
@@ -204,7 +201,6 @@ public abstract class LocalStorageImpl implements ILocalStorage {
 	/**
 	 * Called when a player stops watching this local storage
 	 *
-	 * @param player
 	 */
 	protected void onUnwatched(ServerPlayer player) {
 
@@ -293,7 +289,6 @@ public abstract class LocalStorageImpl implements ILocalStorage {
 	/**
 	 * Sends the message to a player
 	 *
-	 * @param player
 	 */
 	protected void sendDataToPlayer(CustomPacketPayload packet, ServerPlayer player) {
 		PacketDistributor.sendToPlayer(player, packet);

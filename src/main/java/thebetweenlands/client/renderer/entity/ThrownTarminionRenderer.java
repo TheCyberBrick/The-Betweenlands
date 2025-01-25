@@ -10,10 +10,11 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import thebetweenlands.client.BLModelLayers;
 import thebetweenlands.client.model.entity.TarminionModel;
+import thebetweenlands.client.state.ThrownTarminionRenderState;
 import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.entity.projectile.ThrownTarminion;
 
-public class ThrownTarminionRenderer extends EntityRenderer<ThrownTarminion> {
+public class ThrownTarminionRenderer extends EntityRenderer<ThrownTarminion, ThrownTarminionRenderState> {
 
 	private static final ResourceLocation TEXTURE = TheBetweenlands.prefix("textures/entity/tarminion.png");
 	private final TarminionModel model;
@@ -24,18 +25,24 @@ public class ThrownTarminionRenderer extends EntityRenderer<ThrownTarminion> {
 	}
 
 	@Override
-	public void render(ThrownTarminion entity, float entityYaw, float partialTick, PoseStack stack, MultiBufferSource source, int light) {
+	public void render(ThrownTarminionRenderState state, PoseStack stack, MultiBufferSource source, int light) {
 		stack.pushPose();
-		stack.mulPose(Axis.YP.rotationDegrees(entityYaw));
+		stack.mulPose(Axis.YP.rotationDegrees(state.yRot));
 		stack.scale(-1.0F, -1.0F, 1.0F);
 		stack.translate(0.0F, -1.501F, 0.0F);
-		this.model.renderToBuffer(stack, source.getBuffer(RenderType.entityCutoutNoCull(this.getTextureLocation(entity))), light, OverlayTexture.NO_OVERLAY);
+		this.model.renderToBuffer(stack, source.getBuffer(RenderType.entityCutoutNoCull(TEXTURE)), light, OverlayTexture.NO_OVERLAY);
 		stack.popPose();
-		super.render(entity, entityYaw, partialTick, stack, source, light);
+		super.render(state, stack, source, light);
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(ThrownTarminion entity) {
-		return TEXTURE;
+	public ThrownTarminionRenderState createRenderState() {
+		return new ThrownTarminionRenderState();
+	}
+
+	@Override
+	public void extractRenderState(ThrownTarminion entity, ThrownTarminionRenderState state, float partialTick) {
+		super.extractRenderState(entity, state, partialTick);
+		state.yRot = entity.getYRot(partialTick);
 	}
 }

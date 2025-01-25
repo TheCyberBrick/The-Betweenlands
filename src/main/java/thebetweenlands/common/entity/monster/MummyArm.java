@@ -62,7 +62,7 @@ public class MummyArm extends Mob implements BLEntity, OwnableEntity {
 
 	@Nullable
 	@Override
-	public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+	public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnGroupData) {
 		this.setYRot(this.level().getRandom().nextFloat() * 360.0F);
 		this.yRotO = this.getYRot();
 		return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);

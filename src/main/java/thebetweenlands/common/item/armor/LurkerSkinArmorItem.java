@@ -9,6 +9,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -17,7 +18,7 @@ import thebetweenlands.common.registries.ItemRegistry;
 
 public class LurkerSkinArmorItem extends ArmorItem {
 
-	public LurkerSkinArmorItem(Type type, Properties properties) {
+	public LurkerSkinArmorItem(ArmorType type, Properties properties) {
 		super(ArmorMaterialRegistry.LURKER_SKIN, type, properties);
 	}
 

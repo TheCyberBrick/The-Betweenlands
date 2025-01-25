@@ -31,8 +31,6 @@ public interface CustomCorrodible {
 
 	/**
 	 * Returns the maximum amount of coating for the specified item stack
-	 * @param stack
-	 * @return
 	 */
 	default int getMaxCoating(ItemStack stack) {
 		return CorrosionHelper.MAX_CORROSION;
@@ -40,8 +38,6 @@ public interface CustomCorrodible {
 
 	/**
 	 * Returns the maximum amount of corrosion for the specified item stack
-	 * @param stack
-	 * @return
 	 */
 	default int getMaxCorrosion(ItemStack stack) {
 		return CorrosionHelper.MAX_COATING;
@@ -49,8 +45,6 @@ public interface CustomCorrodible {
 
 	/**
 	 * Returns the amount of coating on the specified item stack
-	 * @param stack
-	 * @return
 	 */
 	default int getCoating(ItemStack stack) {
 		if(stack.has(DataComponentRegistry.CORROSION)) {
@@ -61,8 +55,6 @@ public interface CustomCorrodible {
 
 	/**
 	 * Returns the amount of corrosion on the specified item stack
-	 * @param stack
-	 * @return
 	 */
 	default int getCorrosion(ItemStack stack) {
 		if(stack.has(DataComponentRegistry.CORROSION)) {
@@ -73,8 +65,6 @@ public interface CustomCorrodible {
 
 	/**
 	 * Sets the amount of coating of the specified item stack
-	 * @param itemStack
-	 * @param coating
 	 */
 	default void setCoating(ItemStack stack, int coating) {
 		if(stack.has(DataComponentRegistry.CORROSION)) {
@@ -85,8 +75,6 @@ public interface CustomCorrodible {
 
 	/**
 	 * Sets the amount of corrosion of the specified item stack
-	 * @param stack
-	 * @param corrosion
 	 */
 	default void setCorrosion(ItemStack stack, int corrosion) {
 		if(stack.has(DataComponentRegistry.CORROSION)) {

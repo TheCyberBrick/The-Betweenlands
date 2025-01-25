@@ -25,6 +25,7 @@ public class ChiromawWingItem extends Item {
 		super(properties);
 	}
 
+	//TODO move to consume effect
 	@Override
 	public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity livingEntity) {
 		if (livingEntity instanceof Player player) {

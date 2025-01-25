@@ -5,9 +5,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import thebetweenlands.client.audio.SwarmSoundInstance;
@@ -122,12 +124,10 @@ public class SwarmOverlay {
 			RenderSystem.disableDepthTest();
 			RenderSystem.depthMask(false);
 			RenderSystem.enableBlend();
-			graphics.setColor(1.0F, 1.0F, 1.0F, alpha);
-			graphics.blit(SWARM_INDICATOR_OVERLAY_TEXTURE, 0, 0, -90, 0.0F, 0.0F, graphics.guiWidth(), graphics.guiHeight(), graphics.guiWidth(), graphics.guiHeight());
+			graphics.blit(RenderType::guiTexturedOverlay, SWARM_INDICATOR_OVERLAY_TEXTURE, 0, 0, 0.0F, 0.0F, graphics.guiWidth(), graphics.guiHeight(), graphics.guiWidth(), graphics.guiHeight(), ARGB.white(alpha));
 			RenderSystem.disableBlend();
 			RenderSystem.depthMask(true);
 			RenderSystem.enableDepthTest();
-			graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
 		for (Crawler crawler : this.crawlers) {

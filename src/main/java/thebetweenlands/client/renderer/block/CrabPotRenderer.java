@@ -10,8 +10,10 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -61,7 +63,7 @@ public class CrabPotRenderer implements BlockEntityRenderer<CrabPotBlockEntity> 
 					if (entity.fallCounter > 0) {
 						float smoothed = (float) entity.fallCounter * 0.03125F + ((float) entity.fallCounter * 0.03125F - (float) entity.fallCounterPrev * 0.03125F) * partialTicks;
 						float smoothedTumble = (float) entity.fallCounter + ((float) entity.fallCounter - (float) entity.fallCounterPrev) * partialTicks;
-						this.renderMobInSlot(stack, source, entity.getLevel(), entity.getEntity(), 0.0F, 0.0625F + smoothed, 0.0F, smoothedTumble, light);
+						this.renderMobInSlot(stack, source, entity.getLevel(), entity.getEntity(), 0.0F, 0.0625F + smoothed, 0.0F, smoothedTumble, partialTicks, light);
 					}
 					if (entity.fallCounter <= 0) {
 						stack.pushPose();
@@ -117,8 +119,8 @@ public class CrabPotRenderer implements BlockEntityRenderer<CrabPotBlockEntity> 
 		return entity.getTheItem().getItem() instanceof MobItem && (entity.getEntity() == EntityRegistry.SILT_CRAB.get() || entity.getEntity()  == EntityRegistry.BUBBLER_CRAB.get());
 	}
 
-	public void renderMobInSlot(PoseStack stack, MultiBufferSource source, Level level, EntityType<?> type, float x, float y, float z, float rotation, int light) {
-		Entity entity = type.create(level);
+	public void renderMobInSlot(PoseStack stack, MultiBufferSource source, Level level, EntityType<?> type, float x, float y, float z, float rotation, float partialTicks, int light) {
+		Entity entity = type.create(level, EntitySpawnReason.LOAD);
 		if (entity != null) {
 			float scale = 0.95F;
 			float tumble = rotation * 11.25F;
@@ -133,8 +135,8 @@ public class CrabPotRenderer implements BlockEntityRenderer<CrabPotBlockEntity> 
 				stack.mulPose(Axis.XP.rotationDegrees(0.0F));
 			}
 			stack.mulPose(Axis.YP.rotationDegrees((float) (offsetRotation - Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().y())));
-			EntityRenderer<? super Entity> renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(entity);
-			renderer.render(entity, 0, 0, stack, source, light);
+			EntityRenderer<? super Entity, ? extends EntityRenderState> renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(entity);
+			Minecraft.getInstance().getEntityRenderDispatcher().render(entity, 0, 0, 0, partialTicks, stack, source, light);
 			stack.popPose();
 		}
 	}

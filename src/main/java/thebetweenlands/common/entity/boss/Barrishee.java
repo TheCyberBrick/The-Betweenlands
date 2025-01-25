@@ -5,6 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Containers;
@@ -46,7 +47,6 @@ import thebetweenlands.common.entity.movement.climb.PathObstructionAwareEntity;
 import thebetweenlands.common.registries.EntityRegistry;
 import thebetweenlands.common.registries.ParticleRegistry;
 import thebetweenlands.common.registries.SoundRegistry;
-import thebetweenlands.common.world.storage.location.LocationGuarded;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -252,8 +252,8 @@ public class Barrishee extends Monster implements ScreenShaker, BLEntity, PathOb
 			this.spawnScreamParticles();
 		}
 
-		if (!this.level().isClientSide() && this.isScreaming() && !this.isScreamingBeam() && this.getScreamTimer() >= 25) {
-			this.breakBlocksForAOEScream(this.getAOEScreamBounds());
+		if (this.level() instanceof ServerLevel level && this.isScreaming() && !this.isScreamingBeam() && this.getScreamTimer() >= 25) {
+			this.breakBlocksForAOEScream(level, this.getAOEScreamBounds());
 		}
 
 		if (!this.level().isClientSide()) {
@@ -315,8 +315,8 @@ public class Barrishee extends Monster implements ScreenShaker, BLEntity, PathOb
 		}
 	}
 
-	private void breakBlocksForAOEScream(AABB aoeScreamBounds) {
-		if (EventHooks.canEntityGrief(this.level(), this)) {
+	private void breakBlocksForAOEScream(ServerLevel level, AABB aoeScreamBounds) {
+		if (EventHooks.canEntityGrief(level, this)) {
 			int minX = Mth.floor(aoeScreamBounds.minX);
 			int minY = Mth.floor(aoeScreamBounds.minY);
 			int minZ = Mth.floor(aoeScreamBounds.minZ);

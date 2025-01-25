@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import thebetweenlands.api.item.amphibious.AmphibiousArmorUpgrade;
 import thebetweenlands.common.component.item.AmphibiousUpgrades;
+import thebetweenlands.common.component.item.CircleGemData;
 import thebetweenlands.common.item.tool.GemSingerItem;
 import thebetweenlands.common.registries.AmphibiousArmorUpgradeRegistry;
 import thebetweenlands.common.registries.DataComponentRegistry;
@@ -65,7 +66,6 @@ public enum CircleGemType implements StringRepresentable {
 	 * <p>-1: This gem has a disadvantage over the other gem
 	 *
 	 * @param gem Circle gem to compare to
-	 * @return
 	 */
 	public int getRelation(CircleGemType gem) {
 		return switch (this) {
@@ -180,8 +180,6 @@ public enum CircleGemType implements StringRepresentable {
 	/**
 	 * Returns the gem for the specified name
 	 *
-	 * @param name
-	 * @return
 	 */
 	public static CircleGemType fromName(String name) {
 		for (CircleGemType gem : values()) {
@@ -195,8 +193,6 @@ public enum CircleGemType implements StringRepresentable {
 	/**
 	 * Returns the gem for the specified ID
 	 *
-	 * @param id
-	 * @return
 	 */
 	public static CircleGemType fromID(int id) {
 		for (CircleGemType gem : values()) {
@@ -220,7 +216,7 @@ public enum CircleGemType implements StringRepresentable {
 	public final Consumer<ItemStack> getAmphibiousArmorOnChangedHandler() {
 		return armor -> {
 			if (this.getAmphibiousArmorUpgrade() != null && armor.getOrDefault(DataComponentRegistry.AMPHIBIOUS_UPGRADES, AmphibiousUpgrades.EMPTY).getAllUniqueUpgradesWithCounts().containsKey(this.getAmphibiousArmorUpgrade())) {
-				armor.set(DataComponentRegistry.CIRCLE_GEM, this);
+				armor.set(DataComponentRegistry.CIRCLE_GEM, new CircleGemData(this));
 			} else {
 				armor.remove(DataComponentRegistry.CIRCLE_GEM);
 			}

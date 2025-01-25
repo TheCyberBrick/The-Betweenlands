@@ -47,6 +47,7 @@ public class AnimatorBlockEntity extends BaseContainerBlockEntity {
 	public boolean itemAnimated = false;
 	private int prevStackSize = 0;
 	private ItemStack prevItem = ItemStack.EMPTY;
+	private boolean validItem = false;
 
 	public float oRot;
 	public float rot;
@@ -64,6 +65,7 @@ public class AnimatorBlockEntity extends BaseContainerBlockEntity {
 				case 3 -> AnimatorBlockEntity.this.fuelConsumed;
 				case 4 -> AnimatorBlockEntity.this.requiredFuelCount;
 				case 5 -> AnimatorBlockEntity.this.requiredLifeCount;
+				case 6 -> AnimatorBlockEntity.this.validItem ? 1 : 0;
 				default -> 0;
 			};
 		}
@@ -76,6 +78,7 @@ public class AnimatorBlockEntity extends BaseContainerBlockEntity {
 				case 3 -> AnimatorBlockEntity.this.fuelConsumed = value;
 				case 4 -> AnimatorBlockEntity.this.requiredFuelCount = value;
 				case 5 -> AnimatorBlockEntity.this.requiredLifeCount = value;
+				case 6 -> AnimatorBlockEntity.this.validItem = value == 1;
 			}
 		}
 
@@ -92,11 +95,11 @@ public class AnimatorBlockEntity extends BaseContainerBlockEntity {
 	}
 
 	public static void tick(Level level, BlockPos pos, BlockState state, AnimatorBlockEntity entity) {
-		if (!level.isClientSide()) {
-			if (entity.isValidFocalItem(level)) {
+		if (level instanceof ServerLevel serverLevel) {
+			if (entity.validItem) {
 				entity.itemToAnimate = entity.getItem(0);
 				SingleRecipeInput input = new SingleRecipeInput(entity.itemToAnimate);
-				RecipeHolder<AnimatorRecipe> recipe = entity.quickCheck.getRecipeFor(input, level).orElse(null);
+				RecipeHolder<AnimatorRecipe> recipe = entity.quickCheck.getRecipeFor(input, serverLevel).orElse(null);
 				if (recipe != null) {
 					entity.requiredFuelCount = recipe.value().getRequiredFuel(input);
 					entity.requiredLifeCount = recipe.value().getRequiredLife(input);
@@ -112,7 +115,7 @@ public class AnimatorBlockEntity extends BaseContainerBlockEntity {
 				entity.fuelConsumed = 0;
 			}
 
-			if (!entity.itemToAnimate.isEmpty() && entity.isCrystalInSlot() && entity.isSulfurInSlot() && entity.fuelConsumed < entity.requiredFuelCount && entity.isValidFocalItem(level)) {
+			if (!entity.itemToAnimate.isEmpty() && entity.isCrystalInSlot() && entity.isSulfurInSlot() && entity.fuelConsumed < entity.requiredFuelCount && entity.validItem) {
 				if (entity.lifeCrystalLife >= entity.requiredLifeCount) {
 					entity.fuelBurnProgress++;
 					if (entity.fuelBurnProgress >= 42) {
@@ -134,7 +137,7 @@ public class AnimatorBlockEntity extends BaseContainerBlockEntity {
 
 			if (entity.fuelConsumed >= entity.requiredFuelCount && !entity.getItem(0).isEmpty() && !entity.getItem(1).isEmpty() && !entity.itemAnimated) {
 				SingleRecipeInput recipeInput = new SingleRecipeInput(entity.getItem(0));
-				RecipeHolder<AnimatorRecipe> recipe = entity.quickCheck.getRecipeFor(recipeInput, level).orElse(null);
+				RecipeHolder<AnimatorRecipe> recipe = entity.quickCheck.getRecipeFor(recipeInput, serverLevel).orElse(null);
 				if (recipe != null) {
 					ItemStack input = entity.getItem(0).copy();
 					ItemStack result = recipe.value().onAnimated((ServerLevel) level, pos, recipeInput);
@@ -160,7 +163,7 @@ public class AnimatorBlockEntity extends BaseContainerBlockEntity {
 			entity.prevItem = entity.getItem(0);
 			entity.prevStackSize = entity.getItem(0).getCount();
 
-			boolean shouldBeRunning = !entity.getItem(0).isEmpty() && entity.isCrystalInSlot() && entity.isSulfurInSlot() && entity.fuelConsumed < entity.requiredFuelCount && entity.lifeCrystalLife >= entity.requiredLifeCount && entity.isValidFocalItem(level);
+			boolean shouldBeRunning = !entity.getItem(0).isEmpty() && entity.isCrystalInSlot() && entity.isSulfurInSlot() && entity.fuelConsumed < entity.requiredFuelCount && entity.lifeCrystalLife >= entity.requiredLifeCount && entity.validItem;
 			if (entity.running != shouldBeRunning) {
 				entity.running = shouldBeRunning;
 				entity.setChanged();
@@ -233,14 +236,6 @@ public class AnimatorBlockEntity extends BaseContainerBlockEntity {
 		return this.getItem(2).is(ItemRegistry.SULFUR);
 	}
 
-	public boolean isValidFocalItem(Level level) {
-		if (!this.getItem(0).isEmpty()) {
-			SingleRecipeInput recipeInput = new SingleRecipeInput(this.getItem(0));
-			return this.quickCheck.getRecipeFor(recipeInput, level).isPresent();
-		}
-		return false;
-	}
-
 	public boolean isRunning() {
 		return this.running;
 	}
@@ -263,7 +258,16 @@ public class AnimatorBlockEntity extends BaseContainerBlockEntity {
 	@Override
 	public void setItem(int slot, ItemStack stack) {
 		super.setItem(slot, stack);
-		if (slot == 1) {
+		if (slot == 0) {
+			if (!stack.isEmpty()) {
+				if (this.getLevel() instanceof ServerLevel sl) {
+					SingleRecipeInput recipeInput = new SingleRecipeInput(stack);
+					this.validItem = this.quickCheck.getRecipeFor(recipeInput, sl).isPresent();
+				}
+			} else {
+				this.validItem = false;
+			}
+		} else if (slot == 1) {
 			this.lifeCrystalLife = this.getCrystalPower();
 		}
 	}

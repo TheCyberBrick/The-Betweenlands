@@ -5,7 +5,8 @@ import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.CoreShaders;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.joml.Matrix4f;
@@ -50,29 +51,29 @@ public class FishStaminaBarOverlay {
 				boolean treasureUnlocked = anadia.getTreasureUnlocked();
 
 				if (anadia.getStaminaTicks() <= 0) {
-					graphics.blitSprite(SCOOP_FISH, xPos + 240, yPos + 4, 64, 32);
+					graphics.blitSprite(RenderType::guiTextured, SCOOP_FISH, xPos + 240, yPos + 4, 64, 32);
 				} else {
-					graphics.blitSprite(BACKGROUND, xPos, yPos + 2, 256, 25); // background
+					graphics.blitSprite(RenderType::guiTextured, BACKGROUND, xPos, yPos + 2, 256, 25); // background
 
 					graphics.enableScissor(xPos + 4, yPos, xPos + 252, yPos + 19);
 
-					if (showTreasure) graphics.blitSprite(treasureUnlocked ? TREASURE_OPEN : TREASURE, xPos - treasurePos, yPos + 1, 16, 16); // chest
+					if (showTreasure) graphics.blitSprite(RenderType::guiTextured, treasureUnlocked ? TREASURE_OPEN : TREASURE, xPos - treasurePos, yPos + 1, 16, 16); // chest
 
 					drawHangingRope(graphics.pose().last().pose(), tracker, fishpos, xPos - fishpos + 7, yPos + 12, xPos + 256 + 16, yPos, 0.5F); // line
 
-					graphics.blitSprite(FISH, xPos - fishpos - 8, yPos + 1, 16, 16); // fish
+					graphics.blitSprite(RenderType::guiTextured, FISH, xPos - fishpos - 8, yPos + 1, 16, 16); // fish
 
-					graphics.blitSprite(JELLYFISH, xPos - obstructpos4 - 8, yPos + 2, 16, 16); // jolly fush
+					graphics.blitSprite(RenderType::guiTextured, JELLYFISH, xPos - obstructpos4 - 8, yPos + 2, 16, 16); // jolly fush
 
-					graphics.blitSprite(escapeDelay < 10 ? CRAB : CRAB_UNDERGROUND, xPos - escapepos - 8, yPos + 2 + escapeDelay, 16, 16); // crab
+					graphics.blitSprite(RenderType::guiTextured, escapeDelay < 10 ? CRAB : CRAB_UNDERGROUND, xPos - escapepos - 8, yPos + 2 + escapeDelay, 16, 16); // crab
 
-					graphics.blitSprite(SEAWEED, xPos - obstructpos1 - 8, yPos, 16, 16); // weed
-					graphics.blitSprite(CORAL, xPos - obstructpos3 - 8, yPos, 16, 16); // coral
-					graphics.blitSprite(ROCK, xPos - obstructpos2 - 8, yPos, 16, 16); // rock
+					graphics.blitSprite(RenderType::guiTextured, SEAWEED, xPos - obstructpos1 - 8, yPos, 16, 16); // weed
+					graphics.blitSprite(RenderType::guiTextured, CORAL, xPos - obstructpos3 - 8, yPos, 16, 16); // coral
+					graphics.blitSprite(RenderType::guiTextured, ROCK, xPos - obstructpos2 - 8, yPos, 16, 16); // rock
 
 					graphics.disableScissor();
 
-					graphics.blitSprite(FOREGROUND, xPos, yPos + 2, 256, 25); // foreground
+					graphics.blitSprite(RenderType::guiTextured, FOREGROUND, xPos, yPos + 2, 256, 25); // foreground
 				}
 			}
 		}
@@ -130,7 +131,7 @@ public class FishStaminaBarOverlay {
 
 		float u = 0;
 
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(CoreShaders.POSITION_TEX);
 		RenderSystem.setShaderTexture(0, FISHING_LINE);
 		BufferBuilder builder = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_TEX);
 

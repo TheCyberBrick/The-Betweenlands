@@ -20,22 +20,22 @@ public class SynchedAttachmentHandler {
 	public static void syncLevelAttachmentToPlayer(Level level, ServerPlayer player, AttachmentType<? extends ISynchedAttachment<?>> attachmentType) {
 		PacketDistributor.sendToPlayer(player, new UpdateSynchedAttachmentPacket(AttachmentHolderIdentifier.of(level), attachmentType, level.getData(attachmentType)));
 	}
-	
+
 	public static void onPlayerJoinWorld(EntityJoinLevelEvent event) {
 		Level level = event.getLevel();
 		ServerPlayer player = event.getEntity() instanceof ServerPlayer p ? p : null;
 		if(player != null && !player.level().isClientSide()) {
 			for(int i = 0; i < BLRegistries.SYNCHED_ATTACHMENT_TYPES.size(); ++i) {
 				SynchedAttachmentType<?> type = BLRegistries.SYNCHED_ATTACHMENT_TYPES.byId(i);
-				AttachmentType<?> type2 = NeoForgeRegistries.ATTACHMENT_TYPES.get(type.getAttachmentKey());
+				AttachmentType<?> type2 = NeoForgeRegistries.ATTACHMENT_TYPES.getValue(type.getAttachmentKey());
 				try {
 					@SuppressWarnings("unchecked")
 					AttachmentType<? extends ISynchedAttachment<?>> attachmentType = (AttachmentType<? extends ISynchedAttachment<?>>)type2;
-					
+
 					if(player.hasData(type2)) {
 						syncPlayerAttachment(player, attachmentType);
 					}
-					
+
 					if(level.hasAttachments() && level.hasData(type2)) {
 						syncLevelAttachmentToPlayer(level, player, attachmentType);
 					}
@@ -45,5 +45,5 @@ public class SynchedAttachmentHandler {
 			}
 		}
 	}
-	
+
 }

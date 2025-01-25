@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import thebetweenlands.common.TheBetweenlands;
 import thebetweenlands.common.entity.boss.Barrishee;
 import thebetweenlands.common.entity.monster.MummyArm;
-import thebetweenlands.common.entity.monster.Stalker;
 
 import java.util.List;
 
@@ -24,7 +23,7 @@ public class TestFlagItem extends Item {
 	}
 
 	@Override
-	public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
+	public ItemStack getCraftingRemainder(ItemStack itemStack) {
 		return itemStack;
 	}
 
@@ -41,7 +40,7 @@ public class TestFlagItem extends Item {
 		MummyArm arm = new MummyArm(context.getLevel(), context.getPlayer());
 		arm.moveTo(context.getClickLocation());
 		context.getLevel().addFreshEntity(arm);
-		return InteractionResult.sidedSuccess(context.getLevel().isClientSide());
+		return InteractionResult.SUCCESS;
 	}
 
 	@Override
@@ -50,7 +49,7 @@ public class TestFlagItem extends Item {
 			barrishee.setIsScreaming(!barrishee.isScreaming());
 			barrishee.setIsScreamingBeam(!barrishee.isScreamingBeam());
 			barrishee.setScreamTimer(0);
-			return InteractionResult.sidedSuccess(player.level().isClientSide());
+			return InteractionResult.SUCCESS;
 		}
 		return super.interactLivingEntity(stack, player, entity, hand);
 	}

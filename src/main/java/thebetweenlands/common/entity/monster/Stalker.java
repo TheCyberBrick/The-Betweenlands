@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -57,19 +58,19 @@ public class Stalker extends ClimbingMob implements Enemy {
 
 	protected boolean restrictToPitstone = false;
 
-	protected int maxPathingTargetHeight;
+	protected final int maxPathingTargetHeight;
 
 	public boolean isStalking = true;
 
-	protected float farAnglePathingPenalty = 1.0f;
-	public float farAngle = 90.0f;
+	protected final float farAnglePathingPenalty = 1.0f;
+	public final float farAngle = 90.0f;
 
-	protected float nearAnglePathingPenalty = 2.0f;
-	protected float nearAngle = 65.0f;
+	protected final float nearAnglePathingPenalty = 2.0f;
+	protected final float nearAngle = 65.0f;
 
-	protected float stalkingDistanceNear = 4.0f;
-	public float stalkingDistanceFar = 8.0f;
-	protected float stalkingDistancePenalty = 4.0f;
+	protected final float stalkingDistanceNear = 4.0f;
+	public final float stalkingDistanceFar = 8.0f;
+	protected final float stalkingDistancePenalty = 4.0f;
 
 	protected boolean isFleeingFromView;
 
@@ -83,7 +84,7 @@ public class Stalker extends ClimbingMob implements Enemy {
 	public Vec3 eyeRotationTarget;
 	private int nextEyeRotate;
 
-	public int animationOffset;
+	public final int animationOffset;
 
 	private boolean canCallAllies = true;
 
@@ -134,7 +135,7 @@ public class Stalker extends ClimbingMob implements Enemy {
 	}
 
 	@Override
-	public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+	public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnType, @Nullable SpawnGroupData spawnGroupData) {
 		if (this.getY() < TheBetweenlands.PITSTONE_HEIGHT + 3 && this.level().dimension() == DimensionRegistries.DIMENSION_KEY) {
 			this.restrictToPitstone = true;
 		}
@@ -493,8 +494,8 @@ public class Stalker extends ClimbingMob implements Enemy {
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount) {
-		if (super.hurt(source, amount)) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+		if (super.hurtServer(level, source, amount)) {
 			if (this.getTarget() != null && source.getEntity() == this.getTarget()) {
 				this.isStalking = false;
 			}

@@ -14,7 +14,6 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.biome.Climate;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
-import thebetweenlands.common.registries.BiomeRegistry;
 import thebetweenlands.common.world.gen.layer.*;
 import thebetweenlands.common.world.gen.layer.util.*;
 import thebetweenlands.common.world.gen.warp.TerrainPoint;
@@ -107,7 +106,7 @@ public class BetweenlandsBiomeSource extends BiomeSource {
 	}
 
 	public static int getBiomeId(ResourceKey<Biome> biome, HolderGetter<Biome> registry) {
-		return ServerLifecycleHooks.getCurrentServer().registryAccess().registryOrThrow(Registries.BIOME).getId(registry.get(biome).get().value());
+		return ServerLifecycleHooks.getCurrentServer().registryAccess().lookupOrThrow(Registries.BIOME).getId(registry.get(biome).orElseThrow().value());
 	}
 
 	public static long getSeed() {

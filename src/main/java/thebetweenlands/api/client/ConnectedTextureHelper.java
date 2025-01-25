@@ -69,8 +69,6 @@ public class ConnectedTextureHelper {
 
 	/**
 	 * Register a new {@link ConnectedTexturesPropertyProvider} to apply properties to model data
-	 * @param name
-	 * @param property
 	 */
 	public static void registerPropertyProvider(ResourceLocation name, ConnectedTexturesPropertyProvider provider) {
 		assert(!PROPERTY_PROVIDERS.containsKey(name));
@@ -79,8 +77,6 @@ public class ConnectedTextureHelper {
 
 	/**
 	 * Removes and returns the {@link ConnectedTexturesPropertyProvider} with the provided name
-	 * @param name
-	 * @param property
 	 * @return the {@link ConnectedTexturesPropertyProvider}, or {@code null} if there was none registered under that name
 	 */
 	public static ConnectedTexturesPropertyProvider removePropertyProvider(ResourceLocation name) {
@@ -97,8 +93,6 @@ public class ConnectedTextureHelper {
 
 	/**
 	 * Register a {@link ModelProperty} as an index that can be used in connected texture models
-	 * @param name
-	 * @param property
 	 */
 	public static void registerIndexProperty(ResourceLocation name, ModelProperty<Integer> property) {
 		if(INDEX_REGISTRY.containsKey(name))
@@ -108,8 +102,6 @@ public class ConnectedTextureHelper {
 
 	/**
 	 * Register a {@link ModelProperty} as a cullface that can be used in connected texture models
-	 * @param name
-	 * @param property
 	 */
 	public static void registerCullfaceProperty(ResourceLocation name, ModelProperty<Boolean> property) {
 		if(CULLFACE_REGISTRY.containsKey(name))
@@ -283,8 +275,6 @@ public class ConnectedTextureHelper {
 	/**
 	 * Creates the connection array
 	 *
-	 * @param pos
-	 * @param dir         Face
 	 * @param canConnectTo Returns whether this block can connect to the specified block pos
 	 * @param canConnectThrough Returns whether this block can connect through the specified block pos;
 	 * @return Connection array

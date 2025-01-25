@@ -8,6 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import thebetweenlands.common.entity.BLEntity;
 import thebetweenlands.common.herblore.elixir.ElixirEffectRegistry;
@@ -19,7 +20,7 @@ import thebetweenlands.common.registries.ItemRegistry;
 
 public class RubberBootsItem extends ArmorItem {
 	public RubberBootsItem(Properties properties) {
-		super(ArmorMaterialRegistry.RUBBER, Type.BOOTS, properties);
+		super(ArmorMaterialRegistry.RUBBER, ArmorType.BOOTS, properties);
 	}
 
 	public static boolean isEntityWearingRubberBoots(Entity entity) {

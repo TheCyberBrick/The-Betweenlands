@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -41,7 +41,7 @@ public class PlantBlock extends BushBlock implements FarmablePlant {
 	@Override
 	protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
 		if (this.moveWithOffset) {
-			Vec3 vec3 = state.getOffset(level, pos);
+			Vec3 vec3 = state.getOffset(pos);
 			return this.shape.move(vec3.x, vec3.y, vec3.z);
 		} else {
 			return this.shape;
@@ -49,7 +49,7 @@ public class PlantBlock extends BushBlock implements FarmablePlant {
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (stack.is(ItemRegistry.COMPOST)) {
 			pos = pos.below();
 			for (int i = 0; i < 3; i++) {

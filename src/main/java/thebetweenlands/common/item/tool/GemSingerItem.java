@@ -6,7 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -68,7 +68,7 @@ public class GemSingerItem extends Item {
 	}
 
 	@Override
-	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+	public InteractionResult use(Level level, Player player, InteractionHand hand) {
 		if(!level.isClientSide()) {
 			ItemStack stack = player.getItemInHand(hand);
 			if(player.isShiftKeyDown()) {
@@ -141,7 +141,7 @@ public class GemSingerItem extends Item {
 					stack.hurtAndBreak(1, player, Player.getSlotForHand(hand));
 				}
 
-				player.getCooldowns().addCooldown(stack.getItem(), 60);
+				player.getCooldowns().addCooldown(stack, 60);
 			}
 		}
 
@@ -149,7 +149,7 @@ public class GemSingerItem extends Item {
 			level.playSound(player, player.blockPosition(), SoundRegistry.GEM_SINGER.get(), SoundSource.PLAYERS, 2, 1);
 		}
 
-		return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide());
+		return InteractionResult.SUCCESS;
 	}
 
 	protected void spawnEffect(Player player, BlockPos target, int maxRangeBlocks, int maxDelay) {

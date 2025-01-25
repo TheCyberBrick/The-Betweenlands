@@ -33,7 +33,7 @@ public class ReedMatBlock extends Block {
 			if (!level.isClientSide()) {
 				this.seatPlayer(level, player, pos);
 			}
-			return InteractionResult.sidedSuccess(level.isClientSide());
+			return InteractionResult.SUCCESS;
 		}
 		return super.useWithoutItem(state, level, pos, player, hitResult);
 	}
